@@ -1,0 +1,28 @@
+default:
+    image: python:3.9
+    before_script:
+       - apt-get update
+       - apt-get install -y python3-pip netcdf-bin
+       - pip install -r requirements.txt
+stages:
+    - static analysis
+    - test
+test:
+  script:
+    - pytest
+    - ls -lh sample_data/*.nc
+    - find -name "*.nc"
+    - coverage run -m pytest
+    - coverage report --omit=test_*.py */*.py *.py
+
+
+pylint:
+  stage: static analysis
+  allow_failure: true
+  script:
+    - pylint --fail-under=8 */*.py *.py
+  artifacts:
+    when: always
+    reports:
+      codequality: codeclimate.json
+
