@@ -3,7 +3,6 @@ default:
     before_script:
        - apt-get update
        - apt-get install -y python3-pip netcdf-bin
-       - pip install -r requirements.txt
 stages:
     - static analysis
     - test
