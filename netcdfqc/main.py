@@ -5,7 +5,7 @@ Main.py
 def get_version() -> str:
     '''
     Returns a string with the current version.
-    Manually updated, just a test function.
+    Manually updated, just a temporary function.
     '''
     return "0.1.0"
 
