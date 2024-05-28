@@ -1,4 +1,6 @@
 .coverage*
 venv/*
+build/*
+dist/*
 netcdfqc.egg-info/*
 */__pycache__/*
