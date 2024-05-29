@@ -3,4 +3,5 @@ venv/*
 build/*
 dist/*
 netcdfqc.egg-info/*
-*/__pycache__/*
+netcdfqc/__pycache__
+tests/__pycache__
