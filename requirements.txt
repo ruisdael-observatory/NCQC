@@ -1,0 +1,6 @@
+PyYAML
+pytest
+coverage
+netCDF4
+pylint
+
