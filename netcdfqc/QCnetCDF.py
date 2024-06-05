@@ -24,6 +24,7 @@ class QualityControl:
     - add_qc_checks_conf: add checks via a config file
     - add_qc_checks_dict: add checks via a dictionary
     - replace_qc_checks_conf: replace checks via a config file
+    - replace_qc_checks_dict: replace checks via a dictionary
     """
     def __init__(self):
         """
@@ -69,7 +70,17 @@ class QualityControl:
         self.qc_checks_vars = {}
         self.qc_checks_gl_attrs = {}
         new_checks_dict = yaml2dict(path_qc_checks_file)
-        self.add_qc_checks_dict(new_checks_dict)
+        self.add_qc_checks_dict(dict_qc_checks=new_checks_dict)
+
+    def replace_qc_checks_dict(self, dict_qc_checks: dict):
+        """
+        Method dedicated to replacing the current checks with the ones from a provided dictionary
+        :param dict_qc_checks: the dictionary containing the checks
+        """
+        self.qc_checks_dims = {}
+        self.qc_checks_vars = {}
+        self.qc_checks_gl_attrs = {}
+        self.add_qc_checks_dict(dict_qc_checks=dict_qc_checks)
 
     def boundary_check(self, nc_file_path: Path):  # pylint: disable=missing-function-docstring
         # nc_file_dict = netCDF4.Dataset(nc_file_path)

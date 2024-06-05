@@ -162,6 +162,38 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_vars == new_checks_dict['variables']
         assert qc_obj.qc_checks_gl_attrs == new_checks_dict['global attributes']
 
+    def test_replace_qc_checks_dict(self):
+        qc_obj = QualityControl()
+        qc_obj.qc_checks_dims = {
+            'example_dimension': {'existence': True}
+        }
+        qc_obj.qc_checks_vars = {
+            'example_variable': {
+                'existence': True,
+                'boundaries': {'do': True, 'lower': 1, 'upper': 2}
+            }
+        }
+
+        new_checks_dict = {
+            'dimensions': {
+                'example_dimension_2': {'existence': False}
+            },
+            'variables': {
+                'example_variable_2': {
+                    'existence': False,
+                    'boundaries': {'do': True, 'lower': 3, 'upper': 4}
+                }
+            },
+            'global attributes': {
+                'existence': True, 'emptiness': True
+            }
+        }
+
+        qc_obj.replace_qc_checks_dict(new_checks_dict)
+        assert qc_obj.qc_checks_dims == new_checks_dict['dimensions']
+        assert qc_obj.qc_checks_vars == new_checks_dict['variables']
+        assert qc_obj.qc_checks_gl_attrs == new_checks_dict['global attributes']
+
     def test_yaml2dict(self):
         res = yaml2dict(Path(__file__).parent.parent / 'example_config.yaml')
         assert res == {
