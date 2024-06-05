@@ -1,0 +1,16 @@
+dimensions:
+  example_dimension:
+    does_it_exist: true
+
+variables:
+  example_variable:
+    does_it_exist_check: true
+    is_data_within_boundaries_check:
+      perform_check: true
+      lower_bound: 0
+      upper_bound: 1
+
+global attributes:
+  example_gl_attr:
+    does_it_exist_check: true
+    is_it_empty_check: true
