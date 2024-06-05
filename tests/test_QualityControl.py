@@ -163,7 +163,7 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_gl_attrs == new_checks_dict['global attributes']
 
     def test_yaml2dict(self):
-        res = yaml2dict(Path('../example_config.yaml'))
+        res = yaml2dict(Path(__file__).parent.parent / 'example_config.yaml')
         assert res == {
             'dimensions': {'example_dimension': {'does_it_exist': True}},
             'variables': {
