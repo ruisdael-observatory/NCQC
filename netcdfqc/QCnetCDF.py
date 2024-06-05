@@ -44,7 +44,7 @@ class QualityControl:
 
     def add_qc_checks_dict(self, dict_qc_checks: dict):
         """
-        Method dedicated to adding quality control checks th
+        Method dedicated to adding quality control checks via a provided dictionary
         :param dict_qc_checks: the dictionary containing the checks
         """
         if 'dimensions' not in list(dict_qc_checks.keys()):
