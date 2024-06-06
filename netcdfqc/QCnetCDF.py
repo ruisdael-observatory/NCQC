@@ -28,6 +28,7 @@ class QualityControl:
     - replace_qc_checks_dict: replace checks via a dictionary
     - load_netcdf: load the netcdf file to be checked
     """
+
     def __init__(self):
         """
         Constructor for the QualityControl objects
@@ -45,6 +46,7 @@ class QualityControl:
         """
         new_checks_dict = yaml2dict(path_qc_checks_file)
         self.add_qc_checks_dict(dict_qc_checks=new_checks_dict)
+        return self
 
     def add_qc_checks_dict(self, dict_qc_checks: dict):
         """
@@ -63,6 +65,7 @@ class QualityControl:
         self.qc_checks_dims.update(new_checks_dims_dict)
         self.qc_checks_vars.update(new_checks_vars_dict)
         self.qc_checks_gl_attrs.update(new_checks_gl_attrs_dict)
+        return self
 
     def replace_qc_checks_conf(self, path_qc_checks_file: Path):
         """
@@ -74,6 +77,7 @@ class QualityControl:
         self.qc_checks_gl_attrs = {}
         new_checks_dict = yaml2dict(path_qc_checks_file)
         self.add_qc_checks_dict(dict_qc_checks=new_checks_dict)
+        return self
 
     def replace_qc_checks_dict(self, dict_qc_checks: dict):
         """
@@ -84,6 +88,7 @@ class QualityControl:
         self.qc_checks_vars = {}
         self.qc_checks_gl_attrs = {}
         self.add_qc_checks_dict(dict_qc_checks=dict_qc_checks)
+        return self
 
     def load_netcdf(self, nc_file_path: Path):
         """
@@ -91,30 +96,39 @@ class QualityControl:
         :param nc_file_path: path to the netCDF file
         """
         self.nc = netCDF4.Dataset(nc_file_path)  # pylint: disable=no-member
+        return self
 
-    def boundary_check(self, nc_file_path: Path):  # pylint: disable=missing-function-docstring
-        # nc_file_dict = netCDF4.Dataset(nc_file_path)
-        #
-        # vars_to_check = list(self.qc_checks.keys())
-        # vars_nc_file = list(nc_file_dict.variables.keys())
-        #
-        # for var_name in vars_to_check:
-        #     if var_name not in vars_nc_file:
-        #         print(var_name, " not in netCDF file")
-        #         continue
-        #
-        #     lower_bound = self.qc_checks[var_name]['lower']
-        #     upper_bound = self.qc_checks[var_name]['upper']
-        #
-        #     var_values = nc_file_dict[var_name][:]
-        #
-        #     for val in var_values:
-        #         if val < lower_bound or val > upper_bound:
-        #             print("fail - ", var_name, " out of bounds")
-        #             return
-        #
-        # print("success")
-        pass
+    def boundary_check(self):
+        if self.nc is None:
+            self.logger.add_error("boundary check error: no nc file loaded")
+            return
+
+        vars_to_check = [
+            var_name for var_name in self.qc_checks_vars.keys()
+            if self.qc_checks_vars[var_name]['is_data_within_boundaries_check']
+        ]
+
+        vars_nc_file = list(self.nc.variables.keys())
+
+        for var_name in vars_to_check:
+            if var_name not in vars_nc_file:
+                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+                continue
+
+            lower_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['lower_bound']
+            upper_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['upper_bound']
+
+            var_values = self.nc[var_name][:]
+
+            success = True
+            for val in var_values:
+                if val < lower_bound or val > upper_bound:
+                    success = False
+                    self.logger.add_error(f"boundary check error: '{val}' out of bounds for variable '"
+                                          f"{var_name}' with bounds [{lower_bound},{upper_bound}]")
+
+            self.logger.add_info(f"boundary check for variable {var_name}: {'success' if success else 'fail'}")
+        return self
 
 
 def yaml2dict(path: Path) -> dict:
