@@ -3,7 +3,7 @@ Module dedicated to the main logic of the netCDF quality control library
 """
 from pathlib import Path
 
-import netCDF4  # pylint: disable=unused-import
+import netCDF4
 import yaml
 
 from netcdfqc.log import LoggerQC
@@ -18,6 +18,7 @@ class QualityControl:
     - qc_checks_dims: checks for the dimensions of a netCDF file
     - qc_checks_vars: checks for the variables (and data) of a netCDF file
     - qc_checks_gl_attr: checks for the global attributes of a netCDF file
+    - nc: netCDF file to be checked
     - logger: logger for errors, warnings, info, and creation of reports
 
     Methods:
@@ -25,6 +26,7 @@ class QualityControl:
     - add_qc_checks_dict: add checks via a dictionary
     - replace_qc_checks_conf: replace checks via a config file
     - replace_qc_checks_dict: replace checks via a dictionary
+    - load_netcdf: load the netcdf file to be checked
     """
     def __init__(self):
         """
@@ -33,6 +35,7 @@ class QualityControl:
         self.qc_checks_dims: dict = {}
         self.qc_checks_vars: dict = {}
         self.qc_checks_gl_attrs: dict = {}
+        self.nc = None
         self.logger = LoggerQC()
 
     def add_qc_checks_conf(self, path_qc_checks_file: Path):
@@ -81,6 +84,13 @@ class QualityControl:
         self.qc_checks_vars = {}
         self.qc_checks_gl_attrs = {}
         self.add_qc_checks_dict(dict_qc_checks=dict_qc_checks)
+
+    def load_netcdf(self, nc_file_path: Path):
+        """
+        Method dedicated to loading a netCDF file to be checked with quality control
+        :param nc_file_path: path to the netCDF file
+        """
+        self.nc = netCDF4.Dataset(nc_file_path)  # pylint: disable=no-member
 
     def boundary_check(self, nc_file_path: Path):  # pylint: disable=missing-function-docstring
         # nc_file_dict = netCDF4.Dataset(nc_file_path)

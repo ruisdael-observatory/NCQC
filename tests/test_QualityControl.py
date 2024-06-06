@@ -194,6 +194,12 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_vars == new_checks_dict['variables']
         assert qc_obj.qc_checks_gl_attrs == new_checks_dict['global attributes']
 
+    @patch('netcdfqc.QCnetCDF.netCDF4.Dataset')
+    def test_load_netcdf(self, mock_dataset):
+        qc_obj = QualityControl()
+        qc_obj.load_netcdf('path')
+        mock_dataset.assert_called_once_with('path')
+
     def test_yaml2dict(self):
         res = yaml2dict(Path(__file__).parent.parent / 'example_config.yaml')
         assert res == {
