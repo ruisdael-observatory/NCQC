@@ -4,7 +4,6 @@ from unittest.mock import patch
 
 from netcdfqc.QCnetCDF import QualityControl, yaml2dict
 
-
 class TestQualityControl(unittest.TestCase):
 
     @patch('netcdfqc.QCnetCDF.yaml2dict')
@@ -201,7 +200,7 @@ class TestQualityControl(unittest.TestCase):
         mock_dataset.assert_called_once_with('path')
 
     def test_yaml2dict(self):
-        res = yaml2dict(Path(__file__).parent.parent / 'example_config.yaml')
+        res = yaml2dict(Path(__file__).parent.parent / 'sample_data' / 'example_config.yaml')
         assert res == {
             'dimensions': {'example_dimension': {'does_it_exist': True}},
             'variables': {
@@ -219,3 +218,51 @@ class TestQualityControl(unittest.TestCase):
                 'is_it_empty_check': True
             }}
         }
+
+class TestExistenceCheck(unittest.TestCase):
+
+    def test_existence_check(self):
+        qc_obj = QualityControl()
+        qc_obj.add_qc_checks_conf(Path(__file__).parent.parent / 'sample_data' / 'example_config_existence.yaml')
+        qc_obj.existence_check(Path(__file__).parent.parent / 'sample_data' / '20240530_Green_Village-GV_PAR008.nc')
+
+        expected_errors = ['dimension "bad_dimension" should exist but it does not',
+                           'variable "bad_variable" should exist but it does not',
+                           'global attribute "bad_attribute" should exist but it does not']
+
+        expected_warnings = []
+
+        expected_info = ['2/3 checked dimensions exist',
+                         '3/4 checked variables exist',
+                         '2/3 checked global attributes exist']
+
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
+
+    def test_existence_check_all_false(self):
+        qc_obj = QualityControl()
+
+        qc_obj.qc_checks_dims = {
+            'example_dimension': {'does_it_exist_check': False}
+        }
+        qc_obj.qc_checks_vars = {
+            'example_variable': {'does_it_exist_check': False}
+        }
+        qc_obj.qc_checks_gl_attrs = {
+            'example_attribute': {'does_it_exist_check': False}
+        }
+
+        qc_obj.existence_check(Path(__file__).parent.parent / 'sample_data' / '20240530_Green_Village-GV_PAR008.nc')
+
+        expected_errors = []
+
+        expected_warnings = []
+
+        expected_info = ['no dimensions were checked',
+                         'no variables were checked',
+                         'no global attributes were checked']
+
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
