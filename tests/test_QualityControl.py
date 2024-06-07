@@ -289,12 +289,6 @@ class TestBoundaryCheck(unittest.TestCase):
         })
         qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
         qc_obj.boundary_check()
-        expected_report = {
-            'errors': [],
-            'warnings': [],
-            'info': ['boundary check for variable \'velocity_spread\': success'
-                , 'boundary check for variable \'kinetic_energy\': success']
-        }
         assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
             , 'boundary check for variable \'kinetic_energy\': fail']
         assert qc_obj.logger.errors == ['boundary check error: \'1.909999966621399\' out of bounds'
