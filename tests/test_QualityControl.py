@@ -2,6 +2,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import netCDF4
+
 from netcdfqc.QCnetCDF import QualityControl, yaml2dict
 
 
@@ -227,6 +229,8 @@ boundary_check_test_dict = {
     }
 }
 
+nc_test = netCDF4.Dataset(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+
 
 class TestBoundaryCheck(unittest.TestCase):
     """
@@ -258,7 +262,7 @@ class TestBoundaryCheck(unittest.TestCase):
         """
         qc_obj = QualityControl()
         qc_obj.add_qc_checks_dict(boundary_check_test_dict)
-        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+        qc_obj.nc = nc_test
         qc_obj.boundary_check()
         assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
             , 'boundary check for variable \'kinetic_energy\': success']
@@ -288,7 +292,7 @@ class TestBoundaryCheck(unittest.TestCase):
                 'existence': True, 'emptiness': True
             }
         })
-        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+        qc_obj.nc = nc_test
         qc_obj.boundary_check()
         assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
             , 'boundary check for variable \'kinetic_energy\': fail']
@@ -312,7 +316,7 @@ class TestBoundaryCheck(unittest.TestCase):
             },
             'global attributes': {}
         })
-        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+        qc_obj.nc = nc_test
         qc_obj.boundary_check()
         assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
             , 'boundary check for variable \'kinetic_energy\': success']
@@ -343,7 +347,7 @@ class TestBoundaryCheck(unittest.TestCase):
             }
         }
         qc_obj.add_qc_checks_dict(boundary_check_test_dict_omit_var)
-        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+        qc_obj.nc = nc_test
         qc_obj.boundary_check()
         assert qc_obj.logger.info == ['boundary check for variable \'kinetic_energy\': success']
         assert qc_obj.logger.errors == []
