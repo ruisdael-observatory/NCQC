@@ -255,6 +255,10 @@ class TestQualityControl(unittest.TestCase):
             }}
         }
 
+qc_obj_existence = QualityControl()
+
+qc_obj_existence.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240530_Green_Village-GV_PAR008.nc')
+
 class TestExistenceCheck(unittest.TestCase):
     """
     Class for testing the functionality of the existence check.
@@ -271,27 +275,23 @@ class TestExistenceCheck(unittest.TestCase):
         Test for the existence check with some dimensions, variables, and global attributes to be checked,
         of which some do not exist, and some that should not be checked at all.
         """
-        qc_obj = QualityControl()
-
-        qc_obj.qc_checks_dims = {
+        qc_obj_existence.qc_checks_dims = {
             'time': {'does_it_exist_check': True},
             'diameter_classes': {'does_it_exist_check': False},
             'velocity_classes': {'does_it_exist_check': True}
         }
-        qc_obj.qc_checks_vars = {
+        qc_obj_existence.qc_checks_vars = {
             'longitude': {'does_it_exist_check': True},
             'latitude': {'does_it_exist_check': True},
             'datetime': {'does_it_exist_check': True}
         }
-        qc_obj.qc_checks_gl_attrs = {
+        qc_obj_existence.qc_checks_gl_attrs = {
             'title': {'does_it_exist_check': True},
             'source': {'does_it_exist_check': True},
             'contributors': {'does_it_exist_check': False}
         }
 
-        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240530_Green_Village-GV_PAR008.nc')
-
-        qc_obj.existence_check()
+        qc_obj_existence.existence_check()
 
         expected_errors = []
 
@@ -301,39 +301,39 @@ class TestExistenceCheck(unittest.TestCase):
                          '3/3 checked variables exist',
                          '2/2 checked global attributes exist']
 
-        assert qc_obj.logger.errors == expected_errors
-        assert qc_obj.logger.warnings == expected_warnings
-        assert qc_obj.logger.info == expected_info
+        assert qc_obj_existence.logger.errors == expected_errors
+        assert qc_obj_existence.logger.warnings == expected_warnings
+        assert qc_obj_existence.logger.info == expected_info
+
+        qc_obj_existence.logger.errors = []
+        qc_obj_existence.logger.warnings = []
+        qc_obj_existence.logger.info = []
 
     def test_existence_check_mixed(self):
         """
         Test for the existence check with some dimensions, variables, and global attributes to be checked,
         of which some do not exist, and some that should not be checked at all.
         """
-        qc_obj = QualityControl()
-
-        qc_obj.qc_checks_dims = {
+        qc_obj_existence.qc_checks_dims = {
             'time': {'does_it_exist_check': True},
             'diameter_classes': {'does_it_exist_check': False},
             'velocity_classes': {'does_it_exist_check': True},
             'bad_dimension': {'does_it_exist_check': True}
         }
-        qc_obj.qc_checks_vars = {
+        qc_obj_existence.qc_checks_vars = {
             'longitude': {'does_it_exist_check': True},
             'latitude': {'does_it_exist_check': True},
             'datetime': {'does_it_exist_check': True},
             'bad_variable': {'does_it_exist_check': True}
         }
-        qc_obj.qc_checks_gl_attrs = {
+        qc_obj_existence.qc_checks_gl_attrs = {
             'title': {'does_it_exist_check': True},
             'source': {'does_it_exist_check': True},
             'contributors': {'does_it_exist_check': False},
             'bad_attribute': {'does_it_exist_check': True}
         }
 
-        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240530_Green_Village-GV_PAR008.nc')
-
-        qc_obj.existence_check()
+        qc_obj_existence.existence_check()
 
         expected_errors = ['dimension "bad_dimension" should exist but it does not',
                            'variable "bad_variable" should exist but it does not',
@@ -345,30 +345,30 @@ class TestExistenceCheck(unittest.TestCase):
                          '3/4 checked variables exist',
                          '2/3 checked global attributes exist']
 
-        assert qc_obj.logger.errors == expected_errors
-        assert qc_obj.logger.warnings == expected_warnings
-        assert qc_obj.logger.info == expected_info
+        assert qc_obj_existence.logger.errors == expected_errors
+        assert qc_obj_existence.logger.warnings == expected_warnings
+        assert qc_obj_existence.logger.info == expected_info
+
+        qc_obj_existence.logger.errors = []
+        qc_obj_existence.logger.warnings = []
+        qc_obj_existence.logger.info = []
 
     def test_existence_check_none_exist(self):
         """
         Test for the existence check where nothing exists.
         """
-        qc_obj = QualityControl()
-
-        qc_obj.qc_checks_dims = {
+        qc_obj_existence.qc_checks_dims = {
             'bad_dimension': {'does_it_exist_check': True}
         }
-        qc_obj.qc_checks_vars = {
+        qc_obj_existence.qc_checks_vars = {
             'bad_variable1': {'does_it_exist_check': True},
             'bad_variable2': {'does_it_exist_check': True}
         }
-        qc_obj.qc_checks_gl_attrs = {
+        qc_obj_existence.qc_checks_gl_attrs = {
             'bad_attribute': {'does_it_exist_check': True}
         }
 
-        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240530_Green_Village-GV_PAR008.nc')
-
-        qc_obj.existence_check()
+        qc_obj_existence.existence_check()
 
         expected_errors = ['dimension "bad_dimension" should exist but it does not',
                            'variable "bad_variable1" should exist but it does not',
@@ -381,29 +381,29 @@ class TestExistenceCheck(unittest.TestCase):
                          '0/2 checked variables exist',
                          '0/1 checked global attributes exist']
 
-        assert qc_obj.logger.errors == expected_errors
-        assert qc_obj.logger.warnings == expected_warnings
-        assert qc_obj.logger.info == expected_info
+        assert qc_obj_existence.logger.errors == expected_errors
+        assert qc_obj_existence.logger.warnings == expected_warnings
+        assert qc_obj_existence.logger.info == expected_info
+
+        qc_obj_existence.logger.errors = []
+        qc_obj_existence.logger.warnings = []
+        qc_obj_existence.logger.info = []
 
     def test_existence_check_all_false(self):
         """
         Test for the existence check with nothing to be checked.
         """
-        qc_obj = QualityControl()
-
-        qc_obj.qc_checks_dims = {
+        qc_obj_existence.qc_checks_dims = {
             'example_dimension': {'does_it_exist_check': False}
         }
-        qc_obj.qc_checks_vars = {
+        qc_obj_existence.qc_checks_vars = {
             'example_variable': {'does_it_exist_check': False}
         }
-        qc_obj.qc_checks_gl_attrs = {
+        qc_obj_existence.qc_checks_gl_attrs = {
             'example_attribute': {'does_it_exist_check': False}
         }
 
-        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240530_Green_Village-GV_PAR008.nc')
-
-        qc_obj.existence_check()
+        qc_obj_existence.existence_check()
 
         expected_errors = []
 
@@ -413,6 +413,10 @@ class TestExistenceCheck(unittest.TestCase):
                          'no variables were checked',
                          'no global attributes were checked']
 
-        assert qc_obj.logger.errors == expected_errors
-        assert qc_obj.logger.warnings == expected_warnings
-        assert qc_obj.logger.info == expected_info
+        assert qc_obj_existence.logger.errors == expected_errors
+        assert qc_obj_existence.logger.warnings == expected_warnings
+        assert qc_obj_existence.logger.info == expected_info
+
+        qc_obj_existence.logger.errors = []
+        qc_obj_existence.logger.warnings = []
+        qc_obj_existence.logger.info = []
