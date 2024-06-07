@@ -264,11 +264,23 @@ class TestExistenceCheck(unittest.TestCase):
     Class for testing the functionality of the existence check.
 
     Functions:
+    - test_existence_check_no_nc: Test for the existence check when no netCDF file is loaded.
     - test_existence_check_all_exist: Test for the existence check where everything exists.
     - test_existence_check_mixed: Test for the existence check with mixed existence.
     - test_existence_check_none_exist: Test for the existence check where nothing exists.
     - test_existence_check_all_false: Test for the existence check with nothing to be checked.
     """
+
+    def test_existence_check_no_nc(self):
+        """
+        Test for the existence check when no netCDF file is loaded.
+        """
+        qc_obj = QualityControl()
+        qc_obj.existence_check()
+
+        assert qc_obj.logger.errors == ['existence check error: no nc file loaded']
+        assert qc_obj.logger.warnings == []
+        assert qc_obj.logger.info == []
 
     def test_existence_check_all_exist(self):
         """
