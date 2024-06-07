@@ -122,7 +122,9 @@ class QualityControl:
 
     def existence_check(self): # pylint: disable=too-many-branches
         """
-        Method to perform existence checks on dimensions, variables and global attributes
+        Method to perform existence checks on dimensions, variables and global attributes.
+        Logs errors for each field which should exist but does not and
+        logs info for each category how many of the checked fields exist.
         :return: self to make chaining calls possible
         """
         # Dimensions, variables, and global attributes from the netCDF dict
