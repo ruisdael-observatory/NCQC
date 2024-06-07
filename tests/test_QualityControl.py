@@ -121,6 +121,14 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_vars == expected_result['variables']
         assert qc_obj.qc_checks_gl_attrs == expected_result['global attributes']
 
+    def test_add_qc_checks_dict_errors(self):
+        qc_obj = QualityControl()
+        qc_obj.add_qc_checks_dict({})
+        assert qc_obj.logger.errors == ['missing dimensions checks in provided config_file/dict'
+                                        , 'missing variables checks in provided config_file/dict'
+                                        , 'missing global attributes checks in provided config_file/dict']
+
+
     @patch('netcdfqc.QCnetCDF.yaml2dict')
     def test_replace_qc_checks_conf(self, mock_yaml2dict):
         qc_obj = QualityControl()
@@ -200,22 +208,118 @@ class TestQualityControl(unittest.TestCase):
         qc_obj.load_netcdf('path')
         mock_dataset.assert_called_once_with('path')
 
-    def test_yaml2dict(self):
-        res = yaml2dict(Path(__file__).parent.parent / 'example_config.yaml')
-        assert res == {
-            'dimensions': {'example_dimension': {'does_it_exist': True}},
+
+boundary_check_test_dict = {
+    'dimensions': {
+        'example_dimension_2': {'existence': False}
+    },
+    'variables': {
+        'velocity_spread': {
+            'existence': False,
+            'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 3.3}
+        },
+        'kinetic_energy': {
+            'existence': True,
+            'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1.91}
+        },
+    },
+    'global attributes': {
+        'existence': True, 'emptiness': True
+    }
+}
+
+
+class TestBoundaryCheck(unittest.TestCase):
+
+    def test_boundary_check_no_nc(self):
+        qc_obj = QualityControl()
+        qc_obj.add_qc_checks_dict(boundary_check_test_dict)
+        qc_obj.boundary_check()
+        assert qc_obj.logger.info == []
+        assert qc_obj.logger.errors == ['boundary check error: no nc file loaded']
+        assert qc_obj.logger.warnings == []
+
+    def test_boundary_check_success(self):
+        qc_obj = QualityControl()
+        qc_obj.add_qc_checks_dict(boundary_check_test_dict)
+        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+        qc_obj.boundary_check()
+        assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
+            , 'boundary check for variable \'kinetic_energy\': success']
+        assert qc_obj.logger.errors == []
+        assert qc_obj.logger.warnings == []
+
+    def test_boundary_check_fail(self):
+        qc_obj = QualityControl()
+        qc_obj.add_qc_checks_dict({
+            'dimensions': {
+                'example_dimension_2': {'existence': False}
+            },
             'variables': {
-                'example_variable': {
-                    'does_it_exist_check': True,
-                    'is_data_within_boundaries_check': {
-                        'perform_check': True,
-                        'lower_bound': 0,
-                        'upper_bound': 1
-                    }
+                'velocity_spread': {
+                    'existence': False,
+                    'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 3.3}
+                },
+                'kinetic_energy': {
+                    'existence': True,
+                    'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1.8}
+                },
+            },
+            'global attributes': {
+                'existence': True, 'emptiness': True
+            }
+        })
+        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+        qc_obj.boundary_check()
+        expected_report = {
+            'errors': [],
+            'warnings': [],
+            'info': ['boundary check for variable \'velocity_spread\': success'
+                , 'boundary check for variable \'kinetic_energy\': success']
+        }
+        assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
+            , 'boundary check for variable \'kinetic_energy\': fail']
+        assert qc_obj.logger.errors == ['boundary check error: \'1.909999966621399\' out of bounds'
+                                        ' for variable'' \'kinetic_energy\' with bounds [0,1.8]']
+        assert qc_obj.logger.warnings == []
+
+    def test_boundary_check_wrong_var_name(self):
+        qc_obj = QualityControl()
+        qc_obj.add_qc_checks_dict(boundary_check_test_dict)
+        qc_obj.add_qc_checks_dict({
+            'dimensions': {},
+            'variables': {
+                'no_such_var': {
+                    'existence': False,
+                    'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1}
                 }
             },
-            'global attributes': {'example_gl_attr': {
+            'global attributes': {}
+        })
+        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+        qc_obj.boundary_check()
+        assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
+            , 'boundary check for variable \'kinetic_energy\': success']
+        assert qc_obj.logger.errors == []
+        assert qc_obj.logger.warnings == ['variable \'no_such_var\' not in nc file']
+
+
+def test_yaml2dict():
+    res = yaml2dict(Path(__file__).parent.parent / 'sample_data/example_config.yaml')
+    assert res == {
+        'dimensions': {'example_dimension': {'does_it_exist': True}},
+        'variables': {
+            'example_variable': {
                 'does_it_exist_check': True,
-                'is_it_empty_check': True
-            }}
-        }
+                'is_data_within_boundaries_check': {
+                    'perform_check': True,
+                    'lower_bound': 0,
+                    'upper_bound': 1
+                }
+            }
+        },
+        'global attributes': {'example_gl_attr': {
+            'does_it_exist_check': True,
+            'is_it_empty_check': True
+        }}
+    }

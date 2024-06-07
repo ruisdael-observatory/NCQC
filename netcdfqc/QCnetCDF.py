@@ -27,6 +27,7 @@ class QualityControl:
     - replace_qc_checks_conf: replace checks via a config file
     - replace_qc_checks_dict: replace checks via a dictionary
     - load_netcdf: load the netcdf file to be checked
+    - boundary_check
     """
 
     def __init__(self):
@@ -55,16 +56,19 @@ class QualityControl:
         """
         if 'dimensions' not in list(dict_qc_checks.keys()):
             self.logger.add_error(error="missing dimensions checks in provided config_file/dict")
+        else:
+            new_checks_dims_dict = dict_qc_checks['dimensions']
+            self.qc_checks_dims.update(new_checks_dims_dict)
         if 'variables' not in list(dict_qc_checks.keys()):
             self.logger.add_error(error="missing variables checks in provided config_file/dict")
+        else:
+            new_checks_vars_dict = dict_qc_checks['variables']
+            self.qc_checks_vars.update(new_checks_vars_dict)
         if 'global attributes' not in list(dict_qc_checks.keys()):
             self.logger.add_error(error="missing global attributes checks in provided config_file/dict")
-        new_checks_dims_dict = dict_qc_checks['dimensions']
-        new_checks_vars_dict = dict_qc_checks['variables']
-        new_checks_gl_attrs_dict = dict_qc_checks['global attributes']
-        self.qc_checks_dims.update(new_checks_dims_dict)
-        self.qc_checks_vars.update(new_checks_vars_dict)
-        self.qc_checks_gl_attrs.update(new_checks_gl_attrs_dict)
+        else:
+            new_checks_gl_attrs_dict = dict_qc_checks['global attributes']
+            self.qc_checks_gl_attrs.update(new_checks_gl_attrs_dict)
         return self
 
     def replace_qc_checks_conf(self, path_qc_checks_file: Path):
@@ -115,6 +119,7 @@ class QualityControl:
                 self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
+            perform_check = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['perform_check']
             lower_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['lower_bound']
             upper_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['upper_bound']
 
@@ -122,12 +127,12 @@ class QualityControl:
 
             success = True
             for val in var_values:
-                if val < lower_bound or val > upper_bound:
+                if perform_check and (val < lower_bound or val > upper_bound):
                     success = False
                     self.logger.add_error(f"boundary check error: '{val}' out of bounds for variable '"
                                           f"{var_name}' with bounds [{lower_bound},{upper_bound}]")
 
-            self.logger.add_info(f"boundary check for variable {var_name}: {'success' if success else 'fail'}")
+            self.logger.add_info(f"boundary check for variable '{var_name}': {'success' if success else 'fail'}")
         return self
 
 
