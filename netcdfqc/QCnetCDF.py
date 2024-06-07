@@ -126,7 +126,7 @@ class QualityControl:
 
         vars_to_check = [
             var_name for var_name, properties in self.qc_checks_vars.items()
-            if properties['is_data_within_boundaries_check']
+            if properties['is_data_within_boundaries_check']['perform_check']
         ]
 
         vars_nc_file = list(self.nc.variables.keys())
@@ -136,7 +136,6 @@ class QualityControl:
                 self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
-            perform_check = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['perform_check']
             lower_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['lower_bound']
             upper_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['upper_bound']
 
@@ -144,7 +143,7 @@ class QualityControl:
 
             success = True
             for val in var_values:
-                if perform_check and (val < lower_bound or val > upper_bound):
+                if val < lower_bound or val > upper_bound:
                     success = False
                     self.logger.add_error(f"boundary check error: '{val}' out of bounds for variable '"
                                           f"{var_name}' with bounds [{lower_bound},{upper_bound}]")

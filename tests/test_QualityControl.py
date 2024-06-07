@@ -238,6 +238,7 @@ class TestBoundaryCheck(unittest.TestCase):
     - test_boundary_check_fail: Test for the boundaries check when a check fails
     - test_boundary_check_wrong_var_name: Test for the boundaries check when a variable to be
     checked is not in the loaded netCDF file
+    - test_boundary_check_omit_a_var: Test for the boundaries check when a variable has to be omitted
     """
 
     def test_boundary_check_no_nc(self):
@@ -317,6 +318,36 @@ class TestBoundaryCheck(unittest.TestCase):
             , 'boundary check for variable \'kinetic_energy\': success']
         assert qc_obj.logger.errors == []
         assert qc_obj.logger.warnings == ['variable \'no_such_var\' not in nc file']
+
+    def test_boundary_check_omit_a_var(self):
+        """
+        Test for the boundaries check when a variable has to be omitted
+        """
+        qc_obj = QualityControl()
+        boundary_check_test_dict_omit_var = {
+            'dimensions': {
+                'example_dimension_2': {'existence': False}
+            },
+            'variables': {
+                'velocity_spread': {
+                    'existence': False,
+                    'is_data_within_boundaries_check': {'perform_check': False, 'lower_bound': 0, 'upper_bound': 3.3}
+                },
+                'kinetic_energy': {
+                    'existence': True,
+                    'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1.91}
+                },
+            },
+            'global attributes': {
+                'existence': True, 'emptiness': True
+            }
+        }
+        qc_obj.add_qc_checks_dict(boundary_check_test_dict_omit_var)
+        qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
+        qc_obj.boundary_check()
+        assert qc_obj.logger.info == ['boundary check for variable \'kinetic_energy\': success']
+        assert qc_obj.logger.errors == []
+        assert qc_obj.logger.warnings == []
 
 
 def test_yaml2dict():
