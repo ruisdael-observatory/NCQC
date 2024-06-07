@@ -125,8 +125,8 @@ class QualityControl:
             return self
 
         vars_to_check = [
-            var_name for var_name in self.qc_checks_vars.keys()  # pylint: disable=consider-using-dict-items,consider-iterating-dictionary
-            if self.qc_checks_vars[var_name]['is_data_within_boundaries_check']
+            var_name for var_name, properties in self.qc_checks_vars.items()
+            if properties['is_data_within_boundaries_check']
         ]
 
         vars_nc_file = list(self.nc.variables.keys())
