@@ -1,5 +1,8 @@
 """
 Module dedicated to the main logic of the netCDF quality control library
+
+Functions:
+- yaml2dict: reads a yaml file and returns a dictionary with all the field and values
 """
 from pathlib import Path
 
@@ -27,6 +30,7 @@ class QualityControl:
     - replace_qc_checks_conf: replace checks via a config file
     - replace_qc_checks_dict: replace checks via a dictionary
     - load_netcdf: load the netcdf file to be checked
+    - existence_check: perform existence checks on dimensions, variables and global attributes
     """
     def __init__(self):
         """
@@ -116,18 +120,23 @@ class QualityControl:
         # print("success")
         pass
 
-    def existence_check(self, nc_file_path: Path):
-        nc_file_dict = netCDF4.Dataset(nc_file_path, 'r', format="NETCDF4")
-
+    def existence_check(self): # pylint: disable=too-many-branches
+        """
+        Method to perform existence checks on dimensions, variables and global attributes
+        :return: self to make chaining calls possible
+        """
         # Dimensions, variables, and global attributes from the netCDF dict
-        nc_dimensions = nc_file_dict.dimensions.keys()
-        nc_variables = nc_file_dict.variables.keys()
-        nc_global_attributes = nc_file_dict.ncattrs()
+        nc_dimensions = self.nc.dimensions.keys()
+        nc_variables = self.nc.variables.keys()
+        nc_global_attributes = self.nc.ncattrs()
 
-         # Dimensions, variables, and global attributes with 'does_it_exist_check' True in the config file
-        dims_to_check = [dim for dim in self.qc_checks_dims if self.qc_checks_dims[dim]['does_it_exist_check'] is True]
-        vars_to_check = [var for var in self.qc_checks_vars if self.qc_checks_vars[var]['does_it_exist_check'] is True]
-        attrs_to_check = [attr for attr in self.qc_checks_gl_attrs if self.qc_checks_gl_attrs[attr]['does_it_exist_check'] is True]
+        # Dimensions, variables, and global attributes with 'does_it_exist_check' True in the config file
+        dims_to_check = [dim for dim, properties in self.qc_checks_dims.items()
+            if properties['does_it_exist_check'] is True]
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+            if properties['does_it_exist_check'] is True]
+        attrs_to_check = [attr for attr, properties in self.qc_checks_gl_attrs.items()
+            if properties['does_it_exist_check'] is True]
 
         checked = 0
         exist = 0
@@ -140,10 +149,11 @@ class QualityControl:
             else:
                 exist += 1
 
+        # Log info about how many of the checked dimensions exist
         if checked != 0:
             self.logger.add_info(msg=f'{exist}/{checked} checked dimensions exist')
         else:
-            self.logger.add_info(msg=f'no dimensions were checked')
+            self.logger.add_info(msg='no dimensions were checked')
 
         checked = 0
         exist = 0
@@ -156,10 +166,11 @@ class QualityControl:
             else:
                 exist += 1
 
+        # Log info about how many of the checked variables exist
         if checked != 0:
             self.logger.add_info(msg=f'{exist}/{checked} checked variables exist')
         else:
-            self.logger.add_info(msg=f'no variables were checked')
+            self.logger.add_info(msg='no variables were checked')
 
         checked = 0
         exist = 0
@@ -172,10 +183,13 @@ class QualityControl:
             else:
                 exist += 1
 
+        # Log info about how many of the checked global attributes exist
         if checked != 0:
             self.logger.add_info(msg=f'{exist}/{checked} checked global attributes exist')
         else:
-            self.logger.add_info(msg=f'no global attributes were checked')
+            self.logger.add_info(msg='no global attributes were checked')
+
+        return self
 
 def yaml2dict(path: Path) -> dict:
     """
