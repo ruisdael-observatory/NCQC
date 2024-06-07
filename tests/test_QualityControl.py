@@ -125,9 +125,8 @@ class TestQualityControl(unittest.TestCase):
         qc_obj = QualityControl()
         qc_obj.add_qc_checks_dict({})
         assert qc_obj.logger.errors == ['missing dimensions checks in provided config_file/dict'
-                                        , 'missing variables checks in provided config_file/dict'
-                                        , 'missing global attributes checks in provided config_file/dict']
-
+            , 'missing variables checks in provided config_file/dict'
+            , 'missing global attributes checks in provided config_file/dict']
 
     @patch('netcdfqc.QCnetCDF.yaml2dict')
     def test_replace_qc_checks_conf(self, mock_yaml2dict):
@@ -230,8 +229,21 @@ boundary_check_test_dict = {
 
 
 class TestBoundaryCheck(unittest.TestCase):
+    """
+    Class for testing the functionality of the boundaries check
+
+    Methods:
+    - test_boundary_check_no_nc: Test for the boundaries check when no netCDF file is loaded
+    - test_boundary_check_success: Test for the boundaries check when all checks are successful
+    - test_boundary_check_fail: Test for the boundaries check when a check fails
+    - test_boundary_check_wrong_var_name: Test for the boundaries check when a variable to be
+    checked is not in the loaded netCDF file
+    """
 
     def test_boundary_check_no_nc(self):
+        """
+        Test for the boundaries check when no netCDF file is loaded
+        """
         qc_obj = QualityControl()
         qc_obj.add_qc_checks_dict(boundary_check_test_dict)
         qc_obj.boundary_check()
@@ -240,6 +252,9 @@ class TestBoundaryCheck(unittest.TestCase):
         assert qc_obj.logger.warnings == []
 
     def test_boundary_check_success(self):
+        """
+        Test for the boundaries check when all checks are successful
+        """
         qc_obj = QualityControl()
         qc_obj.add_qc_checks_dict(boundary_check_test_dict)
         qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
@@ -250,6 +265,9 @@ class TestBoundaryCheck(unittest.TestCase):
         assert qc_obj.logger.warnings == []
 
     def test_boundary_check_fail(self):
+        """
+        Test for the boundaries check when a check fails
+        """
         qc_obj = QualityControl()
         qc_obj.add_qc_checks_dict({
             'dimensions': {
@@ -284,6 +302,9 @@ class TestBoundaryCheck(unittest.TestCase):
         assert qc_obj.logger.warnings == []
 
     def test_boundary_check_wrong_var_name(self):
+        """
+        Test for the boundaries check when a variable to be checked is not in the loaded netCDF file
+        """
         qc_obj = QualityControl()
         qc_obj.add_qc_checks_dict(boundary_check_test_dict)
         qc_obj.add_qc_checks_dict({

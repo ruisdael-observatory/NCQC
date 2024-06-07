@@ -26,8 +26,8 @@ class QualityControl:
     - add_qc_checks_dict: add checks via a dictionary
     - replace_qc_checks_conf: replace checks via a config file
     - replace_qc_checks_dict: replace checks via a dictionary
-    - load_netcdf: load the netcdf file to be checked
-    - boundary_check
+    - load_netcdf: load the netCDF file to be checked
+    - boundary_check: perform a boundary check on the variables of the loaded netCDF file
     """
 
     def __init__(self):
@@ -44,6 +44,7 @@ class QualityControl:
         """
         Method dedicated to adding quality control checks via a provided config file
         :param path_qc_checks_file: path to the config file
+        :return: self
         """
         new_checks_dict = yaml2dict(path_qc_checks_file)
         self.add_qc_checks_dict(dict_qc_checks=new_checks_dict)
@@ -53,6 +54,7 @@ class QualityControl:
         """
         Method dedicated to adding quality control checks via a provided dictionary
         :param dict_qc_checks: the dictionary containing the checks
+        :return: self
         """
         if 'dimensions' not in list(dict_qc_checks.keys()):
             self.logger.add_error(error="missing dimensions checks in provided config_file/dict")
@@ -75,6 +77,7 @@ class QualityControl:
         """
         Method dedicated to replacing the current checks with the ones from a config file
         :param path_qc_checks_file: path to the config file
+        :return: self
         """
         self.qc_checks_dims = {}
         self.qc_checks_vars = {}
@@ -87,6 +90,7 @@ class QualityControl:
         """
         Method dedicated to replacing the current checks with the ones from a provided dictionary
         :param dict_qc_checks: the dictionary containing the checks
+        :return: self
         """
         self.qc_checks_dims = {}
         self.qc_checks_vars = {}
@@ -98,17 +102,30 @@ class QualityControl:
         """
         Method dedicated to loading a netCDF file to be checked with quality control
         :param nc_file_path: path to the netCDF file
+        :return: self
         """
         self.nc = netCDF4.Dataset(nc_file_path)  # pylint: disable=no-member
         return self
 
     def boundary_check(self):
+        """
+        Method dedicated to checking whether the data for each variable in
+        the loaded netCDF file is within the specified bounds.
+
+        - logs an error to the logger if no netCDF file is loaded
+        - logs a warning to the logger if a variable specified to be checked does
+        not exist in the netCDF file
+        - logs an error to the logger if a value is out of the specified bounds
+        - writes a message to the logger whether a boundary check for a variable
+        succeeded or failed
+        :return: self
+        """
         if self.nc is None:
             self.logger.add_error("boundary check error: no nc file loaded")
-            return
+            return self
 
         vars_to_check = [
-            var_name for var_name in self.qc_checks_vars.keys()
+            var_name for var_name in self.qc_checks_vars.keys()  # pylint: disable=consider-using-dict-items,consider-iterating-dictionary
             if self.qc_checks_vars[var_name]['is_data_within_boundaries_check']
         ]
 
