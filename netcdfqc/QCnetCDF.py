@@ -159,7 +159,7 @@ class QualityControl:
         """
         Method to perform existence checks on dimensions, variables and global attributes.
 
-        - Logs an error if there in no netCDF loaded
+        - Logs an error if there is no netCDF loaded
         - Logs errors for each field which should exist but does not.
         - Logs info for each category how many of the checked fields exist.
 
