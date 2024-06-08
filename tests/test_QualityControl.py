@@ -376,13 +376,13 @@ class TestBoundaryCheck(unittest.TestCase):
             'global attributes': {
                 'existence': True, 'emptiness': True
             }
-            qc_obj.add_qc_checks_dict(boundary_check_test_dict_omit_var)
-            qc_obj.nc = nc_test
-            qc_obj.boundary_check()
-            assert qc_obj.logger.info == ['boundary check for variable \'kinetic_energy\': success']
-            assert qc_obj.logger.errors == []
-            assert qc_obj.logger.warnings == []
         }
+        qc_obj.add_qc_checks_dict(boundary_check_test_dict_omit_var)
+        qc_obj.nc = nc_test
+        qc_obj.boundary_check()
+        assert qc_obj.logger.info == ['boundary check for variable \'kinetic_energy\': success']
+        assert qc_obj.logger.errors == []
+        assert qc_obj.logger.warnings == []
 
 qc_obj_existence = QualityControl()
 
