@@ -585,7 +585,8 @@ def test_yaml2dict():
 
 qc_obj_emptiness = QualityControl()
 
-qc_obj_emptiness.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240526_Green_Village-GV_THIES006.nc')
+# qc_obj_emptiness.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240526_Green_Village-GV_THIES006.nc')
+qc_obj_emptiness.load_netcdf(Path(__file__).parent.parent / 'sample_data' / 'test_emptiness.nc')
 
 class TestEmptinessCheck(unittest.TestCase):
     """
@@ -621,21 +622,27 @@ class TestEmptinessCheck(unittest.TestCase):
             'velocity_classes': {'does_it_exist_check': True}
         }
         qc_obj_emptiness.qc_checks_vars = {
-            'temperature': {'does_it_exist_check': True, 'is_it_empty_check': True}
+            'temperature': {'does_it_exist_check': True, 'is_it_empty_check': True},
+            'wind_speed': {'does_it_exist_check': True, 'is_it_empty_check': True},
+            'wind_direction': {'does_it_exist_check': True, 'is_it_empty_check': False},
+            'longitude': {'does_it_exist_check': True, 'is_it_empty_check': True}
         }
         qc_obj_emptiness.qc_checks_gl_attrs = {
             'title': {'does_it_exist_check': True, 'is_it_empty_check': True},
             'source': {'does_it_exist_check': True, 'is_it_empty_check': True},
-            'contributors': {'does_it_exist_check': False, 'is_it_empty_check': True}
+            'contributors': {'does_it_exist_check': False, 'is_it_empty_check': False}
         }
 
         qc_obj_emptiness.emptiness_check()
 
-        expected_errors = ['global attribute "source" should have a value but it does not']
+        expected_errors = ['variable "temperature" has 1080/1080 NaN data points',
+                           'variable "wind_speed" has 1080/1080 NaN data points',
+                           'global attribute "source" should have a value but it does not']
 
         expected_warnings = []
 
-        expected_info = ['2/3 checked global attributes are fully populated']
+        expected_info = ['1/3 checked variables are fully populated',
+                         '1/2 checked global attributes have values assigned']
 
         assert qc_obj_emptiness.logger.errors == expected_errors
         assert qc_obj_emptiness.logger.warnings == expected_warnings
@@ -665,7 +672,7 @@ class TestEmptinessCheck(unittest.TestCase):
 
         expected_warnings = []
 
-        expected_info = [#'no variables were checked for emptiness',
+        expected_info = ['no variables were checked for emptiness',
                          'no global attributes were checked for emptiness']
 
         assert qc_obj_emptiness.logger.errors == expected_errors
