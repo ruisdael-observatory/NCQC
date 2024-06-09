@@ -264,8 +264,6 @@ boundary_check_test_dict = {
     }
 }
 
-nc_test = netCDF4.Dataset(Path(__file__).parent.parent / 'sample_data/20240430_Green_Village-GV_PAR008.nc')
-
 
 class TestBoundaryCheck(unittest.TestCase):
     """
@@ -291,24 +289,38 @@ class TestBoundaryCheck(unittest.TestCase):
         assert qc_obj.logger.errors == ['boundary check error: no nc file loaded']
         assert qc_obj.logger.warnings == []
 
+    @pytest.mark.usefixtures("create_nc_boundary_check_success")
     def test_boundary_check_success(self):
         """
         Test for the boundaries check when all checks are successful
         """
         qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_boundary_success.nc'
+        qc_obj.load_netcdf(nc_path)
+        
         qc_obj.add_qc_checks_dict(boundary_check_test_dict)
-        qc_obj.nc = nc_test
+
         qc_obj.boundary_check()
+
         assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
             , 'boundary check for variable \'kinetic_energy\': success']
         assert qc_obj.logger.errors == []
         assert qc_obj.logger.warnings == []
 
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
+
+    @pytest.mark.usefixtures("create_nc_boundary_check_fail")
     def test_boundary_check_fail(self):
         """
         Test for the boundaries check when a check fails
         """
         qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_boundary_fail.nc'
+        qc_obj.load_netcdf(nc_path)
+        
         qc_obj.add_qc_checks_dict({
             'dimensions': {
                 'example_dimension_2': {'existence': False}
@@ -327,20 +339,30 @@ class TestBoundaryCheck(unittest.TestCase):
                 'existence': True, 'emptiness': True
             }
         })
-        qc_obj.nc = nc_test
+        
         qc_obj.boundary_check()
+
         assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
             , 'boundary check for variable \'kinetic_energy\': fail']
         assert qc_obj.logger.errors == ['boundary check error: \'1.909999966621399\' out of bounds'
                                         ' for variable'' \'kinetic_energy\' with bounds [0,1.8]']
         assert qc_obj.logger.warnings == []
 
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
+
+    @pytest.mark.usefixtures("create_nc_boundary_check_success")
     def test_boundary_check_wrong_var_name(self):
         """
         Test for the boundaries check when a variable to be checked is not in the loaded netCDF file
         """
         qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_boundary_success.nc'
+        qc_obj.load_netcdf(nc_path)
+        
         qc_obj.add_qc_checks_dict(boundary_check_test_dict)
+
         qc_obj.add_qc_checks_dict({
             'dimensions': {},
             'variables': {
@@ -351,18 +373,27 @@ class TestBoundaryCheck(unittest.TestCase):
             },
             'global attributes': {}
         })
-        qc_obj.nc = nc_test
+
         qc_obj.boundary_check()
+
         assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
             , 'boundary check for variable \'kinetic_energy\': success']
         assert qc_obj.logger.errors == []
         assert qc_obj.logger.warnings == ['variable \'no_such_var\' not in nc file']
 
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
+
+    @pytest.mark.usefixtures("create_nc_boundary_check_success")
     def test_boundary_check_omit_a_var(self):
         """
         Test for the boundaries check when a variable has to be omitted
         """
         qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_boundary_success.nc'
+        qc_obj.load_netcdf(nc_path)
+
         boundary_check_test_dict_omit_var = {
             'dimensions': {
                 'example_dimension_2': {'existence': False}
@@ -382,13 +413,16 @@ class TestBoundaryCheck(unittest.TestCase):
             }
         }
         qc_obj.add_qc_checks_dict(boundary_check_test_dict_omit_var)
-        qc_obj.nc = nc_test
+        
         qc_obj.boundary_check()
+
         assert qc_obj.logger.info == ['boundary check for variable \'kinetic_energy\': success']
         assert qc_obj.logger.errors == []
         assert qc_obj.logger.warnings == []
 
-@pytest.mark.usefixtures("create_nc_existence")
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
+
 class TestExistenceCheck(unittest.TestCase):
     """
     Class for testing the functionality of the existence check.
@@ -412,11 +446,7 @@ class TestExistenceCheck(unittest.TestCase):
         assert qc_obj.logger.warnings == []
         assert qc_obj.logger.info == []
 
-        nc_path = data_dir / 'test_existence.nc'
-
-        if os.path.exists(nc_path):
-            os.remove(nc_path)
-
+    @pytest.mark.usefixtures("create_nc_existence_check")
     def test_existence_check_all_exist(self):
         """
         Test for the existence check with some dimensions, variables, and global attributes to be checked,
@@ -460,6 +490,7 @@ class TestExistenceCheck(unittest.TestCase):
         if os.path.exists(nc_path):
             os.remove(nc_path)
 
+    @pytest.mark.usefixtures("create_nc_existence_check")
     def test_existence_check_mixed(self):
         """
         Test for the existence check with some dimensions, variables, and global attributes to be checked,
@@ -508,6 +539,7 @@ class TestExistenceCheck(unittest.TestCase):
         if os.path.exists(nc_path):
             os.remove(nc_path)
 
+    @pytest.mark.usefixtures("create_nc_existence_check")
     def test_existence_check_none_exist(self):
         """
         Test for the existence check where nothing exists.
@@ -548,6 +580,7 @@ class TestExistenceCheck(unittest.TestCase):
         if os.path.exists(nc_path):
             os.remove(nc_path)
 
+    @pytest.mark.usefixtures("create_nc_existence_check")
     def test_existence_check_all_false(self):
         """
         Test for the existence check with nothing to be checked.
@@ -604,7 +637,7 @@ class TestEmptinessCheck(unittest.TestCase):
         assert qc_obj.logger.warnings == []
         assert qc_obj.logger.info == []
 
-    @pytest.mark.usefixtures("create_nc_emptiness_full")
+    @pytest.mark.usefixtures("create_nc_emptiness_check_full")
     def test_emptiness_check_all_populated(self):
         """
         Test for the emptiness check with some variables and global attributes to be checked,
@@ -644,7 +677,7 @@ class TestEmptinessCheck(unittest.TestCase):
         if os.path.exists(nc_path):
             os.remove(nc_path)
 
-    @pytest.mark.usefixtures("create_nc_emptiness_mixed")
+    @pytest.mark.usefixtures("create_nc_emptiness_check_mixed")
     def test_emptiness_check_mixed(self):
         """
         Test for the emptiness check with some variables and global attributes to be checked,
@@ -691,7 +724,7 @@ class TestEmptinessCheck(unittest.TestCase):
         if os.path.exists(nc_path):
             os.remove(nc_path)
 
-    @pytest.mark.usefixtures("create_nc_emptiness_empty")
+    @pytest.mark.usefixtures("create_nc_emptiness_check_empty")
     def test_emptiness_check_all_empty(self):
         """
         Test for the emptiness check with some variables and global attributes to be checked,
@@ -735,7 +768,7 @@ class TestEmptinessCheck(unittest.TestCase):
         if os.path.exists(nc_path):
             os.remove(nc_path)
 
-    @pytest.mark.usefixtures("create_nc_emptiness_full")
+    @pytest.mark.usefixtures("create_nc_emptiness_check_full")
     def test_emptiness_check_all_false(self):
         """
         Test for the emptiness check with nothing to be checked.

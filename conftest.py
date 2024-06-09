@@ -13,8 +13,62 @@ import pytest
 import os
 
 @pytest.fixture()
-def create_nc_existence():
+def create_nc_boundary_check_success():
 
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_boundary_success.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    # Create a new netCDF file
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    # Create dimensions
+    nc_file.createDimension('time', 100)
+    nc_file.createDimension('diameter_classes', 32)
+    nc_file.createDimension('velocity_classes', 32)
+
+    # Create variables
+    velocity_spread = nc_file.createVariable('velocity_spread', 'f4', ('velocity_classes',), fill_value=-1.0)
+    kinetic_energy = nc_file.createVariable('kinetic_energy', 'f4', ('time',), fill_value=-1.0)
+
+    # Set variables
+    velocity_spread[:] = np.random.uniform(0, 3.3, size=32)
+    kinetic_energy[:] = np.random.uniform(0, 1.91, size=100)
+
+    # Close the netCDF file
+    nc_file.close()
+
+@pytest.fixture()
+def create_nc_boundary_check_fail():
+
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_boundary_fail.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    # Create a new netCDF file
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    # Create dimensions
+    nc_file.createDimension('time', 100)
+    nc_file.createDimension('diameter_classes', 32)
+    nc_file.createDimension('velocity_classes', 32)
+
+    # Create variables
+    velocity_spread = nc_file.createVariable('velocity_spread', 'f4', ('velocity_classes',), fill_value=-1.0)
+    kinetic_energy = nc_file.createVariable('kinetic_energy', 'f4', ('time',), fill_value=-1.0)
+
+    # Set variables
+    velocity_spread[:] = np.random.uniform(0, 3.3, size=32)
+    kinetic_energy[:99] = np.random.uniform(0, 1.8, size=99)
+    kinetic_energy[99:] = 1.909999966621399
+
+    # Close the netCDF file
+    nc_file.close()
+
+@pytest.fixture()
+def create_nc_existence_check():
     nc_path = Path(__file__).parent / 'sample_data' / 'test_existence.nc'
 
     if os.path.exists(nc_path):
@@ -45,7 +99,7 @@ def create_nc_existence():
     nc_file.close()
 
 @pytest.fixture()
-def create_nc_emptiness_full():
+def create_nc_emptiness_check_full():
     nc_path = Path(__file__).parent / 'sample_data' / 'test_emptiness_full.nc'
 
     if os.path.exists(nc_path):
@@ -78,7 +132,7 @@ def create_nc_emptiness_full():
     nc_file.close()
 
 @pytest.fixture()
-def create_nc_emptiness_mixed():
+def create_nc_emptiness_check_mixed():
     nc_path = Path(__file__).parent / 'sample_data' / 'test_emptiness_mixed.nc'
 
     if os.path.exists(nc_path):
@@ -122,7 +176,7 @@ def create_nc_emptiness_mixed():
     nc_file.close()
 
 @pytest.fixture()
-def create_nc_emptiness_empty():
+def create_nc_emptiness_check_empty():
     nc_path = Path(__file__).parent / 'sample_data' / 'test_emptiness_empty.nc'
 
     if os.path.exists(nc_path):
