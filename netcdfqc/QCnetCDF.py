@@ -270,16 +270,18 @@ class QualityControl:
         for var in vars_to_check:
             checked_vars += 1
             var_data = self.nc[var][:]
+            
             checked_vals = 0
-            filled_vals = 0
+            empty_vals = 0
             nan_vals = 0
 
             # Check scalar values (e.g., longitude which just has one value assigned)
             if var_data.ndim == 0:
-                if var_data.item() == self.nc[var].getncattr('_FillValue'):
-                    self.logger.add_error(error=f'variable "{var}" is the fill value')
-                elif math.isnan(var_data.item()):
-                    self.logger.add_error(error=f'variable "{var}" NaN')
+                val = var_data.item()
+                if not val:
+                    self.logger.add_error(error=f'variable "{var}" is empty')
+                elif np.isnan(val):
+                    self.logger.add_error(error=f'variable "{var}" is NaN')
                 else:
                     non_empty_vars += 1
             # Loop over all data points for a variable
@@ -287,22 +289,24 @@ class QualityControl:
                 for val in var_data:
                     checked_vals += 1
                     
-                    if np.ma.is_masked(val):
-                        val = np.nan
-                    if math.isnan(val):
+                    if not val:
+                        empty_vals += 1
+                        print(f'empty: {val}')
+                    elif np.isnan(val):
                         nan_vals += 1
-                    if val == self.nc[var].getncattr('_FillValue'):
-                        filled_vals += 1
-                
-                # Log error if there are automatically filled values
-                if filled_vals > 0:
-                    self.logger.add_error(error=f'variable "{var}" has {filled_vals}/{checked_vals} data points with the fill value')
+                        print(f'nan: {val}')
+
+                print(var)
+
+                # Log error if there are empty values
+                if empty_vals > 0:
+                    self.logger.add_error(error=f'variable "{var}" has {empty_vals}/{checked_vals} empty data points')
                     
                 # Log error if there are NaN values
                 if nan_vals > 0:
                     self.logger.add_error(error=f'variable "{var}" has {nan_vals}/{checked_vals} NaN data points')
 
-                if filled_vals == 0 and nan_vals == 0:
+                if empty_vals == 0 and nan_vals == 0:
                     non_empty_vars += 1
 
         # Log info about how many of the checked variables exist

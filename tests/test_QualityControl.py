@@ -611,46 +611,46 @@ class TestEmptinessCheck(unittest.TestCase):
         assert qc_obj.logger.warnings == []
         assert qc_obj.logger.info == []
 
-    def test_emptiness_check_mixed(self):
-        """
-        Test for the emptiness check with some variables and global attributes to be checked,
-        of which some are not (fully) populated, and some that should not be checked at all.
-        """
-        qc_obj_emptiness.qc_checks_dims = {
-            'time': {'does_it_exist_check': True},
-            'diameter_classes': {'does_it_exist_check': False},
-            'velocity_classes': {'does_it_exist_check': True}
-        }
-        qc_obj_emptiness.qc_checks_vars = {
-            'temperature': {'does_it_exist_check': True, 'is_it_empty_check': True},
-            'wind_speed': {'does_it_exist_check': True, 'is_it_empty_check': True},
-            'wind_direction': {'does_it_exist_check': True, 'is_it_empty_check': False},
-            'longitude': {'does_it_exist_check': True, 'is_it_empty_check': True}
-        }
-        qc_obj_emptiness.qc_checks_gl_attrs = {
-            'title': {'does_it_exist_check': True, 'is_it_empty_check': True},
-            'source': {'does_it_exist_check': True, 'is_it_empty_check': True},
-            'contributors': {'does_it_exist_check': False, 'is_it_empty_check': False}
-        }
+    # def test_emptiness_check_mixed(self):
+    #     """
+    #     Test for the emptiness check with some variables and global attributes to be checked,
+    #     of which some are not (fully) populated, and some that should not be checked at all.
+    #     """
+    #     qc_obj_emptiness.qc_checks_dims = {
+    #         'time': {'does_it_exist_check': True},
+    #         'diameter_classes': {'does_it_exist_check': False},
+    #         'velocity_classes': {'does_it_exist_check': True}
+    #     }
+    #     qc_obj_emptiness.qc_checks_vars = {
+    #         'temperature': {'does_it_exist_check': True, 'is_it_empty_check': True},
+    #         'wind_speed': {'does_it_exist_check': True, 'is_it_empty_check': True},
+    #         'wind_direction': {'does_it_exist_check': True, 'is_it_empty_check': False},
+    #         'longitude': {'does_it_exist_check': True, 'is_it_empty_check': True}
+    #     }
+    #     qc_obj_emptiness.qc_checks_gl_attrs = {
+    #         'title': {'does_it_exist_check': True, 'is_it_empty_check': True},
+    #         'source': {'does_it_exist_check': True, 'is_it_empty_check': True},
+    #         'contributors': {'does_it_exist_check': False, 'is_it_empty_check': False}
+    #     }
 
-        qc_obj_emptiness.emptiness_check()
+    #     qc_obj_emptiness.emptiness_check()
 
-        expected_errors = ['variable "temperature" has 1080/1080 NaN data points',
-                           'variable "wind_speed" has 1080/1080 NaN data points',
-                           'global attribute "source" should have a value but it does not']
+    #     expected_errors = ['variable "temperature" has 1080/1080 NaN data points',
+    #                        'variable "wind_speed" has 1080/1080 NaN data points',
+    #                        'global attribute "source" should have a value but it does not']
 
-        expected_warnings = []
+    #     expected_warnings = []
 
-        expected_info = ['1/3 checked variables are fully populated',
-                         '1/2 checked global attributes have values assigned']
+    #     expected_info = ['1/3 checked variables are fully populated',
+    #                      '1/2 checked global attributes have values assigned']
 
-        assert qc_obj_emptiness.logger.errors == expected_errors
-        assert qc_obj_emptiness.logger.warnings == expected_warnings
-        assert qc_obj_emptiness.logger.info == expected_info
+    #     assert qc_obj_emptiness.logger.errors == expected_errors
+    #     assert qc_obj_emptiness.logger.warnings == expected_warnings
+    #     assert qc_obj_emptiness.logger.info == expected_info
 
-        qc_obj_emptiness.logger.errors = []
-        qc_obj_emptiness.logger.warnings = []
-        qc_obj_emptiness.logger.info = []
+    #     qc_obj_emptiness.logger.errors = []
+    #     qc_obj_emptiness.logger.warnings = []
+    #     qc_obj_emptiness.logger.info = []
 
     def test_emptiness_check_all_false(self):
         """
@@ -682,3 +682,50 @@ class TestEmptinessCheck(unittest.TestCase):
         qc_obj_emptiness.logger.errors = []
         qc_obj_emptiness.logger.warnings = []
         qc_obj_emptiness.logger.info = []
+
+# def test_create_nc(create_nc_emptiness):
+#     output_file_path = Path(__file__).parent.parent / 'sample_data/test.nc'
+
+#     assert output_file_path.exists()
+
+def test_emptiness_check_mixed2(create_nc_emptiness):
+    """
+    Test for the emptiness check with some variables and global attributes to be checked,
+    of which some are not (fully) populated, and some that should not be checked at all.
+    """
+    qc_obj = QualityControl()
+    qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data' / 'test.nc')
+
+    qc_obj.qc_checks_dims = {
+        'time': {'does_it_exist_check': True},
+        'diameter_classes': {'does_it_exist_check': False},
+        'velocity_classes': {'does_it_exist_check': True}
+    }
+    qc_obj.qc_checks_vars = {
+        'temperature': {'does_it_exist_check': True, 'is_it_empty_check': True},
+        'wind_speed': {'does_it_exist_check': True, 'is_it_empty_check': True},
+        'wind_direction': {'does_it_exist_check': True, 'is_it_empty_check': True},
+        'longitude': {'does_it_exist_check': True, 'is_it_empty_check': False}
+    }
+    qc_obj.qc_checks_gl_attrs = {
+        'title': {'does_it_exist_check': True, 'is_it_empty_check': True},
+        'source': {'does_it_exist_check': True, 'is_it_empty_check': False},
+        'contributors': {'does_it_exist_check': False, 'is_it_empty_check': True}
+    }
+
+    qc_obj.emptiness_check()
+
+    expected_errors = ['variable "wind_speed" has 50/100 empty data points',
+                       'variable "wind_direction" has 50/100 NaN data points',
+                       'global attribute "contributors" should have a value but it does not']
+
+    expected_warnings = []
+
+    expected_info = ['1/3 checked variables are fully populated',
+                     '1/2 checked global attributes have values assigned']
+
+    print(qc_obj.logger.errors)
+
+    assert qc_obj.logger.errors == expected_errors
+    assert qc_obj.logger.warnings == expected_warnings
+    assert qc_obj.logger.info == expected_info
