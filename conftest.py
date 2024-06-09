@@ -1,20 +1,29 @@
 """
 Module with all test fixtures.
 When a test fixtures is set as argument for a test function, it automatically runs at the start of the test.
+
+Functions:
+- create_nc_boundary_check_success: Test fixture for testing boundary checking
+    when all data falls within the boundaries.
+- create_nc_boundary_check_fail: Test fixture for testing boundary checking
+    when not all data falls within the boundaries.
+- create_nc_existence_check: Test fixture for testing existence checking.
+- create_nc_emptiness_check_full: Test fixture for testing boundary checking when everything is fully populated.
+- create_nc_emptiness_check_mixed: Test fixture for testing boundary checking when some things are not fully populated.
+- create_nc_emptiness_check_empty: Test fixture for testing boundary checking when nothing is populated.
 """
 
+import os
 from pathlib import Path
-
 from netCDF4 import Dataset
-import yaml
-import math
 import numpy as np
 import pytest
-import os
 
 @pytest.fixture()
 def create_nc_boundary_check_success():
-
+    """
+    Test fixture for testing boundary checking when all data falls within the boundaries.
+    """
     nc_path = Path(__file__).parent / 'sample_data' / 'test_boundary_success.nc'
 
     if os.path.exists(nc_path):
@@ -41,7 +50,9 @@ def create_nc_boundary_check_success():
 
 @pytest.fixture()
 def create_nc_boundary_check_fail():
-
+    """
+    Test fixture for testing boundary checking when not all data falls within the boundaries.
+    """
     nc_path = Path(__file__).parent / 'sample_data' / 'test_boundary_fail.nc'
 
     if os.path.exists(nc_path):
@@ -69,6 +80,9 @@ def create_nc_boundary_check_fail():
 
 @pytest.fixture()
 def create_nc_existence_check():
+    """
+    Test fixture for testing existence checking.
+    """
     nc_path = Path(__file__).parent / 'sample_data' / 'test_existence.nc'
 
     if os.path.exists(nc_path):
@@ -83,12 +97,12 @@ def create_nc_existence_check():
     nc_file.createDimension('velocity_classes', 32)
 
     # Create variables
-    temperature = nc_file.createVariable('temperature', 'f4', ('time',), fill_value=-999.0)
-    wind_speed = nc_file.createVariable('wind_speed', 'f4', ('time',), fill_value=-999.0)
-    wind_direction = nc_file.createVariable('wind_direction', 'f4', ('time',), fill_value=-999.0)
-    longitude = nc_file.createVariable('longitude', 'f4', fill_value=-999.0)
-    latitude = nc_file.createVariable('latitude', 'f4', fill_value=-999.0)
-    altitude = nc_file.createVariable('altitude', 'f4', fill_value=-999.0)
+    nc_file.createVariable('temperature', 'f4', ('time',), fill_value=-999.0)
+    nc_file.createVariable('wind_speed', 'f4', ('time',), fill_value=-999.0)
+    nc_file.createVariable('wind_direction', 'f4', ('time',), fill_value=-999.0)
+    nc_file.createVariable('longitude', 'f4', fill_value=-999.0)
+    nc_file.createVariable('latitude', 'f4', fill_value=-999.0)
+    nc_file.createVariable('altitude', 'f4', fill_value=-999.0)
 
     # Create global attributes
     nc_file.title = "Test NetCDF File"
@@ -100,6 +114,9 @@ def create_nc_existence_check():
 
 @pytest.fixture()
 def create_nc_emptiness_check_full():
+    """
+    Test fixture for testing boundary checking when everything is fully populated.
+    """
     nc_path = Path(__file__).parent / 'sample_data' / 'test_emptiness_full.nc'
 
     if os.path.exists(nc_path):
@@ -133,6 +150,9 @@ def create_nc_emptiness_check_full():
 
 @pytest.fixture()
 def create_nc_emptiness_check_mixed():
+    """
+    Test fixture for testing boundary checking when some things are not fully populated.
+    """
     nc_path = Path(__file__).parent / 'sample_data' / 'test_emptiness_mixed.nc'
 
     if os.path.exists(nc_path):
@@ -177,6 +197,9 @@ def create_nc_emptiness_check_mixed():
 
 @pytest.fixture()
 def create_nc_emptiness_check_empty():
+    """
+    Test fixture for testing boundary checking when nothing is populated.
+    """
     nc_path = Path(__file__).parent / 'sample_data' / 'test_emptiness_empty.nc'
 
     if os.path.exists(nc_path):
@@ -191,7 +214,7 @@ def create_nc_emptiness_check_empty():
     nc_file.createDimension('velocity_classes', 32)
 
     # Create variables
-    temperature = nc_file.createVariable('temperature', 'f4', ('time',), fill_value=-999.0)
+    nc_file.createVariable('temperature', 'f4', ('time',), fill_value=-999.0)
     wind_speed = nc_file.createVariable('wind_speed', 'f4', ('time',), fill_value=-999.0)
     wind_direction = nc_file.createVariable('wind_direction', 'f4', ('time',), fill_value=-999.0)
 

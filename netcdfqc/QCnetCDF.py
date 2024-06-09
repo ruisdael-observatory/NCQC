@@ -4,11 +4,10 @@ Module dedicated to the main logic of the netCDF quality control library
 Functions:
 - yaml2dict: reads a yaml file and returns a dictionary with all the field and values
 """
-from pathlib import Path
 
+from pathlib import Path
 import netCDF4
 import yaml
-import math
 import numpy as np
 
 from netcdfqc.log import LoggerQC
@@ -238,7 +237,7 @@ class QualityControl:
 
         return self
 
-    def emptiness_check(self): # pylint: disable=too-many-branches
+    def emptiness_check(self): # pylint: disable=too-many-branches, disable=too-many-statements
         """
         Method to perform emptiness checks on variables and global attributes.
 
@@ -253,10 +252,6 @@ class QualityControl:
             self.logger.add_error("emptiness check error: no nc file loaded")
             return self
 
-        # Variables and global attributes from the netCDF dict
-        nc_variables = self.nc.variables.keys()
-        nc_global_attributes = self.nc.ncattrs()
-
         # Variables and global attributes with 'is_it_empty_check' True in the config file
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
             if properties['is_it_empty_check'] is True]
@@ -270,7 +265,7 @@ class QualityControl:
         for var in vars_to_check:
             checked_vars += 1
             var_data = self.nc[var][:]
-            
+
             checked_vals = 0
             empty_vals = 0
             nan_vals = 0
@@ -288,7 +283,7 @@ class QualityControl:
             else:
                 for val in var_data:
                     checked_vals += 1
-                    
+
                     if not val:
                         empty_vals += 1
                         print(f'empty: {val}')
@@ -301,7 +296,7 @@ class QualityControl:
                 # Log error if there are empty values
                 if empty_vals > 0:
                     self.logger.add_error(error=f'variable "{var}" has {empty_vals}/{checked_vals} empty data points')
-                    
+
                 # Log error if there are NaN values
                 if nan_vals > 0:
                     self.logger.add_error(error=f'variable "{var}" has {nan_vals}/{checked_vals} NaN data points')
@@ -328,7 +323,8 @@ class QualityControl:
 
         # Log info about how many of the checked global attributes have values assigned
         if checked_attrs != 0:
-            self.logger.add_info(msg=f'{non_empty_attrs}/{checked_attrs} checked global attributes have values assigned')
+            self.logger.add_info(
+                msg=f'{non_empty_attrs}/{checked_attrs} checked global attributes have values assigned')
         else:
             self.logger.add_info(msg='no global attributes were checked for emptiness')
 
