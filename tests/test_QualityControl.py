@@ -5,10 +5,14 @@ Test module for QCnetCDF.py
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+import pytest
+import os
 
 import netCDF4
 
 from netcdfqc.QCnetCDF import QualityControl, yaml2dict
+
+data_dir = Path(__file__).parent.parent / 'sample_data'
 
 class TestQualityControl(unittest.TestCase):
     """
@@ -384,10 +388,7 @@ class TestBoundaryCheck(unittest.TestCase):
         assert qc_obj.logger.errors == []
         assert qc_obj.logger.warnings == []
 
-qc_obj_existence = QualityControl()
-
-qc_obj_existence.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240430_Green_Village-GV_PAR008.nc')
-
+@pytest.mark.usefixtures("create_nc_existence")
 class TestExistenceCheck(unittest.TestCase):
     """
     Class for testing the functionality of the existence check.
@@ -411,28 +412,38 @@ class TestExistenceCheck(unittest.TestCase):
         assert qc_obj.logger.warnings == []
         assert qc_obj.logger.info == []
 
+        nc_path = data_dir / 'test_existence.nc'
+
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
+
     def test_existence_check_all_exist(self):
         """
         Test for the existence check with some dimensions, variables, and global attributes to be checked,
         of which some do not exist, and some that should not be checked at all.
         """
-        qc_obj_existence.qc_checks_dims = {
+        qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_existence.nc'
+        qc_obj.load_netcdf(nc_path)
+
+        qc_obj.qc_checks_dims = {
             'time': {'does_it_exist_check': True},
             'diameter_classes': {'does_it_exist_check': False},
             'velocity_classes': {'does_it_exist_check': True}
         }
-        qc_obj_existence.qc_checks_vars = {
+        qc_obj.qc_checks_vars = {
             'longitude': {'does_it_exist_check': True},
             'latitude': {'does_it_exist_check': True},
-            'datetime': {'does_it_exist_check': True}
+            'altitude': {'does_it_exist_check': True}
         }
-        qc_obj_existence.qc_checks_gl_attrs = {
+        qc_obj.qc_checks_gl_attrs = {
             'title': {'does_it_exist_check': True},
             'source': {'does_it_exist_check': True},
             'contributors': {'does_it_exist_check': False}
         }
 
-        qc_obj_existence.existence_check()
+        qc_obj.existence_check()
 
         expected_errors = []
 
@@ -442,39 +453,43 @@ class TestExistenceCheck(unittest.TestCase):
                          '3/3 checked variables exist',
                          '2/2 checked global attributes exist']
 
-        assert qc_obj_existence.logger.errors == expected_errors
-        assert qc_obj_existence.logger.warnings == expected_warnings
-        assert qc_obj_existence.logger.info == expected_info
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
 
-        qc_obj_existence.logger.errors = []
-        qc_obj_existence.logger.warnings = []
-        qc_obj_existence.logger.info = []
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
 
     def test_existence_check_mixed(self):
         """
         Test for the existence check with some dimensions, variables, and global attributes to be checked,
         of which some do not exist, and some that should not be checked at all.
         """
-        qc_obj_existence.qc_checks_dims = {
+        qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_existence.nc'
+        qc_obj.load_netcdf(nc_path)
+
+        qc_obj.qc_checks_dims = {
             'time': {'does_it_exist_check': True},
             'diameter_classes': {'does_it_exist_check': False},
             'velocity_classes': {'does_it_exist_check': True},
             'bad_dimension': {'does_it_exist_check': True}
         }
-        qc_obj_existence.qc_checks_vars = {
+        qc_obj.qc_checks_vars = {
             'longitude': {'does_it_exist_check': True},
             'latitude': {'does_it_exist_check': True},
-            'datetime': {'does_it_exist_check': True},
+            'altitude': {'does_it_exist_check': True},
             'bad_variable': {'does_it_exist_check': True}
         }
-        qc_obj_existence.qc_checks_gl_attrs = {
+        qc_obj.qc_checks_gl_attrs = {
             'title': {'does_it_exist_check': True},
             'source': {'does_it_exist_check': True},
             'contributors': {'does_it_exist_check': False},
             'bad_attribute': {'does_it_exist_check': True}
         }
 
-        qc_obj_existence.existence_check()
+        qc_obj.existence_check()
 
         expected_errors = ['dimension "bad_dimension" should exist but it does not',
                            'variable "bad_variable" should exist but it does not',
@@ -486,30 +501,34 @@ class TestExistenceCheck(unittest.TestCase):
                          '3/4 checked variables exist',
                          '2/3 checked global attributes exist']
 
-        assert qc_obj_existence.logger.errors == expected_errors
-        assert qc_obj_existence.logger.warnings == expected_warnings
-        assert qc_obj_existence.logger.info == expected_info
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
 
-        qc_obj_existence.logger.errors = []
-        qc_obj_existence.logger.warnings = []
-        qc_obj_existence.logger.info = []
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
 
     def test_existence_check_none_exist(self):
         """
         Test for the existence check where nothing exists.
         """
-        qc_obj_existence.qc_checks_dims = {
+        qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_existence.nc'
+        qc_obj.load_netcdf(nc_path)
+
+        qc_obj.qc_checks_dims = {
             'bad_dimension': {'does_it_exist_check': True}
         }
-        qc_obj_existence.qc_checks_vars = {
+        qc_obj.qc_checks_vars = {
             'bad_variable1': {'does_it_exist_check': True},
             'bad_variable2': {'does_it_exist_check': True}
         }
-        qc_obj_existence.qc_checks_gl_attrs = {
+        qc_obj.qc_checks_gl_attrs = {
             'bad_attribute': {'does_it_exist_check': True}
         }
 
-        qc_obj_existence.existence_check()
+        qc_obj.existence_check()
 
         expected_errors = ['dimension "bad_dimension" should exist but it does not',
                            'variable "bad_variable1" should exist but it does not',
@@ -522,29 +541,33 @@ class TestExistenceCheck(unittest.TestCase):
                          '0/2 checked variables exist',
                          '0/1 checked global attributes exist']
 
-        assert qc_obj_existence.logger.errors == expected_errors
-        assert qc_obj_existence.logger.warnings == expected_warnings
-        assert qc_obj_existence.logger.info == expected_info
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
 
-        qc_obj_existence.logger.errors = []
-        qc_obj_existence.logger.warnings = []
-        qc_obj_existence.logger.info = []
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
 
     def test_existence_check_all_false(self):
         """
         Test for the existence check with nothing to be checked.
         """
-        qc_obj_existence.qc_checks_dims = {
+        qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_existence.nc'
+        qc_obj.load_netcdf(nc_path)
+
+        qc_obj.qc_checks_dims = {
             'example_dimension': {'does_it_exist_check': False}
         }
-        qc_obj_existence.qc_checks_vars = {
+        qc_obj.qc_checks_vars = {
             'example_variable': {'does_it_exist_check': False}
         }
-        qc_obj_existence.qc_checks_gl_attrs = {
+        qc_obj.qc_checks_gl_attrs = {
             'example_attribute': {'does_it_exist_check': False}
         }
 
-        qc_obj_existence.existence_check()
+        qc_obj.existence_check()
 
         expected_errors = []
 
@@ -554,13 +577,196 @@ class TestExistenceCheck(unittest.TestCase):
                          'no variables were checked',
                          'no global attributes were checked']
 
-        assert qc_obj_existence.logger.errors == expected_errors
-        assert qc_obj_existence.logger.warnings == expected_warnings
-        assert qc_obj_existence.logger.info == expected_info
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
 
-        qc_obj_existence.logger.errors = []
-        qc_obj_existence.logger.warnings = []
-        qc_obj_existence.logger.info = []
+
+class TestEmptinessCheck(unittest.TestCase):
+    """
+    Class for testing the functionality of the emptiness check.
+
+    Functions:
+    - test_emptiness_check_no_nc: Test for the emptiness check when no netCDF file is loaded.
+    - TODO: test_emptiness_check_all_populated: Test for the emptiness check where everything is fully populated.
+    - test_emptiness_check_mixed: Test for the emptiness check with mixed emptiness.
+    - TODO: test_emptiness_check_none_populated: Test for the emptiness check where nothing is (fully) populated.
+    - test_emptiness_check_all_false: Test for the emptiness check with nothing to be checked.
+    """
+
+    def test_emptiness_check_no_nc(self):
+        """
+        Test for the emptiness check when no netCDF file is loaded.
+        """
+        qc_obj = QualityControl()
+        qc_obj.emptiness_check()
+
+        assert qc_obj.logger.errors == ['emptiness check error: no nc file loaded']
+        assert qc_obj.logger.warnings == []
+        assert qc_obj.logger.info == []
+
+    @pytest.mark.usefixtures("create_nc_emptiness_full")
+    def test_emptiness_check_all_populated(self):
+        """
+        Test for the emptiness check with some variables and global attributes to be checked,
+        of which some are not (fully) populated, and some that should not be checked at all.
+        """
+        qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_emptiness_full.nc'
+        qc_obj.load_netcdf(nc_path)
+
+        qc_obj.qc_checks_vars = {
+            'temperature': {'is_it_empty_check': True},
+            'wind_speed': {'is_it_empty_check': True},
+            'wind_direction': {'is_it_empty_check': True}
+        }
+        qc_obj.qc_checks_gl_attrs = {
+            'title': {'is_it_empty_check': True},
+            'source': {'is_it_empty_check': False},
+            'contributors': {'is_it_empty_check': True}
+        }
+
+        qc_obj.emptiness_check()
+
+        expected_errors = []
+
+        expected_warnings = []
+
+        expected_info = ['3/3 checked variables are fully populated',
+                        '2/2 checked global attributes have values assigned']
+
+        print(qc_obj.logger.errors)
+
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
+
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
+
+    @pytest.mark.usefixtures("create_nc_emptiness_mixed")
+    def test_emptiness_check_mixed(self):
+        """
+        Test for the emptiness check with some variables and global attributes to be checked,
+        of which some are not (fully) populated, and some that should not be checked at all.
+        """
+        qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_emptiness_mixed.nc'
+        qc_obj.load_netcdf(nc_path)
+
+        qc_obj.qc_checks_vars = {
+            'temperature': {'is_it_empty_check': True},
+            'wind_speed': {'is_it_empty_check': True},
+            'wind_direction': {'is_it_empty_check': True},
+            'longitude': {'is_it_empty_check': True},
+            'latitude': {'is_it_empty_check': True},
+            'altitude': {'is_it_empty_check': True}
+        }
+        qc_obj.qc_checks_gl_attrs = {
+            'title': {'is_it_empty_check': True},
+            'source': {'is_it_empty_check': False},
+            'contributors': {'is_it_empty_check': True}
+        }
+
+        qc_obj.emptiness_check()
+
+        expected_errors = ['variable "wind_speed" has 50/100 empty data points',
+                           'variable "wind_direction" has 50/100 NaN data points',
+                           'scalar variable "longitude" is empty',
+                           'scalar variable "latitude" is NaN',
+                           'global attribute "contributors" is empty']
+
+        expected_warnings = []
+
+        expected_info = ['2/6 checked variables are fully populated',
+                        '1/2 checked global attributes have values assigned']
+
+        print(qc_obj.logger.errors)
+
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
+
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
+
+    @pytest.mark.usefixtures("create_nc_emptiness_empty")
+    def test_emptiness_check_all_empty(self):
+        """
+        Test for the emptiness check with some variables and global attributes to be checked,
+        of which some are not (fully) populated, and some that should not be checked at all.
+        """
+        qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_emptiness_empty.nc'
+        qc_obj.load_netcdf(nc_path)
+
+        qc_obj.qc_checks_vars = {
+            'temperature': {'is_it_empty_check': True},
+            'wind_speed': {'is_it_empty_check': True},
+            'wind_direction': {'is_it_empty_check': True}
+        }
+        qc_obj.qc_checks_gl_attrs = {
+            'title': {'is_it_empty_check': True},
+            'source': {'is_it_empty_check': False},
+            'contributors': {'is_it_empty_check': True}
+        }
+
+        qc_obj.emptiness_check()
+
+        expected_errors = ['variable "temperature" has 100/100 empty data points',
+                           'variable "wind_speed" has 100/100 empty data points',
+                           'variable "wind_direction" has 100/100 NaN data points',
+                           'global attribute "title" is empty',
+                           'global attribute "contributors" is empty']
+
+        expected_warnings = []
+
+        expected_info = ['0/3 checked variables are fully populated',
+                        '0/2 checked global attributes have values assigned']
+
+        print(qc_obj.logger.errors)
+
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
+
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
+
+    @pytest.mark.usefixtures("create_nc_emptiness_full")
+    def test_emptiness_check_all_false(self):
+        """
+        Test for the emptiness check with nothing to be checked.
+        """
+        qc_obj = QualityControl()
+
+        nc_path = data_dir / 'test_emptiness_full.nc'
+        qc_obj.load_netcdf(nc_path)
+
+        qc_obj.qc_checks_vars = {
+            'example_variable': {'is_it_empty_check': False}
+        }
+        qc_obj.qc_checks_gl_attrs = {
+            'example_attribute': {'is_it_empty_check': False}
+        }
+
+        qc_obj.emptiness_check()
+
+        expected_errors = []
+
+        expected_warnings = []
+
+        expected_info = ['no variables were checked for emptiness',
+                         'no global attributes were checked for emptiness']
+
+        assert qc_obj.logger.errors == expected_errors
+        assert qc_obj.logger.warnings == expected_warnings
+        assert qc_obj.logger.info == expected_info
+
+        if os.path.exists(nc_path):
+            os.remove(nc_path)
 
 
 def test_yaml2dict():
@@ -582,150 +788,3 @@ def test_yaml2dict():
             'is_it_empty_check': True
         }}
     }
-
-qc_obj_emptiness = QualityControl()
-
-# qc_obj_emptiness.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240526_Green_Village-GV_THIES006.nc')
-qc_obj_emptiness.load_netcdf(Path(__file__).parent.parent / 'sample_data' / 'test_emptiness.nc')
-
-class TestEmptinessCheck(unittest.TestCase):
-    """
-    Class for testing the functionality of the emptiness check.
-
-    Functions:
-    - test_emptiness_check_no_nc: Test for the emptiness check when no netCDF file is loaded.
-    - TODO: test_emptiness_check_all_populated: Test for the emptiness check where everything is fully populated.
-    - TODO: test_emptiness_check_mixed: Test for the emptiness check with mixed emptiness.
-    - TODO: test_emptiness_check_none_populated: Test for the emptiness check where nothing is (fully) populated.
-    - test_emptiness_check_all_false: Test for the emptiness check with nothing to be checked.
-    """
-
-    def test_emptiness_check_no_nc(self):
-        """
-        Test for the emptiness check when no netCDF file is loaded.
-        """
-        qc_obj = QualityControl()
-        qc_obj.emptiness_check()
-
-        assert qc_obj.logger.errors == ['emptiness check error: no nc file loaded']
-        assert qc_obj.logger.warnings == []
-        assert qc_obj.logger.info == []
-
-    # def test_emptiness_check_mixed(self):
-    #     """
-    #     Test for the emptiness check with some variables and global attributes to be checked,
-    #     of which some are not (fully) populated, and some that should not be checked at all.
-    #     """
-    #     qc_obj_emptiness.qc_checks_dims = {
-    #         'time': {'does_it_exist_check': True},
-    #         'diameter_classes': {'does_it_exist_check': False},
-    #         'velocity_classes': {'does_it_exist_check': True}
-    #     }
-    #     qc_obj_emptiness.qc_checks_vars = {
-    #         'temperature': {'does_it_exist_check': True, 'is_it_empty_check': True},
-    #         'wind_speed': {'does_it_exist_check': True, 'is_it_empty_check': True},
-    #         'wind_direction': {'does_it_exist_check': True, 'is_it_empty_check': False},
-    #         'longitude': {'does_it_exist_check': True, 'is_it_empty_check': True}
-    #     }
-    #     qc_obj_emptiness.qc_checks_gl_attrs = {
-    #         'title': {'does_it_exist_check': True, 'is_it_empty_check': True},
-    #         'source': {'does_it_exist_check': True, 'is_it_empty_check': True},
-    #         'contributors': {'does_it_exist_check': False, 'is_it_empty_check': False}
-    #     }
-
-    #     qc_obj_emptiness.emptiness_check()
-
-    #     expected_errors = ['variable "temperature" has 1080/1080 NaN data points',
-    #                        'variable "wind_speed" has 1080/1080 NaN data points',
-    #                        'global attribute "source" should have a value but it does not']
-
-    #     expected_warnings = []
-
-    #     expected_info = ['1/3 checked variables are fully populated',
-    #                      '1/2 checked global attributes have values assigned']
-
-    #     assert qc_obj_emptiness.logger.errors == expected_errors
-    #     assert qc_obj_emptiness.logger.warnings == expected_warnings
-    #     assert qc_obj_emptiness.logger.info == expected_info
-
-    #     qc_obj_emptiness.logger.errors = []
-    #     qc_obj_emptiness.logger.warnings = []
-    #     qc_obj_emptiness.logger.info = []
-
-    def test_emptiness_check_all_false(self):
-        """
-        Test for the emptiness check with nothing to be checked.
-        """
-        qc_obj_emptiness.qc_checks_dims = {
-            'example_dimension': {'does_it_exist_check': False}
-        }
-        qc_obj_emptiness.qc_checks_vars = {
-            'example_variable': {'does_it_exist_check': False, 'is_it_empty_check': False}
-        }
-        qc_obj_emptiness.qc_checks_gl_attrs = {
-            'example_attribute': {'does_it_exist_check': False, 'is_it_empty_check': False}
-        }
-
-        qc_obj_emptiness.emptiness_check()
-
-        expected_errors = []
-
-        expected_warnings = []
-
-        expected_info = ['no variables were checked for emptiness',
-                         'no global attributes were checked for emptiness']
-
-        assert qc_obj_emptiness.logger.errors == expected_errors
-        assert qc_obj_emptiness.logger.warnings == expected_warnings
-        assert qc_obj_emptiness.logger.info == expected_info
-
-        qc_obj_emptiness.logger.errors = []
-        qc_obj_emptiness.logger.warnings = []
-        qc_obj_emptiness.logger.info = []
-
-# def test_create_nc(create_nc_emptiness):
-#     output_file_path = Path(__file__).parent.parent / 'sample_data/test.nc'
-
-#     assert output_file_path.exists()
-
-def test_emptiness_check_mixed2(create_nc_emptiness):
-    """
-    Test for the emptiness check with some variables and global attributes to be checked,
-    of which some are not (fully) populated, and some that should not be checked at all.
-    """
-    qc_obj = QualityControl()
-    qc_obj.load_netcdf(Path(__file__).parent.parent / 'sample_data' / 'test.nc')
-
-    qc_obj.qc_checks_dims = {
-        'time': {'does_it_exist_check': True},
-        'diameter_classes': {'does_it_exist_check': False},
-        'velocity_classes': {'does_it_exist_check': True}
-    }
-    qc_obj.qc_checks_vars = {
-        'temperature': {'does_it_exist_check': True, 'is_it_empty_check': True},
-        'wind_speed': {'does_it_exist_check': True, 'is_it_empty_check': True},
-        'wind_direction': {'does_it_exist_check': True, 'is_it_empty_check': True},
-        'longitude': {'does_it_exist_check': True, 'is_it_empty_check': False}
-    }
-    qc_obj.qc_checks_gl_attrs = {
-        'title': {'does_it_exist_check': True, 'is_it_empty_check': True},
-        'source': {'does_it_exist_check': True, 'is_it_empty_check': False},
-        'contributors': {'does_it_exist_check': False, 'is_it_empty_check': True}
-    }
-
-    qc_obj.emptiness_check()
-
-    expected_errors = ['variable "wind_speed" has 50/100 empty data points',
-                       'variable "wind_direction" has 50/100 NaN data points',
-                       'global attribute "contributors" should have a value but it does not']
-
-    expected_warnings = []
-
-    expected_info = ['1/3 checked variables are fully populated',
-                     '1/2 checked global attributes have values assigned']
-
-    print(qc_obj.logger.errors)
-
-    assert qc_obj.logger.errors == expected_errors
-    assert qc_obj.logger.warnings == expected_warnings
-    assert qc_obj.logger.info == expected_info

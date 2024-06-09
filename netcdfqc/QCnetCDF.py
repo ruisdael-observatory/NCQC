@@ -279,9 +279,9 @@ class QualityControl:
             if var_data.ndim == 0:
                 val = var_data.item()
                 if not val:
-                    self.logger.add_error(error=f'variable "{var}" is empty')
+                    self.logger.add_error(error=f'scalar variable "{var}" is empty')
                 elif np.isnan(val):
-                    self.logger.add_error(error=f'variable "{var}" is NaN')
+                    self.logger.add_error(error=f'scalar variable "{var}" is NaN')
                 else:
                     non_empty_vars += 1
             # Loop over all data points for a variable
@@ -322,7 +322,7 @@ class QualityControl:
         for attr in attrs_to_check:
             checked_attrs += 1
             if not self.nc.getncattr(attr):
-                self.logger.add_error(error=f'global attribute "{attr}" should have a value but it does not')
+                self.logger.add_error(error=f'global attribute "{attr}" is empty')
             else:
                 non_empty_attrs += 1
 
