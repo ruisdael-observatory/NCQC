@@ -17,6 +17,7 @@ variables:
 
   longitude:
     does_it_exist_check: true
+    is_it_empty_check: true
     is_data_within_boundaries_check:
       perform_check: true
       lower_bound: 0
@@ -24,6 +25,7 @@ variables:
 
   latitude:
     does_it_exist_check: true
+    is_it_empty_check: true
     is_data_within_boundaries_check:
       perform_check: true
       lower_bound: 0
@@ -31,6 +33,7 @@ variables:
 
   datetime:
     does_it_exist_check: true
+    is_it_empty_check: true
     is_data_within_boundaries_check:
       perform_check: true
       lower_bound: 0
@@ -38,6 +41,7 @@ variables:
 
   bad_variable:
     does_it_exist_check: true
+    is_it_empty_check: true
     is_data_within_boundaries_check:
       perform_check: true
       lower_bound: 0

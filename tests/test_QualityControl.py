@@ -386,7 +386,7 @@ class TestBoundaryCheck(unittest.TestCase):
 
 qc_obj_existence = QualityControl()
 
-qc_obj_existence.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240530_Green_Village-GV_PAR008.nc')
+qc_obj_existence.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240430_Green_Village-GV_PAR008.nc')
 
 class TestExistenceCheck(unittest.TestCase):
     """
@@ -582,3 +582,96 @@ def test_yaml2dict():
             'is_it_empty_check': True
         }}
     }
+
+qc_obj_emptiness = QualityControl()
+
+qc_obj_emptiness.load_netcdf(Path(__file__).parent.parent / 'sample_data' / '20240526_Green_Village-GV_THIES006.nc')
+
+class TestEmptinessCheck(unittest.TestCase):
+    """
+    Class for testing the functionality of the emptiness check.
+
+    Functions:
+    - test_emptiness_check_no_nc: Test for the emptiness check when no netCDF file is loaded.
+    - TODO: test_emptiness_check_all_populated: Test for the emptiness check where everything is fully populated.
+    - TODO: test_emptiness_check_mixed: Test for the emptiness check with mixed emptiness.
+    - TODO: test_emptiness_check_none_populated: Test for the emptiness check where nothing is (fully) populated.
+    - test_emptiness_check_all_false: Test for the emptiness check with nothing to be checked.
+    """
+
+    def test_emptiness_check_no_nc(self):
+        """
+        Test for the emptiness check when no netCDF file is loaded.
+        """
+        qc_obj = QualityControl()
+        qc_obj.emptiness_check()
+
+        assert qc_obj.logger.errors == ['emptiness check error: no nc file loaded']
+        assert qc_obj.logger.warnings == []
+        assert qc_obj.logger.info == []
+
+    def test_emptiness_check_mixed(self):
+        """
+        Test for the emptiness check with some variables and global attributes to be checked,
+        of which some are not (fully) populated, and some that should not be checked at all.
+        """
+        qc_obj_emptiness.qc_checks_dims = {
+            'time': {'does_it_exist_check': True},
+            'diameter_classes': {'does_it_exist_check': False},
+            'velocity_classes': {'does_it_exist_check': True}
+        }
+        qc_obj_emptiness.qc_checks_vars = {
+            'temperature': {'does_it_exist_check': True, 'is_it_empty_check': True}
+        }
+        qc_obj_emptiness.qc_checks_gl_attrs = {
+            'title': {'does_it_exist_check': True, 'is_it_empty_check': True},
+            'source': {'does_it_exist_check': True, 'is_it_empty_check': True},
+            'contributors': {'does_it_exist_check': False, 'is_it_empty_check': True}
+        }
+
+        qc_obj_emptiness.emptiness_check()
+
+        expected_errors = ['global attribute "source" should have a value but it does not']
+
+        expected_warnings = []
+
+        expected_info = ['2/3 checked global attributes are fully populated']
+
+        assert qc_obj_emptiness.logger.errors == expected_errors
+        assert qc_obj_emptiness.logger.warnings == expected_warnings
+        assert qc_obj_emptiness.logger.info == expected_info
+
+        qc_obj_emptiness.logger.errors = []
+        qc_obj_emptiness.logger.warnings = []
+        qc_obj_emptiness.logger.info = []
+
+    def test_emptiness_check_all_false(self):
+        """
+        Test for the emptiness check with nothing to be checked.
+        """
+        qc_obj_emptiness.qc_checks_dims = {
+            'example_dimension': {'does_it_exist_check': False}
+        }
+        qc_obj_emptiness.qc_checks_vars = {
+            'example_variable': {'does_it_exist_check': False, 'is_it_empty_check': False}
+        }
+        qc_obj_emptiness.qc_checks_gl_attrs = {
+            'example_attribute': {'does_it_exist_check': False, 'is_it_empty_check': False}
+        }
+
+        qc_obj_emptiness.emptiness_check()
+
+        expected_errors = []
+
+        expected_warnings = []
+
+        expected_info = [#'no variables were checked for emptiness',
+                         'no global attributes were checked for emptiness']
+
+        assert qc_obj_emptiness.logger.errors == expected_errors
+        assert qc_obj_emptiness.logger.warnings == expected_warnings
+        assert qc_obj_emptiness.logger.info == expected_info
+
+        qc_obj_emptiness.logger.errors = []
+        qc_obj_emptiness.logger.warnings = []
+        qc_obj_emptiness.logger.info = []
