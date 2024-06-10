@@ -286,12 +286,8 @@ class QualityControl:
 
                     if not val:
                         empty_vals += 1
-                        print(f'empty: {val}')
                     elif np.isnan(val):
                         nan_vals += 1
-                        print(f'nan: {val}')
-
-                print(var)
 
                 # Log error if there are empty values
                 if empty_vals > 0:
