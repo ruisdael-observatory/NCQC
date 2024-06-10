@@ -1,5 +1,8 @@
 """
 Module dedicated to the main logic of the netCDF quality control library
+
+Functions:
+- yaml2dict: reads a yaml file and returns a dictionary with all the field and values
 """
 from pathlib import Path
 
@@ -26,8 +29,9 @@ class QualityControl:
     - add_qc_checks_dict: add checks via a dictionary
     - replace_qc_checks_conf: replace checks via a config file
     - replace_qc_checks_dict: replace checks via a dictionary
-    - load_netcdf: load the netCDF file to be checked
+    - load_netcdf: load the netcdf file to be checked
     - boundary_check: perform a boundary check on the variables of the loaded netCDF file
+    - existence_check: perform existence checks on dimensions, variables and global attributes
     """
 
     def __init__(self):
@@ -151,6 +155,86 @@ class QualityControl:
             self.logger.add_info(f"boundary check for variable '{var_name}': {'success' if success else 'fail'}")
         return self
 
+    def existence_check(self): # pylint: disable=too-many-branches
+        """
+        Method to perform existence checks on dimensions, variables and global attributes.
+
+        - Logs an error if there is no netCDF loaded
+        - Logs errors for each field which should exist but does not.
+        - Logs info for each category how many of the checked fields exist.
+
+        :return: self to make chaining calls possible
+        """
+        # Log an error if there is no netCDF loaded
+        if self.nc is None:
+            self.logger.add_error("existence check error: no nc file loaded")
+            return self
+
+        # Dimensions, variables, and global attributes from the netCDF dict
+        nc_dimensions = self.nc.dimensions.keys()
+        nc_variables = self.nc.variables.keys()
+        nc_global_attributes = self.nc.ncattrs()
+
+        # Dimensions, variables, and global attributes with 'does_it_exist_check' True in the config file
+        dims_to_check = [dim for dim, properties in self.qc_checks_dims.items()
+            if properties['does_it_exist_check'] is True]
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+            if properties['does_it_exist_check'] is True]
+        attrs_to_check = [attr for attr, properties in self.qc_checks_gl_attrs.items()
+            if properties['does_it_exist_check'] is True]
+
+        checked = 0
+        exist = 0
+
+        # Loop over all dimension in the config file, log error if it should exist but does not
+        for dim in dims_to_check:
+            checked += 1
+            if dim not in nc_dimensions:
+                self.logger.add_error(error=f'dimension "{dim}" should exist but it does not')
+            else:
+                exist += 1
+
+        # Log info about how many of the checked dimensions exist
+        if checked != 0:
+            self.logger.add_info(msg=f'{exist}/{checked} checked dimensions exist')
+        else:
+            self.logger.add_info(msg='no dimensions were checked')
+
+        checked = 0
+        exist = 0
+
+        # Loop over all variables in the config file, log error if it should exist but does not
+        for var in vars_to_check:
+            checked += 1
+            if var not in nc_variables:
+                self.logger.add_error(error=f'variable "{var}" should exist but it does not')
+            else:
+                exist += 1
+
+        # Log info about how many of the checked variables exist
+        if checked != 0:
+            self.logger.add_info(msg=f'{exist}/{checked} checked variables exist')
+        else:
+            self.logger.add_info(msg='no variables were checked')
+
+        checked = 0
+        exist = 0
+
+        # Loop over all global attributes in the config file, log error if it should exist but does not
+        for attr in attrs_to_check:
+            checked += 1
+            if attr not in nc_global_attributes:
+                self.logger.add_error(error=f'global attribute "{attr}" should exist but it does not')
+            else:
+                exist += 1
+
+        # Log info about how many of the checked global attributes exist
+        if checked != 0:
+            self.logger.add_info(msg=f'{exist}/{checked} checked global attributes exist')
+        else:
+            self.logger.add_info(msg='no global attributes were checked')
+
+        return self
 
 def yaml2dict(path: Path) -> dict:
     """
