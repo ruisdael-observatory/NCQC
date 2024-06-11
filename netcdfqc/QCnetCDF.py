@@ -22,6 +22,7 @@ class QualityControl:
     - qc_checks_dims: checks for the dimensions of a netCDF file
     - qc_checks_vars: checks for the variables (and data) of a netCDF file
     - qc_checks_gl_attr: checks for the global attributes of a netCDF file
+    - qc_check_file_size: check for the file size of a netCDF file
     - nc: netCDF file to be checked
     - logger: logger for errors, warnings, info, and creation of reports
 
@@ -33,6 +34,10 @@ class QualityControl:
     - load_netcdf: load the netcdf file to be checked
     - boundary_check: perform a boundary check on the variables of the loaded netCDF file
     - existence_check: perform existence checks on dimensions, variables and global attributes
+    - file_size_check:
+    - data_points_amount_check:
+    - values_change_rate_check:
+    - constant_values_check:
     """
 
     def __init__(self):
@@ -42,6 +47,7 @@ class QualityControl:
         self.qc_checks_dims: dict = {}
         self.qc_checks_vars: dict = {}
         self.qc_checks_gl_attrs: dict = {}
+        self.qc_check_file_size: dict = {}
         self.nc = None
         self.logger = LoggerQC()
 
@@ -76,6 +82,11 @@ class QualityControl:
         else:
             new_checks_gl_attrs_dict = dict_qc_checks['global attributes']
             self.qc_checks_gl_attrs.update(new_checks_gl_attrs_dict)
+        if 'file size' not in list(dict_qc_checks.keys()):
+            self.logger.add_error(error="missing file size check in provided config_file/dict")
+        else:
+            new_check_file_size = dict_qc_checks['file size']
+            self.qc_check_file_size.update(new_check_file_size)
         return self
 
     def replace_qc_checks_conf(self, path_qc_checks_file: Path):
@@ -87,6 +98,7 @@ class QualityControl:
         self.qc_checks_dims = {}
         self.qc_checks_vars = {}
         self.qc_checks_gl_attrs = {}
+        self.qc_check_file_size = {}
         new_checks_dict = yaml2dict(path_qc_checks_file)
         self.add_qc_checks_dict(dict_qc_checks=new_checks_dict)
         return self
@@ -100,6 +112,7 @@ class QualityControl:
         self.qc_checks_dims = {}
         self.qc_checks_vars = {}
         self.qc_checks_gl_attrs = {}
+        self.qc_check_file_size = {}
         self.add_qc_checks_dict(dict_qc_checks=dict_qc_checks)
         return self
 

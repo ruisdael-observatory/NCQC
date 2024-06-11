@@ -38,6 +38,11 @@ boundary_check_test_dict = {
     },
     'global attributes': {
         'existence': True, 'emptiness': True
+    },
+    'file size': {
+        'perform_check': True,
+        'lower_bound': 0,
+        'upper_bound': 1
     }
 }
 
@@ -100,6 +105,11 @@ def test_boundary_check_fail():
         },
         'global attributes': {
             'existence': True, 'emptiness': True
+        },
+        'file size': {
+            'perform_check': True,
+            'lower_bound': 0,
+            'upper_bound': 1
         }
     })
 
@@ -134,7 +144,8 @@ def test_boundary_check_wrong_var_name():
                 'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1}
             }
         },
-        'global attributes': {}
+        'global attributes': {},
+        'file size': {}
     })
 
     qc_obj.boundary_check()
@@ -173,6 +184,11 @@ def test_boundary_check_omit_a_var():
         },
         'global attributes': {
             'existence': True, 'emptiness': True
+        },
+        'file size': {
+            'perform_check': True,
+            'lower_bound': 0,
+            'upper_bound': 1
         }
     }
     qc_obj.add_qc_checks_dict(boundary_check_test_dict_omit_var)
