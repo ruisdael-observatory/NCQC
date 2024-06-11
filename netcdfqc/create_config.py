@@ -3,30 +3,27 @@ Module for creating the base for a config file that can be used for the QualityC
 by parsing other more general config files.
 
 Functions:
-- create_config_dict_from_conf: Parses the given config file to create a dictionary which can be used for QC
+- create_config_dict_from_yaml: Parses the given config file to create a dictionary which can be used for QC
 - create_config_dict_from_dict: Parses the given dictionary to create a dictionary which can be used for QC
 """
 
 from pathlib import Path
-from typing import List, Dict, Union
-import yaml
+from typing import List, Dict
 
 from netcdfqc.QCnetCDF import yaml2dict
 
-def create_config_dict_from_conf(path: Path,
+def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default-value
                                  dimensions_name: str = 'dimensions',
                                  variables_name: str = 'variables',
                                  global_attributes_name: str = 'global_attributes',
-                                 field_names: List[str] = ['telegram_fields', 'var_attrs', 'standard_name'],
-                                 min_file_size: int = 0) -> Dict:
+                                 field_names: List[str] = ['telegram_fields', 'var_attrs', 'standard_name']):
     """
-    Creates a config file for QC by parsing the given config file.
+    Parses the given yaml file to create a dictionary which can be used for QC
 
     :param path: path to the config file to parse
     :param dimension_names: name of the groups containing the dimensions
     :param variables_name: name of the groups containing the variables
     :param global_attributes_name: name of the groups containing the global attributes
-    :param path: the minimal file size that the netCDF files should have
     :return: a dictionary which contains the structure for specifying QC checks
     """
     new_checks_dict = yaml2dict(path)
@@ -34,31 +31,33 @@ def create_config_dict_from_conf(path: Path,
                                         dimensions_name=dimensions_name,
                                         variables_name=variables_name,
                                         global_attributes_name=global_attributes_name,
-                                        field_names=field_names,
-                                        min_file_size=min_file_size)
+                                        field_names=field_names)
 
-def create_config_dict_from_dict(input_dict: Dict,
+def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-default-value
                                  dimensions_name: str = 'dimensions',
                                  variables_name: str = 'variables',
                                  global_attributes_name: str = 'global_attributes',
-                                 field_names: List[str] = ['telegram_fields', 'var_attrs', 'standard_name'],
-                                 min_file_size: int = 0) -> Dict:
+                                 field_names: List[str] = ['telegram_fields', 'var_attrs', 'standard_name']) -> Dict:
     """
-    Creates a config file for QC by parsing the given dictionary.
+    Creates a config dict for QC by parsing the given dictionary.
 
     :param dict: the dictionary to parse
     :param dimension_names: name of the groups containing the dimensions
     :param variables_name: name of the groups containing the variables
     :param global_attributes_name: name of the groups containing the global attributes
     :param field_names: a list of names to follow to get the names of field variables
-    :param min_file_size: the minimal file size that the netCDF files should have
     :return: a dictionary which contains the structure for specifying QC checks
     """
+
     qc_dict = {
         'dimensions': {},
         'variables': {},
         'global_attributes': {},
-        'min_file_size': min_file_size
+        'file_size': {
+            'perform_check': 'TODO',
+            'lower_bound': 'TODO',
+            'upper_bound': 'TODO'
+        }
     }
 
     # Add the dimensions to the dimensions group of the dictionary
@@ -107,6 +106,19 @@ def create_config_dict_from_dict(input_dict: Dict,
                 'perform_check': 'TODO',
                 'lower_bound': 'TODO',
                 'upper_bound': 'TODO'
+            },
+            'are_there_enough_data_points_check': {
+                'perform_check': 'TODO',
+                'threshold': 'TODO',
+                'dimension': 'TODO'
+            },
+            'do_values_change_at_acceptable_rate_check': {
+                'perform_check': 'TODO',
+                'acceptable_difference': 'TODO'
+            },
+            'is_value_constant_for_too_long_check': {
+                'perform_check': 'TODO',
+                'threshold': 'TODO'
             }
         }
 
