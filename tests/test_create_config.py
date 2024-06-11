@@ -18,6 +18,22 @@ def test_create_dict_success():
         },
         'global_attributes': {
             'glattr1': 'value1'
+        },
+        'telegram_fields': {
+            '01': {
+                'dimensions': 'time',
+                'var_attrs': {
+                    'long_name': 'telegram field one',
+                    'standard_name': 'field_1'
+                }
+            },
+            '02': {
+                'dimensions': 'time',
+                'var_attrs': {
+                    'long_name': 'telegram field two',
+                    'standard_name': 'field_2'
+                }
+            }
         }
     }
 
@@ -44,6 +60,24 @@ def test_create_dict_success():
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 }
+            },
+            'field_1': {
+                'does_it_exist_check': 'TODO',
+                'is_it_empty_check': 'TODO',
+                'is_data_within_boundaries_check': {
+                    'perform_check': 'TODO',
+                    'lower_bound': 'TODO',
+                    'upper_bound': 'TODO'
+                }
+            },
+            'field_2': {
+                'does_it_exist_check': 'TODO',
+                'is_it_empty_check': 'TODO',
+                'is_data_within_boundaries_check': {
+                    'perform_check': 'TODO',
+                    'lower_bound': 'TODO',
+                    'upper_bound': 'TODO'
+                }
             }
         },
         'global_attributes': {
@@ -55,8 +89,9 @@ def test_create_dict_success():
         'min_file_size': 0
     }
 
+    print(expected_dict['variables'])
+
     qc_dict = create_config_dict_from_dict(input_dict=test_dict)
 
-    print(qc_dict)
 
     assert qc_dict == expected_dict

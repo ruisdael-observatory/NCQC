@@ -35,6 +35,7 @@ def create_config_dict_from_dict(input_dict: Dict,
                                  dimensions_names: str = 'dimensions',
                                  variables_names: str = 'variables',
                                  global_attributes_names: str = 'global_attributes',
+                                 telegram_names: str = 'telegram_fields',
                                  min_file_size: int = 0) -> Dict:
     """
     Creates a config file for QC by parsing the given dictionary.
@@ -59,8 +60,14 @@ def create_config_dict_from_dict(input_dict: Dict,
     if variables_names in list(input_dict.keys()):
         qc_dict['variables'].update(input_dict[variables_names])
 
+    if telegram_names in list(input_dict.keys()):
+        for field in input_dict[telegram_names]:
+            field_name = input_dict[telegram_names][field]['var_attrs']['standard_name']
+            qc_dict['variables'].update({field_name: {}})
+
     if global_attributes_names in list(input_dict.keys()):
         qc_dict['global_attributes'].update(input_dict[global_attributes_names])
+
 
     for dim in qc_dict['dimensions']:
         qc_dict['dimensions'][dim] = {
@@ -77,11 +84,15 @@ def create_config_dict_from_dict(input_dict: Dict,
                 'upper_bound': 'TODO'
             }
         }
+        
+    print(qc_dict['variables'])
 
     for attr in qc_dict['global_attributes']:
         qc_dict['global_attributes'][attr] = {
             'does_it_exist_check': 'TODO',
             'is_it_empty_check': 'TODO'
         }
+
+    
 
     return qc_dict
