@@ -326,6 +326,31 @@ class QualityControl:
 
         return self
 
+    def file_size_check(self):
+        """
+        Method to perform file size checks on the loaded netCDF file
+        """
+        pass
+
+    def data_points_amount_check(self):
+        """
+        Method to perform amount of data points for each variable check. Method
+        checks if the amount of data points is above a given threshold
+        """
+        pass
+
+    def values_change_rate_check(self):
+        """
+        Method checks if values in variables data change at an acceptable rate
+        """
+        pass
+
+    def constant_values_check(self):
+        """
+        Method checks if values in variables data are constant for a suspicious amount of time
+        """
+        pass
+
 def yaml2dict(path: Path) -> dict:
     """
     This function reads a yaml file and returns a dictionary with all the field and values.
