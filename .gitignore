@@ -3,6 +3,5 @@ venv/*
 build/*
 dist/*
 netcdfqc.egg-info/*
-netcdfqc/__pycache__
-tests/__pycache__
+__pycache__
 .idea

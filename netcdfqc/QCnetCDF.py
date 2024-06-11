@@ -4,10 +4,11 @@ Module dedicated to the main logic of the netCDF quality control library
 Functions:
 - yaml2dict: reads a yaml file and returns a dictionary with all the field and values
 """
-from pathlib import Path
 
+from pathlib import Path
 import netCDF4
 import yaml
+import numpy as np
 
 from netcdfqc.log import LoggerQC
 
@@ -233,6 +234,95 @@ class QualityControl:
             self.logger.add_info(msg=f'{exist}/{checked} checked global attributes exist')
         else:
             self.logger.add_info(msg='no global attributes were checked')
+
+        return self
+
+    def emptiness_check(self): # pylint: disable=too-many-branches, disable=too-many-statements
+        """
+        Method to perform emptiness checks on variables and global attributes.
+
+        - Logs an error if there is no netCDF loaded
+        - Logs errors for each variable and global attribute which should be fully populated but is not.
+        - Logs info for each category how many of the checked fields are fully populated.
+
+        :return: self to make chaining calls possible
+        """
+        # Log an error if there is no netCDF loaded
+        if self.nc is None:
+            self.logger.add_error("emptiness check error: no nc file loaded")
+            return self
+
+        # Variables and global attributes with 'is_it_empty_check' True in the config file
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+            if properties['is_it_empty_check'] is True]
+        attrs_to_check = [attr for attr, properties in self.qc_checks_gl_attrs.items()
+            if properties['is_it_empty_check'] is True]
+
+        checked_vars = 0
+        non_empty_vars = 0
+
+        # Loop over all variables in the config file
+        for var in vars_to_check:
+            checked_vars += 1
+            var_data = self.nc[var][:]
+
+            checked_vals = 0
+            empty_vals = 0
+            nan_vals = 0
+
+            # Check scalar values (e.g., longitude which just has one value assigned)
+            if var_data.ndim == 0:
+                val = var_data.item()
+                if not val:
+                    self.logger.add_error(error=f'scalar variable "{var}" is empty')
+                elif np.isnan(val):
+                    self.logger.add_error(error=f'scalar variable "{var}" is NaN')
+                else:
+                    non_empty_vars += 1
+            # Loop over all data points for a variable
+            else:
+                for val in var_data:
+                    checked_vals += 1
+
+                    if not val:
+                        empty_vals += 1
+                    elif np.isnan(val):
+                        nan_vals += 1
+
+                # Log error if there are empty values
+                if empty_vals > 0:
+                    self.logger.add_error(error=f'variable "{var}" has {empty_vals}/{checked_vals} empty data points')
+
+                # Log error if there are NaN values
+                if nan_vals > 0:
+                    self.logger.add_error(error=f'variable "{var}" has {nan_vals}/{checked_vals} NaN data points')
+
+                if empty_vals == 0 and nan_vals == 0:
+                    non_empty_vars += 1
+
+        # Log info about how many of the checked variables exist
+        if checked_vars != 0:
+            self.logger.add_info(msg=f'{non_empty_vars}/{checked_vars} checked variables are fully populated')
+        else:
+            self.logger.add_info(msg='no variables were checked for emptiness')
+
+        checked_attrs = 0
+        non_empty_attrs = 0
+
+        # Loop over all global attributes in the config file, log error if it should exist but does not
+        for attr in attrs_to_check:
+            checked_attrs += 1
+            if not self.nc.getncattr(attr):
+                self.logger.add_error(error=f'global attribute "{attr}" is empty')
+            else:
+                non_empty_attrs += 1
+
+        # Log info about how many of the checked global attributes have values assigned
+        if checked_attrs != 0:
+            self.logger.add_info(
+                msg=f'{non_empty_attrs}/{checked_attrs} checked global attributes have values assigned')
+        else:
+            self.logger.add_info(msg='no global attributes were checked for emptiness')
 
         return self
 
