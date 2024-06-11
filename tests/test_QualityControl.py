@@ -20,6 +20,7 @@ class TestQualityControl(unittest.TestCase):
     Functions:
     - test_add_qc_checks_conf: Test for adding the required checks by using a config file
     - test_add_qc_checks_dict: Test for adding the required checks by using a dictionary
+    - test_add_qc_checks_dict_errors: Test for adding qc checks with an empty dictionary
     - test_replace_qc_checks_conf: Test for replacing the required checks by using a config file
     - test_replace_qc_checks_dict: Test for replacing the required checks by using a dictionary
     - test_load_netcdf: Test for using load_netcdf to set the netCDF attribute
@@ -170,6 +171,9 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_check_file_size == expected_result['file size']
 
     def test_add_qc_checks_dict_errors(self):
+        """
+        Test for adding qc checks with an empty dictionary
+        """
         qc_obj = QualityControl()
         qc_obj.add_qc_checks_dict({})
         assert qc_obj.logger.errors == ['missing dimensions checks in provided config_file/dict'
@@ -293,7 +297,7 @@ def test_yaml2dict():
     """
     res = yaml2dict(Path(__file__).parent.parent / 'sample_data/example_config.yaml')
     assert res == {
-        'dimensions': {'example_dimension': {'does_it_exist': True}},
+        'dimensions': {'example_dimension': {'does_it_exist_check': True}},
         'variables': {
             'example_variable': {
                 'does_it_exist_check': True,
@@ -301,7 +305,13 @@ def test_yaml2dict():
                     'perform_check': True,
                     'lower_bound': 0,
                     'upper_bound': 1
-                }
+                },
+                'are_there_enough_data_points_check': {'perform_check': True, 'threshold': 100},
+                'do_values_change_at_acceptable_rate_check': {
+                    'perform_check': True,
+                    'acceptable_difference': 1
+                },
+                'is_value_constant_for_too_long_check': {'perform_check': True, 'threshold': 10}
             }
         },
         'global attributes': {'example_gl_attr': {

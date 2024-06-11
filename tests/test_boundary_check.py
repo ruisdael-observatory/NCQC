@@ -11,12 +11,8 @@ checked is not in the loaded netCDF file
 """
 
 import os
-import unittest
 from pathlib import Path
-from unittest.mock import patch
 import pytest
-
-import netCDF4
 
 from netcdfqc.QCnetCDF import QualityControl
 
@@ -46,6 +42,7 @@ boundary_check_test_dict = {
     }
 }
 
+
 def test_boundary_check_no_nc():
     """
     Test for the boundaries check when no netCDF file is loaded
@@ -56,6 +53,7 @@ def test_boundary_check_no_nc():
     assert not qc_obj.logger.info
     assert qc_obj.logger.errors == ['boundary check error: no nc file loaded']
     assert not qc_obj.logger.warnings
+
 
 @pytest.mark.usefixtures("create_nc_boundary_check_success")
 def test_boundary_check_success():
@@ -78,6 +76,7 @@ def test_boundary_check_success():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_boundary_check_fail")
 def test_boundary_check_fail():
@@ -124,6 +123,7 @@ def test_boundary_check_fail():
     if os.path.exists(nc_path):
         os.remove(nc_path)
 
+
 @pytest.mark.usefixtures("create_nc_boundary_check_success")
 def test_boundary_check_wrong_var_name():
     """
@@ -157,6 +157,7 @@ def test_boundary_check_wrong_var_name():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_boundary_check_success")
 def test_boundary_check_omit_a_var():

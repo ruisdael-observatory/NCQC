@@ -10,16 +10,13 @@ Functions:
 """
 
 import os
-import unittest
 from pathlib import Path
-from unittest.mock import patch
 import pytest
-
-import netCDF4
 
 from netcdfqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
+
 
 def test_emptiness_check_no_nc():
     """
@@ -31,6 +28,7 @@ def test_emptiness_check_no_nc():
     assert qc_obj.logger.errors == ['emptiness check error: no nc file loaded']
     assert not qc_obj.logger.warnings
     assert not qc_obj.logger.info
+
 
 @pytest.mark.usefixtures("create_nc_emptiness_check_full")
 def test_emptiness_check_full():
@@ -62,7 +60,7 @@ def test_emptiness_check_full():
     expected_warnings = []
 
     expected_info = ['3/3 checked variables are fully populated',
-                    '2/2 checked global attributes have values assigned']
+                     '2/2 checked global attributes have values assigned']
 
     print(qc_obj.logger.errors)
 
@@ -72,6 +70,7 @@ def test_emptiness_check_full():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_emptiness_check_mixed")
 def test_emptiness_check_mixed():
@@ -100,15 +99,15 @@ def test_emptiness_check_mixed():
     qc_obj.emptiness_check()
 
     expected_errors = ['variable "wind_speed" has 50/100 empty data points',
-                        'variable "wind_direction" has 50/100 NaN data points',
-                        'scalar variable "longitude" is empty',
-                        'scalar variable "latitude" is NaN',
-                        'global attribute "contributors" is empty']
+                       'variable "wind_direction" has 50/100 NaN data points',
+                       'scalar variable "longitude" is empty',
+                       'scalar variable "latitude" is NaN',
+                       'global attribute "contributors" is empty']
 
     expected_warnings = []
 
     expected_info = ['2/6 checked variables are fully populated',
-                    '1/2 checked global attributes have values assigned']
+                     '1/2 checked global attributes have values assigned']
 
     print(qc_obj.logger.errors)
 
@@ -118,6 +117,7 @@ def test_emptiness_check_mixed():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_emptiness_check_empty")
 def test_emptiness_check_all_empty():
@@ -143,15 +143,15 @@ def test_emptiness_check_all_empty():
     qc_obj.emptiness_check()
 
     expected_errors = ['variable "temperature" has 100/100 empty data points',
-                        'variable "wind_speed" has 100/100 empty data points',
-                        'variable "wind_direction" has 100/100 NaN data points',
-                        'global attribute "title" is empty',
-                        'global attribute "contributors" is empty']
+                       'variable "wind_speed" has 100/100 empty data points',
+                       'variable "wind_direction" has 100/100 NaN data points',
+                       'global attribute "title" is empty',
+                       'global attribute "contributors" is empty']
 
     expected_warnings = []
 
     expected_info = ['0/3 checked variables are fully populated',
-                    '0/2 checked global attributes have values assigned']
+                     '0/2 checked global attributes have values assigned']
 
     print(qc_obj.logger.errors)
 
@@ -161,6 +161,7 @@ def test_emptiness_check_all_empty():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_emptiness_check_full")
 def test_emptiness_check_all_false():
@@ -186,7 +187,7 @@ def test_emptiness_check_all_false():
     expected_warnings = []
 
     expected_info = ['no variables were checked for emptiness',
-                        'no global attributes were checked for emptiness']
+                     'no global attributes were checked for emptiness']
 
     assert qc_obj.logger.errors == expected_errors
     assert qc_obj.logger.warnings == expected_warnings
