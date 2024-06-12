@@ -1,5 +1,5 @@
 """
-Module for testing the automatic creation of config files for specifying checks.
+Module for testing the automatic creation of config dicts for specifying checks.
 
 Functions:
 - test_create_from_yaml: Test for create_config_dict_from_yaml with default arguments and a mocked yaml2dict function.
