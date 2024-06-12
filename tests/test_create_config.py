@@ -6,7 +6,8 @@ Functions:
 - test_create_from_dict_with_arguments: Test for create_config_dict_from_dict with custom arguments.
 - test_create_from_dict_fields_list_one_item: Test for create_config_dict_from_dict
     with only one string in the field_name list argument.
-- test_create_from_dict_empty: Test for create_config_dict_from_dict with an empty input dictionary.
+- test_create_from_dict_empty: Test for create_config_dict_from_dict with an empty input dictionary
+    and empty field_names list argument.
 """
 
 from pathlib import Path
@@ -390,7 +391,7 @@ def test_create_from_dict_field_list_one_item():
 
 def test_create_from_dict_empty():
     """
-    Test for create_config_dict_from_dict with an empty input dictionary.
+    Test for create_config_dict_from_dict with an empty input dictionary and empty field_names list argument.
     """
     test_dict = {}
 
@@ -405,6 +406,6 @@ def test_create_from_dict_empty():
         }
     }
 
-    qc_dict = create_config_dict_from_dict(input_dict=test_dict)
+    qc_dict = create_config_dict_from_dict(input_dict=test_dict, field_names=[])
 
     assert qc_dict == expected_dict

@@ -69,7 +69,7 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
         qc_dict['variables'].update(input_dict[variables_name])
 
     # Add the (telegram_)fields to the variables group of the dictionary
-    if field_names[0] in list(input_dict.keys()):
+    if len(field_names) > 0 and field_names[0] in list(input_dict.keys()):
         # If there is just one item in the list, add all fields within the group which that string defines
         if len(field_names) == 1:
             qc_dict['variables'].update(input_dict[field_names[0]])
@@ -83,7 +83,6 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
                 while i < len(field_names):
                     field_name = field_name[field_names[i]]
                     i += 1
-                    print(len(dimensions_name))
 
                 qc_dict['variables'].update({field_name: {}})
 
