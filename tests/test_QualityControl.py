@@ -313,8 +313,8 @@ def test_yaml2dict():
                 },
                 'is_value_constant_for_too_long_check': {
                     'perform_check': True,
-                    'threshold': 10,
-                    'over_which_dimensions': [0, 1, 2]
+                    'over_which_dimensions': [0, 1, 2],
+                    'threshold_for_each_dimension': [10, 10, 10]
                 }
             }
         },
