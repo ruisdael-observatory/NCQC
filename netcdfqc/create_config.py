@@ -16,7 +16,7 @@ def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default
                                  dimensions_name: str = 'dimensions',
                                  variables_name: str = 'variables',
                                  global_attributes_name: str = 'global_attributes',
-                                 field_names: List[str] = ['telegram_fields', 'var_attrs', 'standard_name']):
+                                 other_variable_names: List[List[str]] = [['telegram_fields']]):
     """
     Parses the given yaml file to create a dictionary which can be used for QC
 
@@ -31,13 +31,13 @@ def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default
                                         dimensions_name=dimensions_name,
                                         variables_name=variables_name,
                                         global_attributes_name=global_attributes_name,
-                                        field_names=field_names)
+                                        other_variable_names=other_variable_names)
 
 def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-default-value
                                  dimensions_name: str = 'dimensions',
                                  variables_name: str = 'variables',
                                  global_attributes_name: str = 'global_attributes',
-                                 field_names: List[str] = ['telegram_fields', 'var_attrs', 'standard_name']) -> Dict:
+                                 other_variable_names: List[List[str]] = [['telegram_fields']]) -> Dict:
     """
     Creates a config dict for QC by parsing the given dictionary.
 
@@ -45,7 +45,7 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
     :param dimension_names: name of the groups containing the dimensions
     :param variables_name: name of the groups containing the variables
     :param global_attributes_name: name of the groups containing the global attributes
-    :param field_names: a list of names to follow to get the names of field variables
+    :param other_variable_names: a list of names to follow to get the names of field variables
     :return: a dictionary which contains the structure for specifying QC checks
     """
 
@@ -68,23 +68,25 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
     if variables_name in list(input_dict.keys()):
         qc_dict['variables'].update(input_dict[variables_name])
 
-    # Add the (telegram_)fields to the variables group of the dictionary
-    if len(field_names) > 0 and field_names[0] in list(input_dict.keys()):
-        # If there is just one item in the list, add all fields within the group which that string defines
-        if len(field_names) == 1:
-            qc_dict['variables'].update(input_dict[field_names[0]])
-        # Individually go through the fields of that group
-        else:
-            for field in input_dict[field_names[0]]:
-                field_name = input_dict[field_names[0]][field]
+    # Loop over all specified other variables names
+    for other_variable in other_variable_names:
+        # Add the variable to the variables group of the dictionary
+        if len(other_variable) > 0 and other_variable[0] in list(input_dict.keys()):
+            # If there is just one item in the list, add all fields within the group which that string defines
+            if len(other_variable) == 1:
+                qc_dict['variables'].update(input_dict[other_variable[0]])
+            # Individually go through the fields of that group
+            else:
+                for field in input_dict[other_variable[0]]:
+                    field_name = input_dict[other_variable[0]][field]
 
-                i = 1
-                # Use the remaining strings in the list as a "path" to get to the name
-                while i < len(field_names):
-                    field_name = field_name[field_names[i]]
-                    i += 1
+                    i = 1
+                    # Use the remaining strings in the list as a "path" to get to the name
+                    while i < len(other_variable):
+                        field_name = field_name[other_variable[i]]
+                        i += 1
 
-                qc_dict['variables'].update({field_name: {}})
+                    qc_dict['variables'].update({field_name: {}})
 
     # Add the global attributes to the global attributes group of the dictionary
     if global_attributes_name in list(input_dict.keys()):

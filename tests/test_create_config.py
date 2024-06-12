@@ -4,10 +4,11 @@ Module for testing the automatic creation of config dicts for specifying checks.
 Functions:
 - test_create_from_yaml: Test for create_config_dict_from_yaml with default arguments and a mocked yaml2dict function.
 - test_create_from_dict_with_arguments: Test for create_config_dict_from_dict with custom arguments.
-- test_create_from_dict_fields_list_one_item: Test for create_config_dict_from_dict
-    with only one string in the field_name list argument.
-- test_create_from_dict_empty: Test for create_config_dict_from_dict with an empty input dictionary
-    and empty field_names list argument.
+- test_create_from_dict_multiple_other_variables: 
+- test_create_from_dict_one_string_other_variables: Test for create_config_dict_from_dict
+    with only one string in the other_variables_names list argument.
+- test_create_from_dict_empty_other_variables: Test for create_config_dict_from_dict
+    with an empty input dictionary and empty other_variable_names list argument.
 """
 
 from pathlib import Path
@@ -32,22 +33,6 @@ def test_create_from_yaml(mock_yaml2dict):
         },
         'global_attributes': {
             'glattr1': 'value1'
-        },
-        'telegram_fields': {
-            '01': {
-                'dimensions': 'time',
-                'var_attrs': {
-                    'long_name': 'telegram field one',
-                    'standard_name': 'field_1'
-                }
-            },
-            '02': {
-                'dimensions': 'time',
-                'var_attrs': {
-                    'long_name': 'telegram field two',
-                    'standard_name': 'field_2'
-                }
-            }
         }
     }
 
@@ -100,50 +85,6 @@ def test_create_from_yaml(mock_yaml2dict):
                     'perform_check': 'TODO',
                     'threshold': 'TODO'
                 }
-            },
-            'field_1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
-                },
-                'are_there_enough_data_points_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
-                },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
-                },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
-                }
-            },
-            'field_2': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
-                },
-                'are_there_enough_data_points_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
-                },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
-                },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
-                }
             }
         },
         'global_attributes': {
@@ -159,7 +100,7 @@ def test_create_from_yaml(mock_yaml2dict):
         }
     }
 
-    qc_dict = create_config_dict_from_yaml(path=Path('path'))
+    qc_dict = create_config_dict_from_yaml(path=Path('path'), )
 
     assert qc_dict == expected_dict
 
@@ -314,13 +255,13 @@ def test_create_from_dict_with_arguments():
                                            dimensions_name='dims',
                                            variables_name='vars',
                                            global_attributes_name='global_attrs',
-                                           field_names=['fields', 'attrs', 'short_name'])
+                                           other_variable_names=[['fields', 'attrs', 'short_name']])
 
     assert qc_dict == expected_dict
 
-def test_create_from_dict_field_list_one_item():
+def test_create_from_dict_multiple_other_variables():
     """
-    Test for create_config_dict_from_dict with only one string in the field_name list argument.
+    Test for create_config_dict_from_dict with multiple other variable names specified.
     """
     test_dict = {
         'fields': {
@@ -385,13 +326,85 @@ def test_create_from_dict_field_list_one_item():
         }
     }
 
-    qc_dict = create_config_dict_from_dict(input_dict=test_dict, field_names=["fields"])
+    qc_dict = create_config_dict_from_dict(input_dict=test_dict, variables_name="",
+                                           other_variable_names=[["variables"], ["fields"]])
 
     assert qc_dict == expected_dict
 
-def test_create_from_dict_empty():
+def test_create_from_dict_one_string_other_variables():
     """
-    Test for create_config_dict_from_dict with an empty input dictionary and empty field_names list argument.
+    Test for create_config_dict_from_dict with only one string in the other_variables_names list argument.
+    """
+    test_dict = {
+        'fields': {
+            'field1': 'value1',
+            'field2': 'value2'
+        }
+    }
+
+    expected_dict = {
+        'dimensions': {},
+        'variables': {
+            'field1': {
+                'does_it_exist_check': 'TODO',
+                'is_it_empty_check': 'TODO',
+                'is_data_within_boundaries_check': {
+                    'perform_check': 'TODO',
+                    'lower_bound': 'TODO',
+                    'upper_bound': 'TODO'
+                },
+                'are_there_enough_data_points_check': {
+                    'perform_check': 'TODO',
+                    'threshold': 'TODO',
+                    'dimension': 'TODO'
+                },
+                'do_values_change_at_acceptable_rate_check': {
+                    'perform_check': 'TODO',
+                    'acceptable_difference': 'TODO'
+                },
+                'is_value_constant_for_too_long_check': {
+                    'perform_check': 'TODO',
+                    'threshold': 'TODO'
+                }
+            },
+            'field2': {
+                'does_it_exist_check': 'TODO',
+                'is_it_empty_check': 'TODO',
+                'is_data_within_boundaries_check': {
+                    'perform_check': 'TODO',
+                    'lower_bound': 'TODO',
+                    'upper_bound': 'TODO'
+                },
+                'are_there_enough_data_points_check': {
+                    'perform_check': 'TODO',
+                    'threshold': 'TODO',
+                    'dimension': 'TODO'
+                },
+                'do_values_change_at_acceptable_rate_check': {
+                    'perform_check': 'TODO',
+                    'acceptable_difference': 'TODO'
+                },
+                'is_value_constant_for_too_long_check': {
+                    'perform_check': 'TODO',
+                    'threshold': 'TODO'
+                }
+            }
+        },
+        'global_attributes': {},
+        'file_size': {
+            'perform_check': 'TODO',
+            'lower_bound': 'TODO',
+            'upper_bound': 'TODO'
+        }
+    }
+
+    qc_dict = create_config_dict_from_dict(input_dict=test_dict, other_variable_names=[["fields"]])
+
+    assert qc_dict == expected_dict
+
+def test_create_from_dict_empty_other_variables():
+    """
+    Test for create_config_dict_from_dict with an empty input dictionary and empty other_variable_names list argument.
     """
     test_dict = {}
 
@@ -406,6 +419,6 @@ def test_create_from_dict_empty():
         }
     }
 
-    qc_dict = create_config_dict_from_dict(input_dict=test_dict, field_names=[])
+    qc_dict = create_config_dict_from_dict(input_dict=test_dict, other_variable_names=[[]])
 
     assert qc_dict == expected_dict
