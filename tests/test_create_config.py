@@ -8,7 +8,7 @@ Functions:
 - test_create_from_dict_one_string_other_variables: Test for create_config_dict_from_dict
     with only one string in the other_variables_names list argument.
 - test_create_from_dict_empty_other_variables: Test for create_config_dict_from_dict
-    with an empty input dictionary and empty other_variable_names list argument.
+    with an empty input dictionary and empty other_variable_name_paths list argument.
 """
 
 from pathlib import Path
@@ -255,7 +255,7 @@ def test_create_from_dict_with_arguments():
                                            dimensions_name='dims',
                                            variables_name='vars',
                                            global_attributes_name='global_attrs',
-                                           other_variable_names=[['fields', 'attrs', 'short_name']])
+                                           other_variable_name_paths=[['fields', 'attrs', 'short_name']])
 
     assert qc_dict == expected_dict
 
@@ -327,7 +327,7 @@ def test_create_from_dict_multiple_other_variables():
     }
 
     qc_dict = create_config_dict_from_dict(input_dict=test_dict, variables_name="",
-                                           other_variable_names=[["variables"], ["fields"]])
+                                           other_variable_name_paths=[["variables"], ["fields"]])
 
     assert qc_dict == expected_dict
 
@@ -398,13 +398,13 @@ def test_create_from_dict_one_string_other_variables():
         }
     }
 
-    qc_dict = create_config_dict_from_dict(input_dict=test_dict, other_variable_names=[["fields"]])
+    qc_dict = create_config_dict_from_dict(input_dict=test_dict, other_variable_name_paths=[["fields"]])
 
     assert qc_dict == expected_dict
 
 def test_create_from_dict_empty_other_variables():
     """
-    Test for create_config_dict_from_dict with an empty input dictionary and empty other_variable_names list argument.
+    Test for create_config_dict_from_dict with an empty input dictionary and empty other_variable_name_paths list argument.
     """
     test_dict = {}
 
@@ -419,6 +419,6 @@ def test_create_from_dict_empty_other_variables():
         }
     }
 
-    qc_dict = create_config_dict_from_dict(input_dict=test_dict, other_variable_names=[[]])
+    qc_dict = create_config_dict_from_dict(input_dict=test_dict, other_variable_name_paths=[[]])
 
     assert qc_dict == expected_dict

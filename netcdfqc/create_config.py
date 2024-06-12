@@ -16,7 +16,7 @@ def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default
                                  dimensions_name: str = 'dimensions',
                                  variables_name: str = 'variables',
                                  global_attributes_name: str = 'global_attributes',
-                                 other_variable_names: List[List[str]] = [['telegram_fields']]):
+                                 other_variable_name_paths: List[List[str]] = [['telegram_fields']]):
     """
     Parses the given yaml file to create a dictionary which can be used for QC
 
@@ -31,13 +31,13 @@ def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default
                                         dimensions_name=dimensions_name,
                                         variables_name=variables_name,
                                         global_attributes_name=global_attributes_name,
-                                        other_variable_names=other_variable_names)
+                                        other_variable_name_paths=other_variable_name_paths)
 
 def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-default-value
                                  dimensions_name: str = 'dimensions',
                                  variables_name: str = 'variables',
                                  global_attributes_name: str = 'global_attributes',
-                                 other_variable_names: List[List[str]] = [['telegram_fields']]) -> Dict:
+                                 other_variable_name_paths: List[List[str]] = [['telegram_fields']]) -> Dict:
     """
     Creates a config dict for QC by parsing the given dictionary.
 
@@ -45,7 +45,7 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
     :param dimension_names: name of the groups containing the dimensions
     :param variables_name: name of the groups containing the variables
     :param global_attributes_name: name of the groups containing the global attributes
-    :param other_variable_names: a list of names to follow to get the names of field variables
+    :param other_variable_name_paths: a list of names to follow to get the names of field variables
     :return: a dictionary which contains the structure for specifying QC checks
     """
 
@@ -69,21 +69,21 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
         qc_dict['variables'].update(input_dict[variables_name])
 
     # Loop over all specified other variables names
-    for other_variable in other_variable_names:
+    for variable_name_path in other_variable_name_paths:
         # Add the variable to the variables group of the dictionary
-        if len(other_variable) > 0 and other_variable[0] in list(input_dict.keys()):
+        if len(variable_name_path) > 0 and variable_name_path[0] in list(input_dict.keys()):
             # If there is just one item in the list, add all fields within the group which that string defines
-            if len(other_variable) == 1:
-                qc_dict['variables'].update(input_dict[other_variable[0]])
+            if len(variable_name_path) == 1:
+                qc_dict['variables'].update(input_dict[variable_name_path[0]])
             # Individually go through the fields of that group
             else:
-                for field in input_dict[other_variable[0]]:
-                    field_name = input_dict[other_variable[0]][field]
+                for field in input_dict[variable_name_path[0]]:
+                    field_name = input_dict[variable_name_path[0]][field]
 
                     i = 1
                     # Use the remaining strings in the list as a "path" to get to the name
-                    while i < len(other_variable):
-                        field_name = field_name[other_variable[i]]
+                    while i < len(variable_name_path):
+                        field_name = field_name[variable_name_path[i]]
                         i += 1
 
                     qc_dict['variables'].update({field_name: {}})
