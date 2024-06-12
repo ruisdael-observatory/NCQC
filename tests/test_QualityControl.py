@@ -311,7 +311,11 @@ def test_yaml2dict():
                     'perform_check': True,
                     'acceptable_difference': 1
                 },
-                'is_value_constant_for_too_long_check': {'perform_check': True, 'threshold': 10}
+                'is_value_constant_for_too_long_check': {
+                    'perform_check': True,
+                    'threshold': 10,
+                    'over_which_dimensions': [0, 1, 2]
+                }
             }
         },
         'global attributes': {'example_gl_attr': {
