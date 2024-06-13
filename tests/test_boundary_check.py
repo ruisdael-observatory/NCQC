@@ -11,12 +11,8 @@ checked is not in the loaded netCDF file
 """
 
 import os
-import unittest
 from pathlib import Path
-from unittest.mock import patch
 import pytest
-
-import netCDF4
 
 from netcdfqc.QCnetCDF import QualityControl
 
@@ -38,8 +34,14 @@ boundary_check_test_dict = {
     },
     'global attributes': {
         'existence': True, 'emptiness': True
+    },
+    'file size': {
+        'perform_check': True,
+        'lower_bound': 0,
+        'upper_bound': 1
     }
 }
+
 
 def test_boundary_check_no_nc():
     """
@@ -51,6 +53,7 @@ def test_boundary_check_no_nc():
     assert not qc_obj.logger.info
     assert qc_obj.logger.errors == ['boundary check error: no nc file loaded']
     assert not qc_obj.logger.warnings
+
 
 @pytest.mark.usefixtures("create_nc_boundary_check_success")
 def test_boundary_check_success():
@@ -73,6 +76,7 @@ def test_boundary_check_success():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_boundary_check_fail")
 def test_boundary_check_fail():
@@ -100,6 +104,11 @@ def test_boundary_check_fail():
         },
         'global attributes': {
             'existence': True, 'emptiness': True
+        },
+        'file size': {
+            'perform_check': True,
+            'lower_bound': 0,
+            'upper_bound': 1
         }
     })
 
@@ -113,6 +122,7 @@ def test_boundary_check_fail():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_boundary_check_success")
 def test_boundary_check_wrong_var_name():
@@ -134,7 +144,8 @@ def test_boundary_check_wrong_var_name():
                 'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1}
             }
         },
-        'global attributes': {}
+        'global attributes': {},
+        'file size': {}
     })
 
     qc_obj.boundary_check()
@@ -146,6 +157,7 @@ def test_boundary_check_wrong_var_name():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_boundary_check_success")
 def test_boundary_check_omit_a_var():
@@ -173,6 +185,11 @@ def test_boundary_check_omit_a_var():
         },
         'global attributes': {
             'existence': True, 'emptiness': True
+        },
+        'file size': {
+            'perform_check': True,
+            'lower_bound': 0,
+            'upper_bound': 1
         }
     }
     qc_obj.add_qc_checks_dict(boundary_check_test_dict_omit_var)

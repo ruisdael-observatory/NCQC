@@ -1,6 +1,6 @@
 dimensions:
   example_dimension:
-    does_it_exist: true
+    does_it_exist_check: true
 
 variables:
   example_variable:
@@ -9,8 +9,23 @@ variables:
       perform_check: true
       lower_bound: 0
       upper_bound: 1
+    are_there_enough_data_points_check:
+      perform_check: true
+      threshold: 100
+    do_values_change_at_acceptable_rate_check:
+      perform_check: true
+      acceptable_difference: 1
+    is_value_constant_for_too_long_check:
+      perform_check: true
+      over_which_dimensions: [0, 1, 2]
+      threshold_for_each_dimension: [10, 10, 10]
 
 global attributes:
   example_gl_attr:
     does_it_exist_check: true
     is_it_empty_check: true
+
+file size:
+  perform_check: true
+  lower_bound: 0
+  upper_bound: 1
