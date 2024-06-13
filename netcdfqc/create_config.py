@@ -2,6 +2,22 @@
 Module for creating the base for a config file that can be used for the QualityControl object
 by parsing other more general config files.
 
+The functions in this module can be used by specifying either the path to a .yml file or a dictionary
+and specifying the names of the groups containing the dimensions, variables and global attributes
+via dimensions_name, variables_name, and global_attributes_names.
+
+If there are multiple groups of variables stored in different ways, other_variable_name_paths can be used.
+This takes a list of lists of strings, each of which indicates the 'path' to the names of a variables.
+For example, with the below structure, ['telegram_fields'] would result in '01' getting added as a variable
+since that's the name of each field, but then making it ['telegram_fields']['var_attrs']['standard_name']
+would result in 'rain_intensity' getting added as a variable.
+
+telegram_fields:
+    '01':                 
+        var_attrs:
+            standard_name: 'rain_intensity'
+
+
 Functions:
 - create_config_dict_from_yaml: Parses the given config file to create a dictionary which can be used for QC
 - create_config_dict_from_dict: Parses the given dictionary to create a dictionary which can be used for QC
