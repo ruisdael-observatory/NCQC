@@ -60,6 +60,11 @@ boundary_check_property_based_test_dict = {
         },
         'global attributes': {
             'existence': True, 'emptiness': True
+        },
+        'file size': {
+            'perform_check': True,
+            'lower_bound': 0,
+            'upper_bound': 1
         }
     }
 
