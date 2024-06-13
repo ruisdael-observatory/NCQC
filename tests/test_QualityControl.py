@@ -315,7 +315,8 @@ def test_yaml2dict():
                     'perform_check': True,
                     'over_which_dimensions': [0, 1, 2],
                     'threshold_for_each_dimension': [10, 10, 10]
-                }
+                },
+                'expected_dimensions_check': ['time', 'velocity_classes']
             }
         },
         'global attributes': {'example_gl_attr': {
