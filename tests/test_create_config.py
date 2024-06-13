@@ -4,7 +4,8 @@ Module for testing the automatic creation of config dicts for specifying checks.
 Functions:
 - test_create_from_yaml: Test for create_config_dict_from_yaml with default arguments and a mocked yaml2dict function.
 - test_create_from_dict_with_arguments: Test for create_config_dict_from_dict with custom arguments.
-- test_create_from_dict_multiple_other_variables: 
+- test_create_from_dict_multiple_other_variables: Test for create_config_dict_from_dict
+    with multiple other variable names specified.
 - test_create_from_dict_one_string_other_variables: Test for create_config_dict_from_dict
     with only one string in the other_variables_names list argument.
 - test_create_from_dict_empty_other_variables: Test for create_config_dict_from_dict
@@ -135,11 +136,6 @@ def test_create_from_dict_with_arguments():
                     'short_name': 'field_2'
                 }
             }
-        },
-        'file_size': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
         }
     }
 
@@ -264,6 +260,10 @@ def test_create_from_dict_multiple_other_variables():
     Test for create_config_dict_from_dict with multiple other variable names specified.
     """
     test_dict = {
+        'vars': {
+            'var1': 'value1',
+            'var2': 'value2'
+        },
         'fields': {
             'field1': 'value1',
             'field2': 'value2'
@@ -273,6 +273,50 @@ def test_create_from_dict_multiple_other_variables():
     expected_dict = {
         'dimensions': {},
         'variables': {
+            'var1': {
+                'does_it_exist_check': 'TODO',
+                'is_it_empty_check': 'TODO',
+                'is_data_within_boundaries_check': {
+                    'perform_check': 'TODO',
+                    'lower_bound': 'TODO',
+                    'upper_bound': 'TODO'
+                },
+                'are_there_enough_data_points_check': {
+                    'perform_check': 'TODO',
+                    'threshold': 'TODO',
+                    'dimension': 'TODO'
+                },
+                'do_values_change_at_acceptable_rate_check': {
+                    'perform_check': 'TODO',
+                    'acceptable_difference': 'TODO'
+                },
+                'is_value_constant_for_too_long_check': {
+                    'perform_check': 'TODO',
+                    'threshold': 'TODO'
+                }
+            },
+            'var2': {
+                'does_it_exist_check': 'TODO',
+                'is_it_empty_check': 'TODO',
+                'is_data_within_boundaries_check': {
+                    'perform_check': 'TODO',
+                    'lower_bound': 'TODO',
+                    'upper_bound': 'TODO'
+                },
+                'are_there_enough_data_points_check': {
+                    'perform_check': 'TODO',
+                    'threshold': 'TODO',
+                    'dimension': 'TODO'
+                },
+                'do_values_change_at_acceptable_rate_check': {
+                    'perform_check': 'TODO',
+                    'acceptable_difference': 'TODO'
+                },
+                'is_value_constant_for_too_long_check': {
+                    'perform_check': 'TODO',
+                    'threshold': 'TODO'
+                }
+            },
             'field1': {
                 'does_it_exist_check': 'TODO',
                 'is_it_empty_check': 'TODO',
@@ -327,7 +371,7 @@ def test_create_from_dict_multiple_other_variables():
     }
 
     qc_dict = create_config_dict_from_dict(input_dict=test_dict, variables_name="",
-                                           other_variable_name_paths=[["variables"], ["fields"]])
+                                           other_variable_name_paths=[["vars"], ["fields"]])
 
     assert qc_dict == expected_dict
 
@@ -404,7 +448,8 @@ def test_create_from_dict_one_string_other_variables():
 
 def test_create_from_dict_empty_other_variables():
     """
-    Test for create_config_dict_from_dict with an empty input dictionary and empty other_variable_name_paths list argument.
+    Test for create_config_dict_from_dict with an empty input dictionary
+    and empty other_variable_name_paths list argument.
     """
     test_dict = {}
 
