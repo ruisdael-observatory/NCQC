@@ -1,14 +1,13 @@
 """
 Test module for the Quality Control object
+
+Functions:
+- test_yaml2dict: Test for the yaml2dict function
 """
 
-import os
 import unittest
 from pathlib import Path
 from unittest.mock import patch
-import pytest
-
-import netCDF4
 
 from netcdfqc.QCnetCDF import QualityControl, yaml2dict
 
@@ -21,6 +20,7 @@ class TestQualityControl(unittest.TestCase):
     Functions:
     - test_add_qc_checks_conf: Test for adding the required checks by using a config file
     - test_add_qc_checks_dict: Test for adding the required checks by using a dictionary
+    - test_add_qc_checks_dict_errors: Test for adding qc checks with an empty dictionary
     - test_replace_qc_checks_conf: Test for replacing the required checks by using a config file
     - test_replace_qc_checks_dict: Test for replacing the required checks by using a dictionary
     - test_load_netcdf: Test for using load_netcdf to set the netCDF attribute
@@ -59,6 +59,11 @@ class TestQualityControl(unittest.TestCase):
                     },
                     'global attributes': {
                         'existence': True, 'emptiness': True
+                    },
+                    'file size': {
+                        'perform_check': True,
+                        'lower_bound': 0,
+                        'upper_bound': 1
                     }
                 }
                 return new_checks_dict
@@ -83,6 +88,11 @@ class TestQualityControl(unittest.TestCase):
             },
             'global attributes': {
                 'existence': True, 'emptiness': True
+            },
+            'file size': {
+                'perform_check': True,
+                'lower_bound': 0,
+                'upper_bound': 1
             }
         }
 
@@ -90,6 +100,7 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_dims == expected_result['dimensions']
         assert qc_obj.qc_checks_vars == expected_result['variables']
         assert qc_obj.qc_checks_gl_attrs == expected_result['global attributes']
+        assert qc_obj.qc_check_file_size == expected_result['file size']
 
     def test_add_qc_checks_dict(self):
         """
@@ -119,6 +130,11 @@ class TestQualityControl(unittest.TestCase):
             },
             'global attributes': {
                 'existence': True, 'emptiness': True
+            },
+            'file size': {
+                'perform_check': True,
+                'lower_bound': 0,
+                'upper_bound': 1
             }
         }
 
@@ -139,6 +155,11 @@ class TestQualityControl(unittest.TestCase):
             },
             'global attributes': {
                 'existence': True, 'emptiness': True
+            },
+            'file size': {
+                'perform_check': True,
+                'lower_bound': 0,
+                'upper_bound': 1
             }
         }
 
@@ -147,13 +168,18 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_dims == expected_result['dimensions']
         assert qc_obj.qc_checks_vars == expected_result['variables']
         assert qc_obj.qc_checks_gl_attrs == expected_result['global attributes']
+        assert qc_obj.qc_check_file_size == expected_result['file size']
 
     def test_add_qc_checks_dict_errors(self):
+        """
+        Test for adding qc checks with an empty dictionary
+        """
         qc_obj = QualityControl()
         qc_obj.add_qc_checks_dict({})
         assert qc_obj.logger.errors == ['missing dimensions checks in provided config_file/dict'
             , 'missing variables checks in provided config_file/dict'
-            , 'missing global attributes checks in provided config_file/dict']
+            , 'missing global attributes checks in provided config_file/dict'
+            , 'missing file size check in provided config_file/dict']
 
     @patch('netcdfqc.QCnetCDF.yaml2dict')
     def test_replace_qc_checks_conf(self, mock_yaml2dict):
@@ -172,6 +198,13 @@ class TestQualityControl(unittest.TestCase):
             }
         }
         qc_obj.qc_checks_gl_attrs = {'existence': True, 'emptiness': True}
+        qc_obj.qc_check_file_size = {
+            'file size': {
+                'perform_check': True,
+                'lower_bound': 0,
+                'upper_bound': 1
+            }
+        }
 
         new_checks_dict = {
             'dimensions': {
@@ -185,6 +218,11 @@ class TestQualityControl(unittest.TestCase):
             },
             'global attributes': {
                 'existence': True, 'emptiness': True
+            },
+            'file size': {
+                'perform_check': False,
+                'lower_bound': 1,
+                'upper_bound': 2
             }
         }
 
@@ -199,6 +237,7 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_dims == new_checks_dict['dimensions']
         assert qc_obj.qc_checks_vars == new_checks_dict['variables']
         assert qc_obj.qc_checks_gl_attrs == new_checks_dict['global attributes']
+        assert qc_obj.qc_check_file_size == new_checks_dict['file size']
 
     def test_replace_qc_checks_dict(self):
         """
@@ -227,6 +266,11 @@ class TestQualityControl(unittest.TestCase):
             },
             'global attributes': {
                 'existence': True, 'emptiness': True
+            },
+            'file size': {
+                'perform_check': True,
+                'lower_bound': 0,
+                'upper_bound': 1
             }
         }
 
@@ -234,6 +278,7 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_dims == new_checks_dict['dimensions']
         assert qc_obj.qc_checks_vars == new_checks_dict['variables']
         assert qc_obj.qc_checks_gl_attrs == new_checks_dict['global attributes']
+        assert qc_obj.qc_check_file_size == new_checks_dict['file size']
 
     @patch('netcdfqc.QCnetCDF.netCDF4.Dataset')
     def test_load_netcdf(self, mock_dataset):
@@ -247,9 +292,12 @@ class TestQualityControl(unittest.TestCase):
 
 
 def test_yaml2dict():
+    """
+    Test for the yaml2dict function
+    """
     res = yaml2dict(Path(__file__).parent.parent / 'sample_data/example_config.yaml')
     assert res == {
-        'dimensions': {'example_dimension': {'does_it_exist': True}},
+        'dimensions': {'example_dimension': {'does_it_exist_check': True}},
         'variables': {
             'example_variable': {
                 'does_it_exist_check': True,
@@ -257,11 +305,26 @@ def test_yaml2dict():
                     'perform_check': True,
                     'lower_bound': 0,
                     'upper_bound': 1
+                },
+                'are_there_enough_data_points_check': {'perform_check': True, 'threshold': 100},
+                'do_values_change_at_acceptable_rate_check': {
+                    'perform_check': True,
+                    'acceptable_difference': 1
+                },
+                'is_value_constant_for_too_long_check': {
+                    'perform_check': True,
+                    'over_which_dimensions': [0, 1, 2],
+                    'threshold_for_each_dimension': [10, 10, 10]
                 }
             }
         },
         'global attributes': {'example_gl_attr': {
             'does_it_exist_check': True,
             'is_it_empty_check': True
-        }}
+        }},
+        'file size': {
+            'perform_check': True,
+            'lower_bound': 0,
+            'upper_bound': 1
+        }
     }

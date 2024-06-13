@@ -10,16 +10,13 @@ Functions:
 """
 
 import os
-import unittest
 from pathlib import Path
-from unittest.mock import patch
 import pytest
-
-import netCDF4
 
 from netcdfqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
+
 
 def test_existence_check_no_nc():
     """
@@ -31,6 +28,7 @@ def test_existence_check_no_nc():
     assert qc_obj.logger.errors == ['existence check error: no nc file loaded']
     assert not qc_obj.logger.warnings
     assert not qc_obj.logger.info
+
 
 @pytest.mark.usefixtures("create_nc_existence_check")
 def test_existence_check_all_exist():
@@ -66,8 +64,8 @@ def test_existence_check_all_exist():
     expected_warnings = []
 
     expected_info = ['2/2 checked dimensions exist',
-                        '3/3 checked variables exist',
-                        '2/2 checked global attributes exist']
+                     '3/3 checked variables exist',
+                     '2/2 checked global attributes exist']
 
     assert qc_obj.logger.errors == expected_errors
     assert qc_obj.logger.warnings == expected_warnings
@@ -75,6 +73,7 @@ def test_existence_check_all_exist():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_existence_check")
 def test_existence_check_mixed():
@@ -109,14 +108,14 @@ def test_existence_check_mixed():
     qc_obj.existence_check()
 
     expected_errors = ['dimension "bad_dimension" should exist but it does not',
-                        'variable "bad_variable" should exist but it does not',
-                        'global attribute "bad_attribute" should exist but it does not']
+                       'variable "bad_variable" should exist but it does not',
+                       'global attribute "bad_attribute" should exist but it does not']
 
     expected_warnings = []
 
     expected_info = ['2/3 checked dimensions exist',
-                        '3/4 checked variables exist',
-                        '2/3 checked global attributes exist']
+                     '3/4 checked variables exist',
+                     '2/3 checked global attributes exist']
 
     assert qc_obj.logger.errors == expected_errors
     assert qc_obj.logger.warnings == expected_warnings
@@ -124,6 +123,7 @@ def test_existence_check_mixed():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_existence_check")
 def test_existence_check_none_exist():
@@ -149,15 +149,15 @@ def test_existence_check_none_exist():
     qc_obj.existence_check()
 
     expected_errors = ['dimension "bad_dimension" should exist but it does not',
-                        'variable "bad_variable1" should exist but it does not',
-                        'variable "bad_variable2" should exist but it does not',
-                        'global attribute "bad_attribute" should exist but it does not']
+                       'variable "bad_variable1" should exist but it does not',
+                       'variable "bad_variable2" should exist but it does not',
+                       'global attribute "bad_attribute" should exist but it does not']
 
     expected_warnings = []
 
     expected_info = ['0/1 checked dimensions exist',
-                        '0/2 checked variables exist',
-                        '0/1 checked global attributes exist']
+                     '0/2 checked variables exist',
+                     '0/1 checked global attributes exist']
 
     assert qc_obj.logger.errors == expected_errors
     assert qc_obj.logger.warnings == expected_warnings
@@ -165,6 +165,7 @@ def test_existence_check_none_exist():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_existence_check")
 def test_existence_check_all_false():
@@ -193,8 +194,8 @@ def test_existence_check_all_false():
     expected_warnings = []
 
     expected_info = ['no dimensions were checked',
-                        'no variables were checked',
-                        'no global attributes were checked']
+                     'no variables were checked',
+                     'no global attributes were checked']
 
     assert qc_obj.logger.errors == expected_errors
     assert qc_obj.logger.warnings == expected_warnings
