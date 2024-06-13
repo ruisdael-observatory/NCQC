@@ -124,6 +124,7 @@ class QualityControl:
         :return: self
         """
         self.nc = netCDF4.Dataset(nc_file_path)  # pylint: disable=no-member
+        self.__file_size_check(nc_file_path)
         return self
 
     def boundary_check(self):
@@ -167,7 +168,7 @@ class QualityControl:
                     self.logger.add_error(f"boundary check error: '{val}' out of bounds for variable '"
                                           f"{var_name}' with bounds [{lower_bound},{upper_bound}]")
 
-            self.logger.add_info(f"boundary check for variable '{var_name}': {'success' if success else 'fail'}")
+            self.logger.add_info(f"boundary check for variable '{var_name}': {'SUCCESS' if success else 'FAIL'}")
         return self
 
     def existence_check(self): # pylint: disable=too-many-branches
@@ -340,10 +341,28 @@ class QualityControl:
 
         return self
 
-    def file_size_check(self):
+    def __file_size_check(self, nc_file_path: Path):
         """
-        Method to perform file size checks on the loaded netCDF file
+        Private method to perform file size check while loading a netCDF file
+        :param nc_file_path: path to the netCDF file
+        :return: self
         """
+        if not self.qc_check_file_size['perform_check']:
+            return self
+
+        lower_bound = self.qc_check_file_size['lower_bound']
+        upper_bound = self.qc_check_file_size['upper_bound']
+
+        nc_file_size = Path(nc_file_path).stat().st_size
+
+        if nc_file_size < lower_bound or nc_file_size > upper_bound:
+            self.logger.add_error('file size check error: size of the '
+                                  'loaded file is not within the specified bounds')
+            self.logger.add_info('file size check: FAIL')
+            return self
+
+        self.logger.add_info('file size check: SUCCESS')
+        return self
 
     def data_points_amount_check(self):
         """
@@ -376,3 +395,15 @@ def yaml2dict(path: Path) -> dict:
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
+
+if __name__ == '__main__':
+    qc = QualityControl()
+    qc.add_qc_checks_dict({
+        'file size': {
+            'perform_check': True,
+            'lower_bound': 200000,
+            'upper_bound': 300000
+        }
+    })
+    qc.load_netcdf('../20240430_Green_Village-GV_PAR008.nc')
+    print(qc.logger.info)

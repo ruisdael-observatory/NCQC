@@ -69,8 +69,8 @@ def test_boundary_check_success():
 
     qc_obj.boundary_check()
 
-    assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
-        , 'boundary check for variable \'kinetic_energy\': success']
+    assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': SUCCESS'
+        , 'boundary check for variable \'kinetic_energy\': SUCCESS']
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
@@ -114,8 +114,8 @@ def test_boundary_check_fail():
 
     qc_obj.boundary_check()
 
-    assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
-        , 'boundary check for variable \'kinetic_energy\': fail']
+    assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': SUCCESS'
+        , 'boundary check for variable \'kinetic_energy\': FAIL']
     assert qc_obj.logger.errors == ['boundary check error: \'1.909999966621399\' out of bounds'
                                     ' for variable'' \'kinetic_energy\' with bounds [0,1.8]']
     assert not qc_obj.logger.warnings
@@ -150,8 +150,8 @@ def test_boundary_check_wrong_var_name():
 
     qc_obj.boundary_check()
 
-    assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': success'
-        , 'boundary check for variable \'kinetic_energy\': success']
+    assert qc_obj.logger.info == ['boundary check for variable \'velocity_spread\': SUCCESS'
+        , 'boundary check for variable \'kinetic_energy\': SUCCESS']
     assert not qc_obj.logger.errors
     assert qc_obj.logger.warnings == ['variable \'no_such_var\' not in nc file']
 
@@ -196,7 +196,7 @@ def test_boundary_check_omit_a_var():
 
     qc_obj.boundary_check()
 
-    assert qc_obj.logger.info == ['boundary check for variable \'kinetic_energy\': success']
+    assert qc_obj.logger.info == ['boundary check for variable \'kinetic_energy\': SUCCESS']
     assert not qc_obj.logger.warnings
     assert not qc_obj.logger.errors
 
