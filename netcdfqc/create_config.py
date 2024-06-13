@@ -40,7 +40,8 @@ def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default
     :param dimension_names: name of the groups containing the dimensions
     :param variables_name: name of the groups containing the variables
     :param global_attributes_name: name of the groups containing the global attributes
-    :return: a dictionary which contains the structure for specifying QC checks
+    :return: a dictionary which contains the structure for specifying QC checks,
+        where the specific values still need to be filled in
     """
     new_checks_dict = yaml2dict(path)
     return create_config_dict_from_dict(input_dict=new_checks_dict,
@@ -62,7 +63,8 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
     :param variables_name: name of the groups containing the variables
     :param global_attributes_name: name of the groups containing the global attributes
     :param other_variable_name_paths: a list of names to follow to get the names of field variables
-    :return: a dictionary which contains the structure for specifying QC checks
+    :return: a dictionary which contains the structure for specifying QC checks,
+        where the specific values still need to be filled in
     """
 
     qc_dict = {
@@ -114,7 +116,8 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
             'does_it_exist_check': 'TODO'
         }
 
-    # Give every variable the setup for potentially applicable checks with "TO DO" for values
+    # Give every variable the setup for potentially applicable checks with "TO DO" for values,
+    # which have to be manually edited
     for var in qc_dict['variables']:
         qc_dict['variables'][var] = {
             'does_it_exist_check': 'TODO',
