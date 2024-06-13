@@ -38,6 +38,7 @@ class QualityControl:
     - data_points_amount_check:
     - values_change_rate_check:
     - constant_values_check:
+    - expected_dimensions_vars_check: Method dedicated to checking whether each variable has the expected dimensions
     """
 
     def __init__(self):
@@ -358,6 +359,11 @@ class QualityControl:
     def constant_values_check(self):
         """
         Method checks if values in variables data are constant for a suspicious amount of time
+        """
+
+    def expected_dimensions_vars_check(self):
+        """
+        Method dedicated to checking whether each variable has the expected dimensions
         """
 
 def yaml2dict(path: Path) -> dict:
