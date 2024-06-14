@@ -355,11 +355,49 @@ class QualityControl:
         """
         Method checks if values in variables data change at an acceptable rate
         """
+        # Log an error if there is no NetCDF loaded
+        if self.nc is None:
+            self.logger.add_error("values change rate check error: no nc file loaded")
+            return self
+
+        # Variables with 'do_values_change_at_acceptable_rate_check' True in the config file
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+                         if properties["do_values_change_at_acceptable_rate_check"]['perform_check'] is True]
+
+        vars_nc_file = list(self.nc.variables.keys())
+
+        for var_name in vars_to_check:
+            if var_name not in vars_nc_file:
+                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+                continue
+
+            var_values = self.nc[var_name][:]
+
+            acceptable_difference = self.qc_checks_vars[var_name]['do_values_change_at_acceptable_rate_check']['acceptable_difference']
+
+            success = True
+
+            for i in range(len(var_values) - 1):
+                difference = abs(var_values[i] - var_values[i + 1])
+                if difference > acceptable_difference:
+                    success = False
+                    self.logger.add_error(f"value change rate check error for variable:'{var_name}."
+                                          f"Acceptable difference is: {acceptable_difference}"
+                                          f"Difference found: {difference}'")
+
+            self.logger.add_info(f"value change rate check for variable '{var_name}': {'success' if success else 'fail'}")
+
+        return self
+
+
+
+
 
     def constant_values_check(self):
         """
         Method checks if values in variables data are constant for a suspicious amount of time
         """
+        "'temperature': {'check_persistence': {'perform_check': True, 'dimension': time, 'data_points': 100}}"
 
     def expected_dimensions_vars_check(self):
         """
