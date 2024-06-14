@@ -345,6 +345,9 @@ class QualityControl:
         Method to perform file size checks on the loaded netCDF file
         :return: self
         """
+        if self.nc is None:
+            self.logger.add_error("file size check error: no nc file loaded")
+            return self
 
         if not self.qc_check_file_size['perform_check']:
             return self
