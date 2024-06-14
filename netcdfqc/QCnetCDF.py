@@ -390,14 +390,69 @@ class QualityControl:
         return self
 
 
-
-
-
     def constant_values_check(self):
         """
         Method checks if values in variables data are constant for a suspicious amount of time
         """
         "'temperature': {'check_persistence': {'perform_check': True, 'dimension': time, 'data_points': 100}}"
+        # Log an error if there is no NetCDF loaded
+        if self.nc is None:
+            self.logger.add_error("value persistence check error: no nc file loaded")
+            return self
+
+        # Variables with 'do_values_change_at_acceptable_rate_check' True in the config file
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+                         if properties["is_value_constant_for_too_long_check"]['perform_check'] is True]
+
+        vars_nc_file = list(self.nc.variables.keys())
+
+        for var_name in vars_to_check:
+            if var_name not in vars_nc_file:
+                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+                continue
+
+            var_values = self.nc[var_name][:]
+            dimensions = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['over_which_dimensions']
+            dimensions_thresholds = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['threshold_for_each_dimension']
+
+            if not dimensions:
+                self.logger.add_warning(f"dimension/s to check not specified")
+                continue
+            if not dimensions_thresholds:
+                self.logger.add_warning(f"threshold/s to check not specified")
+                continue
+
+            success = True
+
+            for i in dimensions:
+                var_values_dimension = var_values[i][:]
+                try:
+                    threshold = dimensions_thresholds[i]
+                except IndexError:
+                    self.logger.add_error(f"threshold to check not specified")
+                    continue
+
+                if len(var_values[i]) < threshold:
+                    self.logger.add_warning(f"length of variables values is smaller than threshold")
+                    continue
+
+                value_to_check_against = var_values_dimension[0]
+                count_consecutive = 1
+
+                for j in range(1, len(var_values_dimension)):
+                    if var_values_dimension[j] == value_to_check_against:
+                        count_consecutive += 1
+                        if count_consecutive > threshold:
+                            self.logger.add_error(f"To many consecutive values have the same value")
+                            success = False
+                    else:
+                        value_to_check_against = var_values_dimension[j]
+                        count_consecutive = 1
+
+            self.logger.add_info(
+                f"value persistence check for variable '{var_name}': {'success' if success else 'fail'}")
+
+        return self
 
     def expected_dimensions_vars_check(self):
         """
