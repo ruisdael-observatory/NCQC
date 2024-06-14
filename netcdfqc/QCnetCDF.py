@@ -343,6 +343,11 @@ class QualityControl:
     def file_size_check(self):
         """
         Method to perform file size checks on the loaded netCDF file
+
+        - logs an error if there is no netCDF file loaded
+        - logs an error if the file size is out of the specified bounds
+        - logs an info message stating whether the check is successful or not
+
         :return: self
         """
         if self.nc is None:
