@@ -473,3 +473,10 @@ def yaml2dict(path: Path) -> dict:
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
 
+
+if __name__ == '__main__':
+    qc = QualityControl()
+    qc.add_qc_checks_dict(yaml2dict('example_config.yaml'))
+    qc.load_netcdf('2024526_Green_Village-GV_THIES006.nc')
+    qc.constant_values_check()
+    print(qc.logger.errors)
