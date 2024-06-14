@@ -124,7 +124,6 @@ class QualityControl:
         :return: self
         """
         self.nc = netCDF4.Dataset(nc_file_path)  # pylint: disable=no-member
-        self.__file_size_check(nc_file_path)
         return self
 
     def boundary_check(self):
@@ -341,23 +340,23 @@ class QualityControl:
 
         return self
 
-    def __file_size_check(self, nc_file_path: Path):
+    def file_size_check(self):
         """
-        Private method to perform file size check while loading a netCDF file
-        :param nc_file_path: path to the netCDF file
+        Method to perform file size checks on the loaded netCDF file
         :return: self
         """
+
         if not self.qc_check_file_size['perform_check']:
             return self
 
         lower_bound = self.qc_check_file_size['lower_bound']
         upper_bound = self.qc_check_file_size['upper_bound']
 
-        nc_file_size = Path(nc_file_path).stat().st_size
+        nc_file_size = Path(self.nc.filepath()).stat().st_size
 
         if nc_file_size < lower_bound or nc_file_size > upper_bound:
-            self.logger.add_error('file size check error: size of the '
-                                  'loaded file is not within the specified bounds')
+            self.logger.add_error(f'file size check error: size of loaded file ({nc_file_size} bytes)'
+                                  f'is out of bounds for bounds: [{lower_bound},{upper_bound}]')
             self.logger.add_info('file size check: FAIL')
             return self
 
@@ -401,9 +400,10 @@ if __name__ == '__main__':
     qc.add_qc_checks_dict({
         'file size': {
             'perform_check': True,
-            'lower_bound': 200000,
+            'lower_bound': 299000,
             'upper_bound': 300000
         }
     })
     qc.load_netcdf('../20240430_Green_Village-GV_PAR008.nc')
+    qc.file_size_check()
     print(qc.logger.info)
