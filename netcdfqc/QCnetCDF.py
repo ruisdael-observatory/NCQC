@@ -402,16 +402,3 @@ def yaml2dict(path: Path) -> dict:
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
-
-if __name__ == '__main__':
-    qc = QualityControl()
-    qc.add_qc_checks_dict({
-        'file size': {
-            'perform_check': True,
-            'lower_bound': 299000,
-            'upper_bound': 300000
-        }
-    })
-    qc.load_netcdf('../20240430_Green_Village-GV_PAR008.nc')
-    qc.file_size_check()
-    print(qc.logger.info)
