@@ -422,10 +422,12 @@ class QualityControl:
                 self.logger.add_warning(f"threshold/s to check not specified")
                 continue
 
-            success = True
-
             for i in dimensions:
-                var_values_dimension = var_values[i][:]
+                try:
+                    var_values_dimension = var_values[i][:]
+                except IndexError:
+                    self.logger.add_error(f"variable {var_name} doesn't have {i+1} dimensions")
+                    continue
                 try:
                     threshold = dimensions_thresholds[i]
                 except IndexError:
@@ -439,6 +441,8 @@ class QualityControl:
                 value_to_check_against = var_values_dimension[0]
                 count_consecutive = 1
 
+                success = True
+
                 for j in range(1, len(var_values_dimension)):
                     if var_values_dimension[j] == value_to_check_against:
                         count_consecutive += 1
@@ -449,8 +453,7 @@ class QualityControl:
                         value_to_check_against = var_values_dimension[j]
                         count_consecutive = 1
 
-            self.logger.add_info(
-                f"value persistence check for variable '{var_name}': {'success' if success else 'fail'}")
+                self.logger.add_info(f"value persistence check for variable '{var_name}': {'success' if success else 'fail'}")
 
         return self
 
@@ -469,3 +472,4 @@ def yaml2dict(path: Path) -> dict:
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
+
