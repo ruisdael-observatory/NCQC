@@ -74,3 +74,6 @@ def test_change_rate():
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
