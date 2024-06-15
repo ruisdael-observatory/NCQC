@@ -381,9 +381,6 @@ class QualityControl:
                 difference = abs(var_values[i] - var_values[i + 1])
                 if difference > acceptable_difference:
                     success = False
-                    self.logger.add_error(f"value change rate check error for variable:'{var_name}."
-                                          f"Acceptable difference is: {acceptable_difference}"
-                                          f"Difference found: {difference}'")
 
             self.logger.add_info(f"value change rate check for variable '{var_name}': {'success' if success else 'fail'}")
 
@@ -483,7 +480,7 @@ def yaml2dict(path: Path) -> dict:
 
 if __name__ == '__main__':
     qc = QualityControl()
-    qc.add_qc_checks_dict(yaml2dict('example_config.yaml'))
+    qc.add_qc_checks_dict(yaml2dict('../sample_data/example_config.yaml'))
     qc.load_netcdf('2024526_Green_Village-GV_THIES006.nc')
     qc.constant_values_check()
     print(qc.logger.info)

@@ -229,3 +229,31 @@ def create_nc_emptiness_check_empty():
 
     # Close the netCDF file
     nc_file.close()
+
+@pytest.fixture()
+def create_nc_change_rate_check():
+    """
+    Test fixture for testing the change rate check.
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_change_rate.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    # Create a new netCDF file
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    # Create dimensions
+    nc_file.createDimension('time', 100)
+
+    # Create variables
+    test_pass = nc_file.createVariable('test_pass', 'f4', ('time',), fill_value=-1.0)
+    test_fail = nc_file.createVariable('test_fail', 'f4', ('time',), fill_value=-1.0)
+
+    # Set variables
+    test_pass[:] = np.ones(100)
+    test_fail[:] = np.arange(0,500,5)
+
+    # Close the netCDF file
+    nc_file.close()
+
