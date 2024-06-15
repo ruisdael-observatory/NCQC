@@ -167,7 +167,7 @@ class QualityControl:
                     self.logger.add_error(f"boundary check error: '{val}' out of bounds for variable '"
                                           f"{var_name}' with bounds [{lower_bound},{upper_bound}]")
 
-            self.logger.add_info(f"boundary check for variable '{var_name}': {'success' if success else 'fail'}")
+            self.logger.add_info(f"boundary check for variable '{var_name}': {'SUCCESS' if success else 'FAIL'}")
         return self
 
     def existence_check(self): # pylint: disable=too-many-branches
@@ -343,7 +343,33 @@ class QualityControl:
     def file_size_check(self):
         """
         Method to perform file size checks on the loaded netCDF file
+
+        - logs an error if there is no netCDF file loaded
+        - logs an error if the file size is out of the specified bounds
+        - logs an info message stating whether the check is successful or not
+
+        :return: self
         """
+        if self.nc is None:
+            self.logger.add_error("file size check error: no nc file loaded")
+            return self
+
+        if not self.qc_check_file_size['perform_check']:
+            return self
+
+        lower_bound = self.qc_check_file_size['lower_bound']
+        upper_bound = self.qc_check_file_size['upper_bound']
+
+        nc_file_size = Path(self.nc.filepath()).stat().st_size
+
+        if nc_file_size < lower_bound or nc_file_size > upper_bound:
+            self.logger.add_error(f'file size check error: size of loaded file ({nc_file_size} bytes)'
+                                  f'is out of bounds for bounds: [{lower_bound},{upper_bound}]')
+            self.logger.add_info('file size check: FAIL')
+            return self
+
+        self.logger.add_info('file size check: SUCCESS')
+        return self
 
     def data_points_amount_check(self):
         """

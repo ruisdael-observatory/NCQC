@@ -30,5 +30,5 @@ global attributes:
 
 file size:
   perform_check: true
-  lower_bound: 0
-  upper_bound: 1
+  lower_bound: 10000
+  upper_bound: 20000
