@@ -11,6 +11,7 @@ Functions:
 - create_nc_emptiness_check_full: Test fixture for testing boundary checking when everything is fully populated.
 - create_nc_emptiness_check_mixed: Test fixture for testing boundary checking when some things are not fully populated.
 - create_nc_emptiness_check_empty: Test fixture for testing boundary checking when nothing is populated.
+- create_data_points_amount_check: Test fixture for testing data_points_amount_check
 """
 
 import os
@@ -233,6 +234,9 @@ def create_nc_emptiness_check_empty():
 
 @pytest.fixture()
 def create_nc_data_points_amount_check():
+    """
+    Test fixture for testing data_points_amount_check
+    """
     nc_path = Path(__file__).parent / 'sample_data' / 'test_data_points_amount.nc'
 
     if os.path.exists(nc_path):
