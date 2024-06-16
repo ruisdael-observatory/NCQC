@@ -3,7 +3,7 @@ dimensions:
     does_it_exist_check: true
 
 variables:
-  example_variable:
+  raw_data:
     does_it_exist_check: true
     is_data_within_boundaries_check:
       perform_check: true
@@ -17,8 +17,8 @@ variables:
       acceptable_difference: 1
     is_value_constant_for_too_long_check:
       perform_check: true
-      over_which_dimensions: [0, 1, 2]
-      threshold_for_each_dimension: [10, 10, 10]
+      over_which_dimensions: [0,1,2]
+      threshold_for_each_dimension: [25,25,20]
     expected_dimensions_check:
       perform_check: true
       expected_dimensions: [time, velocity_classes]
