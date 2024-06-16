@@ -8,6 +8,10 @@ Functions:
 - test_boundary_check_wrong_var_name: Test for the boundaries check when a variable to be
 checked is not in the loaded netCDF file
 - test_boundary_check_omit_a_var: Test for the boundaries check when a variable has to be omitted
+- test_boundary_check_multidim_var_success: Test for the boundaries check when a variable is multidimensional
+with expected success
+- test_boundary_check_multidim_var_fail: Test for the boundaries check when a variable is multidimensional
+with expected failure
 """
 
 import os
@@ -199,6 +203,79 @@ def test_boundary_check_omit_a_var():
     assert qc_obj.logger.info == ['boundary check for variable \'kinetic_energy\': SUCCESS']
     assert not qc_obj.logger.warnings
     assert not qc_obj.logger.errors
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+
+@pytest.mark.usefixtures("create_nc_boundary_check_multidim_var")
+def test_boundary_check_multidim_var_success():
+    """
+    Test for the boundaries check when a variable is multidimensional
+    with expected success
+    """
+    qc_obj = QualityControl()
+
+    nc_path = data_dir / 'test_boundary_multidim.nc'
+    qc_obj.load_netcdf(nc_path)
+
+    qc_obj.add_qc_checks_dict({
+        'dimensions': {},
+        'variables': {
+            'var_2d': {
+                'is_data_within_boundaries_check': {
+                    'perform_check': True,
+                    'lower_bound': 0,
+                    'upper_bound': 1.01
+                }
+            }
+        },
+        'global attributes': {},
+        'file size': {}
+    })
+
+    qc_obj.boundary_check()
+
+    assert qc_obj.logger.info == ["boundary check for variable 'var_2d': SUCCESS"]
+    assert not qc_obj.logger.warnings
+    assert not qc_obj.logger.errors
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+
+@pytest.mark.usefixtures("create_nc_boundary_check_multidim_var")
+def test_boundary_check_multidim_var_fail():
+    """
+    Test for the boundaries check when a variable is multidimensional
+    with expected failure
+    """
+    qc_obj = QualityControl()
+
+    nc_path = data_dir / 'test_boundary_multidim.nc'
+    qc_obj.load_netcdf(nc_path)
+
+    qc_obj.add_qc_checks_dict({
+        'dimensions': {},
+        'variables': {
+            'var_2d': {
+                'is_data_within_boundaries_check': {
+                    'perform_check': True,
+                    'lower_bound': 0,
+                    'upper_bound': 1
+                }
+            }
+        },
+        'global attributes': {},
+        'file size': {}
+    })
+
+    qc_obj.boundary_check()
+
+    assert qc_obj.logger.info == ["boundary check for variable 'var_2d': FAIL"]
+    assert not qc_obj.logger.warnings
+    assert qc_obj.logger.errors == ["boundary check error: '1.0099999904632568' out of"
+                                    " bounds for variable 'var_2d' with bounds [0,1]"]
 
     if os.path.exists(nc_path):
         os.remove(nc_path)

@@ -7,6 +7,8 @@ Functions:
     when all data falls within the boundaries.
 - create_nc_boundary_check_fail: Test fixture for testing boundary checking
     when not all data falls within the boundaries.
+- create_nc_boundary_check_multidim_var: Test fixture for testing boundary
+checking when a variable is multidimensional
 - create_nc_existence_check: Test fixture for testing existence checking.
 - create_nc_emptiness_check_full: Test fixture for testing boundary checking when everything is fully populated.
 - create_nc_emptiness_check_mixed: Test fixture for testing boundary checking when some things are not fully populated.
@@ -76,6 +78,30 @@ def create_nc_boundary_check_fail():
     kinetic_energy[99:] = 1.909999966621399
 
     # Close the netCDF file
+    nc_file.close()
+
+
+@pytest.fixture()
+def create_nc_boundary_check_multidim_var():
+    """
+    Test fixture for testing boundary checking when a variable is multidimensional
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_boundary_multidim.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    nc_file.createDimension('dim_1', 10)
+    nc_file.createDimension('dim_2', 20)
+
+    var_2d = nc_file.createVariable('var_2d', 'f4', ('dim_1', 'dim_2'), fill_value=-999.0)
+
+    var_2d[:9, :] = np.random.uniform(low=0, high=1, size=(9, 20))
+    var_2d[9, :19] = np.random.uniform(low=0, high=1, size=(1, 19))
+    var_2d[9, 19] = 1.01
+
     nc_file.close()
 
 @pytest.fixture()

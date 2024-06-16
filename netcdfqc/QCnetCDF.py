@@ -158,7 +158,8 @@ class QualityControl:
             lower_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['lower_bound']
             upper_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['upper_bound']
 
-            var_values = self.nc[var_name][:]
+            # use np.ravel to flatten the (possibly multidimensional) array into a 1-d array
+            var_values = np.ravel(self.nc[var_name][:])
 
             success = True
             for val in var_values:
