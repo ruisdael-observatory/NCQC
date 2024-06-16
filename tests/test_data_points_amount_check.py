@@ -20,6 +20,8 @@ class TestDataPointsAmountCheck(unittest.TestCase):
     Methods:
     - test_data_points_amount_check_success: Testing the data_points_amount_check method from
      QCnetCDF.py with expected success
+    - test_data_points_amount_check_omit_a_var: Testing the data_points_amount_check method from
+     QCnetCDF.py when omitting a variable
     - test_data_points_amount_check_fail: Testing the data_points_amount_check method from QCnetCDF.py
      with expected failure for one of the checks
     - test_data_points_amount_check_no_such_var: Testing the data_points_amount_check method from
@@ -62,7 +64,7 @@ class TestDataPointsAmountCheck(unittest.TestCase):
     @pytest.mark.usefixtures("create_nc_data_points_amount_check")
     def test_data_points_amount_check_omit_a_var(self):
         """
-        Testing the data_points_amount_check method from QCnetCDF.py with expected success
+        Testing the data_points_amount_check method from QCnetCDF.py when omitting a variable
         """
         qc_obj = QualityControl()
         qc_obj.load_netcdf(nc_path)
