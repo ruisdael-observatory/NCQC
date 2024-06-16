@@ -397,10 +397,10 @@ class QualityControl:
                 continue
 
             threshold = self.qc_checks_vars[var_name]['are_there_enough_data_points_check']['threshold']
-            var_values_length = len(self.nc[var_name][:])
+            var_values_size = self.nc[var_name][:].size  # total number of data points over all dimensions
 
-            if threshold > var_values_length:
-                self.logger.add_error(f"data points amount check error: number of data points ({var_values_length})"
+            if threshold > var_values_size:
+                self.logger.add_error(f"data points amount check error: number of data points ({var_values_size})"
                                       f" for variable '{var_name}' is below the specified threshold ({threshold})")
                 self.logger.add_info(f"data points amount check for variable '{var_name}': FAIL")
             else:
