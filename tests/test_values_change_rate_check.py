@@ -24,7 +24,7 @@ change_rate_check_test_dict_success = {
     },
     'variables': {
         'test_pass': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': True, 'acceptable_difference': 1}
+            'do_values_change_at_acceptable_rate_check': {'perform_check': True,'over_which_dimension':[0], 'acceptable_difference': [1]}
         },
     },
     'global attributes': {
@@ -38,7 +38,7 @@ change_rate_check_test_dict_fail = {
     },
     'variables': {
         'test_fail': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': True, 'acceptable_difference': 1}
+            'do_values_change_at_acceptable_rate_check': {'perform_check': True,'over_which_dimension':[0], 'acceptable_difference': [1]}
         },
     },
     'global attributes': {
@@ -52,7 +52,7 @@ change_rate_check_var_not_in_nc_dict = {
     },
     'variables': {
         'test_not_in_nc': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': True, 'acceptable_difference': 1}
+            'do_values_change_at_acceptable_rate_check': {'perform_check': True,'over_which_dimension':[0], 'acceptable_difference': [1]}
         },
     },
     'global attributes': {
@@ -66,10 +66,10 @@ change_rate_check_omit_var_test_dict = {
     },
     'variables': {
         'test_pass': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': True, 'acceptable_difference': 1}
+            'do_values_change_at_acceptable_rate_check': {'perform_check': True,'over_which_dimension':[0], 'acceptable_difference': [1]}
         },
         'test_fail': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': False, 'acceptable_difference': 1}
+            'do_values_change_at_acceptable_rate_check': {'perform_check': False,'over_which_dimension':[0], 'acceptable_difference': [1]}
         },
     },
     'global attributes': {
@@ -104,7 +104,7 @@ def test_change_rate_success():
 
     qc_obj.values_change_rate_check()
 
-    assert qc_obj.logger.info == ["value change rate check for variable 'test_pass': success"]
+    assert qc_obj.logger.info == ["value change rate check for variable 'test_pass' and dimension '0': success"]
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
@@ -125,7 +125,7 @@ def test_change_rate_fail():
 
     qc_obj.values_change_rate_check()
 
-    assert qc_obj.logger.info == ["value change rate check for variable 'test_fail': fail"]
+    assert qc_obj.logger.info == ["value change rate check for variable 'test_fail' and dimension '0': fail"]
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
@@ -168,7 +168,7 @@ def test_change_rate_omitted_var():
     qc_obj.values_change_rate_check()
 
     #only variable test_pass is checked,variable test_fail isn't checked
-    assert qc_obj.logger.info == ["value change rate check for variable 'test_pass': success"]
+    assert qc_obj.logger.info == ["value change rate check for variable 'test_pass' and dimension '0': success"]
 
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings

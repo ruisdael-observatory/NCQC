@@ -373,16 +373,38 @@ class QualityControl:
 
             var_values = self.nc[var_name][:]
 
-            acceptable_difference = self.qc_checks_vars[var_name]['do_values_change_at_acceptable_rate_check']['acceptable_difference']
+            dimensions = self.qc_checks_vars[var_name]['do_values_change_at_acceptable_rate_check']['over_which_dimension']
+            dimensions_acceptable_diff = self.qc_checks_vars[var_name]['do_values_change_at_acceptable_rate_check']['acceptable_difference']
 
-            success = True
+            if not dimensions:
+                self.logger.add_error(f"dimension/s to check not specified")
+                continue
+            if not dimensions_acceptable_diff:
+                self.logger.add_error(f"acceptable differences to check not specified")
+                continue
 
-            for i in range(len(var_values) - 1):
-                difference = abs(var_values[i] - var_values[i + 1])
-                if difference > acceptable_difference:
+            if len(var_values.shape) < len(dimensions):
+                self.logger.add_error(f"variable {var_name} doesn't have {len(dimensions)} dimensions")
+                continue
+
+
+            for d in dimensions:
+                success = True
+                difference_array = np.diff(var_values,axis=d)
+                flat_difference_array = difference_array.flatten()
+
+                try:
+                    acceptable_difference = dimensions_acceptable_diff[d]
+                except IndexError:
+                    self.logger.add_error(f"threshold to check not specified")
                     success = False
+                    continue
+                for i in flat_difference_array:
+                    difference = abs(i)
+                    if difference > acceptable_difference:
+                        success = False
 
-            self.logger.add_info(f"value change rate check for variable '{var_name}': {'success' if success else 'fail'}")
+                self.logger.add_info(f"value change rate check for variable '{var_name}' and dimension '{d}': {'success' if success else 'fail'}")
 
         return self
 
@@ -409,7 +431,6 @@ class QualityControl:
                 continue
 
             var_values = self.nc[var_name][:50][:][:]
-            print(var_values.shape)
             dimensions = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['over_which_dimensions']
             dimensions_thresholds = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['threshold_for_each_dimension']
 
@@ -426,11 +447,8 @@ class QualityControl:
             success = True
             for i in dimensions:
                 var_values_data = np.rollaxis(var_values[:], i)
-                print(var_values_data.shape)
                 data_size = var_values_data.shape[0]
-                print(data_size)
                 var_values_dimension = np.ravel(var_values_data)
-                print(var_values_dimension.shape)
                 try:
                     threshold = dimensions_thresholds[i]
                 except IndexError:
@@ -486,6 +504,6 @@ if __name__ == '__main__':
     yml_path =  Path(__file__).parent.parent / 'sample_data' / 'example_config.yaml'
     qc.add_qc_checks_dict(yaml2dict(yml_path))
     qc.load_netcdf(nc_path)
-    qc.constant_values_check()
+    qc.values_change_rate_check()
     print(qc.logger.info)
     print(qc.logger.errors)
