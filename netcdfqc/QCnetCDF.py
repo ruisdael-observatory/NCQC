@@ -408,7 +408,8 @@ class QualityControl:
                 self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
-            var_values = self.nc[var_name][:]
+            var_values = self.nc[var_name][:50][:][:]
+            print(var_values.shape)
             dimensions = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['over_which_dimensions']
             dimensions_thresholds = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['threshold_for_each_dimension']
 
@@ -418,17 +419,18 @@ class QualityControl:
             if not dimensions_thresholds:
                 self.logger.add_error(f"threshold/s to check not specified")
                 continue
-            if len(var_values.shape) != len(dimensions):
+            if len(var_values.shape) < len(dimensions):
                 self.logger.add_error(f"variable {var_name} doesn't have {len(dimensions)} dimensions")
                 continue
 
             success = True
-
             for i in dimensions:
-                if len(dimensions) == 1:
-                    var_values_dimension = var_values[:]
-                else:
-                    var_values_dimension = var_values[i][:]
+                var_values_data = np.rollaxis(var_values[:], i)
+                print(var_values_data.shape)
+                data_size = var_values_data.shape[0]
+                print(data_size)
+                var_values_dimension = np.ravel(var_values_data)
+                print(var_values_dimension.shape)
                 try:
                     threshold = dimensions_thresholds[i]
                 except IndexError:
@@ -440,20 +442,20 @@ class QualityControl:
                     self.logger.add_info(f"length of variables values is smaller than threshold")
                     continue
 
-                value_to_check_against = var_values_dimension[0]
-                count_consecutive = 1
-
                 consecutive_value_counts = {}
 
-                for j in range(1, len(var_values_dimension)):
-                    if var_values_dimension[j] == value_to_check_against:
-                        count_consecutive += 1
-                        if count_consecutive > threshold:
-                            consecutive_value_counts[value_to_check_against] = count_consecutive
-                            success = False
-                    else:
-                        value_to_check_against = var_values_dimension[j]
-                        count_consecutive = 1
+                for j in range(0, len(var_values_dimension)-data_size):
+                    value_to_check_against = var_values_dimension[j]
+                    count_consecutive = 1
+                    for z in range(j, len(var_values_dimension), data_size):
+                        if var_values_dimension[z] == value_to_check_against:
+                            count_consecutive += 1
+                            if count_consecutive > threshold:
+                                consecutive_value_counts[value_to_check_against] = count_consecutive
+                                success = False
+                        else:
+                            value_to_check_against = var_values_dimension[z]
+                            count_consecutive = 1
                 for value in consecutive_value_counts:
                     self.logger.add_info(f"{var_name} has {consecutive_value_counts[value]} consecutive values {value}")
 
@@ -480,8 +482,10 @@ def yaml2dict(path: Path) -> dict:
 
 if __name__ == '__main__':
     qc = QualityControl()
-    qc.add_qc_checks_dict(yaml2dict('../sample_data/example_config.yaml'))
-    qc.load_netcdf('2024526_Green_Village-GV_THIES006.nc')
+    nc_path = Path(__file__).parent.parent / 'sample_data' / '2024526_Green_Village-GV_THIES006.nc'
+    yml_path =  Path(__file__).parent.parent / 'sample_data' / 'example_config.yaml'
+    qc.add_qc_checks_dict(yaml2dict(yml_path))
+    qc.load_netcdf(nc_path)
     qc.constant_values_check()
     print(qc.logger.info)
     print(qc.logger.errors)
