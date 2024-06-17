@@ -3,7 +3,7 @@ dimensions:
     does_it_exist_check: true
 
 variables:
-  temperature:
+  example_variable:
     does_it_exist_check: true
     is_data_within_boundaries_check:
       perform_check: true
@@ -13,8 +13,8 @@ variables:
       perform_check: true
       threshold: 100
     consecutive_values_max_allowed_difference:
-      over_which_dimension:
-      maximum_difference: 100
+      over_which_dimension: [0]
+      maximum_difference: [1]
     max_number_of_consecutive_same_values:
       maximum: 25
     expected_dimensions_check:

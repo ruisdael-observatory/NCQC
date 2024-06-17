@@ -7,8 +7,6 @@ Functions:
 - test_consecutive_values_max_allowed_difference_fail: Test for when change rate of variables is not acceptable
 - test_consecutive_values_max_allowed_difference_var_not_in_file: Test checking for the change rate of variables when
   variable is not in file.
-- test_consecutive_values_max_allowed_difference_omitted_var: Tests checking for the change rate of variables when variable
-  should be omitted from check
 """
 
 import os
@@ -61,23 +59,6 @@ change_rate_check_var_not_in_nc_dict = {
     }
 }
 
-change_rate_check_omit_var_test_dict = {
-    'dimensions': {
-    },
-    'variables': {
-        'test_pass': {
-            'consecutive_values_max_allowed_difference': {'over_which_dimension':[0], 'maximum_difference': [1]}
-        },
-        'test_fail': {
-            'consecutive_values_max_allowed_difference': {'over_which_dimension':[0], 'maximum_difference': [1]}
-        },
-    },
-    'global attributes': {
-    },
-    'file size': {
-    }
-}
-
 def test_consecutive_values_max_allowed_difference_no_nc():
     """
     Test for value change rate check when no netCDF file is loaded.
@@ -86,7 +67,7 @@ def test_consecutive_values_max_allowed_difference_no_nc():
     qc_obj.add_qc_checks_dict(change_rate_check_test_dict_success)
     qc_obj.consecutive_values_max_allowed_difference()
     assert not qc_obj.logger.info
-    assert qc_obj.logger.errors == ['values change rate check error: no nc file loaded']
+    assert qc_obj.logger.errors == ['consecutive_values_max_allowed_difference error: no nc file loaded']
     assert not qc_obj.logger.warnings
 
 
@@ -104,7 +85,8 @@ def test_consecutive_values_max_allowed_difference_success():
 
     qc_obj.consecutive_values_max_allowed_difference()
 
-    assert qc_obj.logger.info == ["value change rate check for variable 'test_pass' and dimension '0': success"]
+    assert qc_obj.logger.info == ["consecutive_values_max_allowed_difference for variable 'test_pass'"
+                                  " and dimension '0': success"]
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
@@ -114,7 +96,7 @@ def test_consecutive_values_max_allowed_difference_success():
 @pytest.mark.usefixtures("create_nc_consecutive_values_max_allowed_difference")
 def test_consecutive_values_max_allowed_difference_fail():
     """
-    Test for when change rate of variables is acceptable.
+    Test for when change rate of variables is not acceptable.
     """
     qc_obj = QualityControl()
 
@@ -125,7 +107,8 @@ def test_consecutive_values_max_allowed_difference_fail():
 
     qc_obj.consecutive_values_max_allowed_difference()
 
-    assert qc_obj.logger.info == ["value change rate check for variable 'test_fail' and dimension '0': fail"]
+    assert qc_obj.logger.info == ["consecutive_values_max_allowed_difference for variable 'test_fail' and "
+                                  "dimension '0': fail"]
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
@@ -153,29 +136,7 @@ def test_consecutive_values_max_allowed_difference_var_not_in_file():
     if os.path.exists(nc_path):
         os.remove(nc_path)
 
-@pytest.mark.usefixtures("create_nc_consecutive_values_max_allowed_difference")
-def test_consecutive_values_max_allowed_difference_omitted_var():
-    """
-    Test checking for the change rate of variables when variable should be omitted from check.
-    """
-    qc_obj = QualityControl()
 
-    nc_path = data_dir / 'test_change_rate.nc'
-    qc_obj.load_netcdf(nc_path)
-
-    qc_obj.add_qc_checks_dict(change_rate_check_omit_var_test_dict)
-
-    qc_obj.consecutive_values_max_allowed_difference()
-
-    #only variable test_pass is checked,variable test_fail isn't checked
-    assert qc_obj.logger.info == ["value change rate check for variable 'test_pass' and dimension '0': success",
-                                  "value change rate check for variable 'test_fail' and dimension '0': fail"]
-
-    assert not qc_obj.logger.errors
-    assert not qc_obj.logger.warnings
-
-    if os.path.exists(nc_path):
-        os.remove(nc_path)
 
 
 

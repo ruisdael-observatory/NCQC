@@ -307,14 +307,12 @@ def test_yaml2dict():
                     'upper_bound': 1
                 },
                 'are_there_enough_data_points_check': {'perform_check': True, 'threshold': 100},
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': True,
-                    'acceptable_difference': 1
+                'consecutive_values_max_allowed_difference': {
+                    'over_which_dimension': [0],
+                    'maximum_difference': [1]
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': True,
-                    'over_which_dimensions': [0, 1, 2],
-                    'threshold_for_each_dimension': [10, 10, 10]
+                'max_number_of_consecutive_same_values': {
+                    'maximum': 25
                 },
                 'expected_dimensions_check': {
                     'perform_check': True,

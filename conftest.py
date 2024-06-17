@@ -257,3 +257,30 @@ def create_nc_consecutive_values_max_allowed_difference():
     # Close the netCDF file
     nc_file.close()
 
+@pytest.fixture()
+def create_nc_max_number_of_consecutive_same_values():
+    """
+    Test fixture for testing max number of consecutive values that are the same.
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_max_number_of_consecutive_same_values.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    # Create a new netCDF file
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    # Create dimensions
+    nc_file.createDimension('time', 100)
+
+    # Create variables
+    test_pass = nc_file.createVariable('test_pass', 'f4', ('time',), fill_value=-1.0)
+    test_fail = nc_file.createVariable('test_fail', 'f4', ('time',), fill_value=-1.0)
+
+    # Set variables
+    test_pass[:] = np.ones(100)
+    test_pass[::2] = 0
+    test_fail[:] = np.ones(100)
+
+    # Close the netCDF file
+    nc_file.close()

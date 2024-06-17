@@ -358,7 +358,7 @@ class QualityControl:
         """
         # Log an error if there is no NetCDF loaded
         if self.nc is None:
-            self.logger.add_error("values change rate check error: no nc file loaded")
+            self.logger.add_error("consecutive_values_max_allowed_difference error: no nc file loaded")
             return self
 
         # Variables with 'do_values_change_at_acceptable_rate_check' True in the config file
@@ -414,18 +414,18 @@ class QualityControl:
                     if difference > acceptable_difference:
                         success = False
 
-                self.logger.add_info(f"value change rate check for variable '{var_name}' and dimension '{d}': {'success' if success else 'fail'}")
+                self.logger.add_info(f"consecutive_values_max_allowed_difference for variable '{var_name}' and dimension '{d}': {'success' if success else 'fail'}")
 
         return self
 
 
-    def max_number_of_consecutive_same_value_check(self):
+    def max_number_of_consecutive_same_values(self):
         """
         Method checks if to many consecutive values of a variable are the same
         """
         # Log an error if there is no NetCDF loaded
         if self.nc is None:
-            self.logger.add_error("value persistence check error: no nc file loaded")
+            self.logger.add_error("max_number_of_consecutive_same_values error: no nc file loaded")
             return self
 
         # Variables with 'do_values_change_at_acceptable_rate_check' True in the config file
@@ -469,10 +469,10 @@ class QualityControl:
                     count_consecutive = 1
             for value in consecutive_value_counts:
                 self.logger.add_info(
-                    f"{var_name} has {consecutive_value_counts[value]} consecutive values {value}")
+                    f"{var_name} has {consecutive_value_counts[value]} consecutive same values {value}")
 
             self.logger.add_info(
-                f"value persistence check for variable '{var_name}': {'success' if success else 'fail'}")
+                f"max_number_of_consecutive_same_values check for variable '{var_name}': {'success' if success else 'fail'}")
 
         return self
 
