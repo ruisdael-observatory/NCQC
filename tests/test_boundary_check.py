@@ -72,6 +72,7 @@ boundary_check_property_based_test_dict = {
     }
 }
 
+
 def test_boundary_check_no_nc():
     """
     Test for the boundaries check when no netCDF file is loaded
@@ -232,6 +233,7 @@ def test_boundary_check_omit_a_var():
     if os.path.exists(nc_path):
         os.remove(nc_path)
 
+
 @given(data=st.lists(st.integers(min_value=-10, max_value=40), max_size=100))
 def test_boundary_check_property_based_success(data):
     """
@@ -255,6 +257,7 @@ def test_boundary_check_property_based_success(data):
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @given(data=st.lists(st.integers(), max_size=100)
        .filter(lambda lst: any(x < -10 or x > 40 for x in lst)))
@@ -286,6 +289,7 @@ def test_boundary_check_property_based_fail(data):
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_boundary_check_multidim_var")
 def test_boundary_check_multidim_var_success():

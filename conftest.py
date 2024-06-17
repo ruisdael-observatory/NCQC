@@ -24,6 +24,7 @@ from netCDF4 import Dataset
 import numpy as np
 import pytest
 
+
 @pytest.fixture()
 def create_nc_boundary_check_success():
     """
@@ -52,6 +53,7 @@ def create_nc_boundary_check_success():
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_boundary_check_fail():
@@ -83,6 +85,7 @@ def create_nc_boundary_check_fail():
     # Close the netCDF file
     nc_file.close()
 
+
 def create_nc_boundary_check_property_based(data: List[int]):
     """
     Function to create netCDF files for property based testing for boundary checks.
@@ -103,6 +106,7 @@ def create_nc_boundary_check_property_based(data: List[int]):
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_existence_check():
@@ -137,6 +141,7 @@ def create_nc_existence_check():
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_emptiness_check_full():
@@ -173,6 +178,7 @@ def create_nc_emptiness_check_full():
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_emptiness_check_mixed():
@@ -220,6 +226,7 @@ def create_nc_emptiness_check_mixed():
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_emptiness_check_empty():
@@ -279,6 +286,7 @@ def create_nc_data_points_amount_check():
     var_2d[:, :] = np.random.uniform(low=0, high=100, size=(10, 20))
 
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_boundary_check_multidim_var():
