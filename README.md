@@ -9,10 +9,10 @@ ncqc is a Python library for performing quality control on netCDF files. It was 
 
 ## Usage
 There are a couple steps to perform quality control checks. These are:
-* Creating a configuration file or dictionary
-* Setting up a QualityControl object
-* Runnings checks with a QualityControl object
-* Getting the report from a QualityControl object
+* [Creating a configuration file or dictionary](#creating-a-configuration-file-or-dictionary)
+* [Setting up a QualityControl object](#setting-up-a-qualitycontrol-object)
+* [Running checks with a QualityControl object](#running-checks-with-a-qualitycontrol-object)
+* [Getting a report from a QualityControl object](#getting-a-report-from-a-qualitycontrol-object)
 
 ### Creating a configuration file or dictionary
 To remove the manual labor from setting up the configuration for the `QualityControl` object, there are two methods: `create_config_dict_from_yaml` and `create_config_dict_from_dict` to create the base for a configuration dictionary by parsing an existing .yaml file or dictionary respectively. By specifying the names of the groups containing the dimensions, variables and global attributes via the paramaters `dimensions_name`, `variables_name`, and `global_attributes_name`, these fields get added to the output dictionary with the structure for specifying what checks to perform already set up. Below is an example of how this can be used.
@@ -178,7 +178,7 @@ qc_obj.replace_qc_check_dict(path_to_yaml_file)
 qc_obj.load_netcdf(nc_path)
 ```
 
-### Runnings checks with a QualityControl object
+### Running checks with a QualityControl object
 These are the quality control checks that can be performed on a `QualityControl` object with a set up configuration and loaded netCDF file:
 * `boundary_check`: logs an error for each data point which falls outside of the variable bounds, which are specified in the configuration
 * `existence_check`: logs an error for each dimension, variable, or global attribute which according to the configuration should be present in the netCDF file but is not, and logs info for each category how many of the checked fields exist
