@@ -251,7 +251,7 @@ def test_boundary_check_property_based_success(data):
 
     qc_obj.boundary_check()
 
-    assert qc_obj.logger.info == ['boundary check for variable \'temperature\': success']
+    assert qc_obj.logger.info == ['boundary check for variable \'temperature\': SUCCESS']
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
@@ -283,7 +283,7 @@ def test_boundary_check_property_based_fail(data):
         if val < -10 or val > 40:
             expected_errors += 1
 
-    assert qc_obj.logger.info == ['boundary check for variable \'temperature\': fail']
+    assert qc_obj.logger.info == ['boundary check for variable \'temperature\': FAIL']
     assert len(qc_obj.logger.errors) == expected_errors
     assert not qc_obj.logger.warnings
 
