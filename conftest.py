@@ -11,6 +11,7 @@ Functions:
 - create_nc_emptiness_check_full: Test fixture for testing boundary checking when everything is fully populated.
 - create_nc_emptiness_check_mixed: Test fixture for testing boundary checking when some things are not fully populated.
 - create_nc_emptiness_check_empty: Test fixture for testing boundary checking when nothing is populated.
+- create_data_points_amount_check: Test fixture for testing data_points_amount_check
 """
 
 import os
@@ -228,4 +229,28 @@ def create_nc_emptiness_check_empty():
     nc_file.contributors = ""
 
     # Close the netCDF file
+    nc_file.close()
+
+
+@pytest.fixture()
+def create_nc_data_points_amount_check():
+    """
+    Test fixture for testing data_points_amount_check
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_data_points_amount.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    nc_file.createDimension('dimension_1', 10)
+    nc_file.createDimension('dimension_2', 20)
+
+    var_1d = nc_file.createVariable('var_1d', 'f4', ('dimension_1',), fill_value=-999.0)
+    var_2d = nc_file.createVariable('var_2d', 'f4', ('dimension_1', 'dimension_2'), fill_value=-999.0)
+
+    var_1d[:] = np.random.uniform(low=0, high=100, size=10)
+    var_2d[:, :] = np.random.uniform(low=0, high=100, size=(10, 20))
+
     nc_file.close()
