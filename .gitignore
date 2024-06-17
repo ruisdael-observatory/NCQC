@@ -5,3 +5,4 @@ dist/*
 netcdfqc.egg-info/*
 __pycache__
 .idea
+.hypothesis/*

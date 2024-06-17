@@ -34,8 +34,8 @@ class QualityControl:
     - load_netcdf: load the netcdf file to be checked
     - boundary_check: perform a boundary check on the variables of the loaded netCDF file
     - existence_check: perform existence checks on dimensions, variables and global attributes
-    - file_size_check:
-    - data_points_amount_check:
+    - file_size_check: perform a file size check on the loaded netCDF file
+    - data_points_amount_check: perform a data points amount check on the variables of the loaded netCDF file
     - values_change_rate_check:
     - constant_values_check:
     - expected_dimensions_vars_check: Method dedicated to checking whether each variable has the expected dimensions
@@ -158,7 +158,8 @@ class QualityControl:
             lower_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['lower_bound']
             upper_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['upper_bound']
 
-            var_values = self.nc[var_name][:]
+            # use np.ravel to flatten the (possibly multidimensional) array into a 1-d array
+            var_values = np.ravel(self.nc[var_name][:])
 
             success = True
             for val in var_values:
@@ -167,7 +168,7 @@ class QualityControl:
                     self.logger.add_error(f"boundary check error: '{val}' out of bounds for variable '"
                                           f"{var_name}' with bounds [{lower_bound},{upper_bound}]")
 
-            self.logger.add_info(f"boundary check for variable '{var_name}': {'success' if success else 'fail'}")
+            self.logger.add_info(f"boundary check for variable '{var_name}': {'SUCCESS' if success else 'FAIL'}")
         return self
 
     def existence_check(self): # pylint: disable=too-many-branches
@@ -343,13 +344,70 @@ class QualityControl:
     def file_size_check(self):
         """
         Method to perform file size checks on the loaded netCDF file
+
+        - logs an error if there is no netCDF file loaded
+        - logs an error if the file size is out of the specified bounds
+        - logs an info message stating whether the check is successful or not
+
+        :return: self
         """
+        if self.nc is None:
+            self.logger.add_error("file size check error: no nc file loaded")
+            return self
+
+        if not self.qc_check_file_size['perform_check']:
+            return self
+
+        lower_bound = self.qc_check_file_size['lower_bound']
+        upper_bound = self.qc_check_file_size['upper_bound']
+
+        nc_file_size = Path(self.nc.filepath()).stat().st_size
+
+        if nc_file_size < lower_bound or nc_file_size > upper_bound:
+            self.logger.add_error(f'file size check error: size of loaded file ({nc_file_size} bytes)'
+                                  f'is out of bounds for bounds: [{lower_bound},{upper_bound}]')
+            self.logger.add_info('file size check: FAIL')
+            return self
+
+        self.logger.add_info('file size check: SUCCESS')
+        return self
 
     def data_points_amount_check(self):
         """
         Method to perform amount of data points for each variable check. Method
         checks if the amount of data points is above a given threshold
+
+        - logs an error if there is no netCDF file loaded
+        - logs an error if the number of data points for a variable is below the specified threshold
+        - logs an info message for each variable, stating whether the check is successful or not
+
+        :return: self
         """
+        if self.nc is None:
+            self.logger.add_error("data points amount check error: no nc file loaded")
+            return self
+
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+                         if properties['are_there_enough_data_points_check']['perform_check']]
+
+        vars_nc_file = list(self.nc.variables.keys())
+
+        for var_name in vars_to_check:
+            if var_name not in vars_nc_file:
+                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+                continue
+
+            threshold = self.qc_checks_vars[var_name]['are_there_enough_data_points_check']['threshold']
+            var_values_size = self.nc[var_name][:].size  # total number of data points over all dimensions
+
+            if threshold > var_values_size:
+                self.logger.add_error(f"data points amount check error: number of data points ({var_values_size})"
+                                      f" for variable '{var_name}' is below the specified threshold ({threshold})")
+                self.logger.add_info(f"data points amount check for variable '{var_name}': FAIL")
+            else:
+                self.logger.add_info(f"data points amount check for variable '{var_name}': SUCCESS")
+
+        return self
 
     def consecutive_values_max_allowed_difference(self):
         """
