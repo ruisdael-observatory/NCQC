@@ -34,8 +34,8 @@ class QualityControl:
     - load_netcdf: load the netcdf file to be checked
     - boundary_check: perform a boundary check on the variables of the loaded netCDF file
     - existence_check: perform existence checks on dimensions, variables and global attributes
-    - file_size_check:
-    - data_points_amount_check:
+    - file_size_check: perform a file size check on the loaded netCDF file
+    - data_points_amount_check: perform a data points amount check on the variables of the loaded netCDF file
     - values_change_rate_check:
     - constant_values_check:
     - expected_dimensions_vars_check: Method dedicated to checking whether each variable has the expected dimensions
@@ -376,7 +376,38 @@ class QualityControl:
         """
         Method to perform amount of data points for each variable check. Method
         checks if the amount of data points is above a given threshold
+
+        - logs an error if there is no netCDF file loaded
+        - logs an error if the number of data points for a variable is below the specified threshold
+        - logs an info message for each variable, stating whether the check is successful or not
+
+        :return: self
         """
+        if self.nc is None:
+            self.logger.add_error("data points amount check error: no nc file loaded")
+            return self
+
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+                         if properties['are_there_enough_data_points_check']['perform_check']]
+
+        vars_nc_file = list(self.nc.variables.keys())
+
+        for var_name in vars_to_check:
+            if var_name not in vars_nc_file:
+                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+                continue
+
+            threshold = self.qc_checks_vars[var_name]['are_there_enough_data_points_check']['threshold']
+            var_values_size = self.nc[var_name][:].size  # total number of data points over all dimensions
+
+            if threshold > var_values_size:
+                self.logger.add_error(f"data points amount check error: number of data points ({var_values_size})"
+                                      f" for variable '{var_name}' is below the specified threshold ({threshold})")
+                self.logger.add_info(f"data points amount check for variable '{var_name}': FAIL")
+            else:
+                self.logger.add_info(f"data points amount check for variable '{var_name}': SUCCESS")
+
+        return self
 
     def values_change_rate_check(self):
         """
