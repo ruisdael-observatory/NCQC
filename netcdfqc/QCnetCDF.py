@@ -430,7 +430,7 @@ class QualityControl:
                 self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
-            var_values = self.nc[var_name][:]
+            var_values = self.nc[var_name][:50]
             dimensions = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['over_which_dimensions']
             dimensions_thresholds = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['threshold_for_each_dimension']
 
@@ -463,7 +463,9 @@ class QualityControl:
 
                 consecutive_value_counts = {}
                 print(var_values_dimension[:50])
+
                 if(len(dimensions)==1):
+
                     value_to_check_against = var_values_dimension[0]
                     count_consecutive = 1
                     for j in range(1, len(var_values_dimension)):
@@ -479,25 +481,26 @@ class QualityControl:
                         self.logger.add_info(
                             f"{var_name} has {consecutive_value_counts[value]} consecutive values {value}")
 
-                else:
-                    for j in range(0, len(var_values_dimension)-data_size,data_size):
-                        value_to_check_against = var_values_dimension[j]
-                        count_consecutive = 1
-                        for z in range(j, data_size):
-                            if var_values_dimension[z] == value_to_check_against:
-                                count_consecutive += 1
-                                if count_consecutive > threshold:
-                                    consecutive_value_counts[value_to_check_against] = count_consecutive
-                                    success = False
-                            else:
-                                value_to_check_against = var_values_dimension[z]
-                                count_consecutive = 1
-                        for value in consecutive_value_counts:
-                            self.logger.add_info(f"{var_name} has {consecutive_value_counts[value]} consecutive values {value}")
+                    self.logger.add_info(
+                        f"value persistence check for variable '{var_name}': {'success' if success else 'fail'}")
 
-                self.logger.add_info('\n')
+                    return self
 
-            self.logger.add_info(f"value persistence check for variable '{var_name}': {'success' if success else 'fail'}")
+
+                for j in range(0, len(var_values_dimension)-data_size,data_size):
+                    value_to_check_against = var_values_dimension[j]
+                    count_consecutive = 1
+                    for z in range(j, data_size):
+                        if var_values_dimension[z] == value_to_check_against:
+                            count_consecutive += 1
+                            if count_consecutive > threshold:
+                                consecutive_value_counts[value_to_check_against] = count_consecutive
+                                success = False
+                        else:
+                            value_to_check_against = var_values_dimension[z]
+                            count_consecutive = 1
+
+                self.logger.add_info(f"value persistence check for variable '{var_name}' and dimension '{i}': {'success' if success else 'fail'}")
 
         return self
 
