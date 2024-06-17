@@ -12,6 +12,10 @@ checked is not in the loaded netCDF file
     when all values are within the specified boundaries
 - test_boundary_check_property_based_fail: Property based test for the boundaries check
     when at least one value is outside of the specified boundaries
+- test_boundary_check_multidim_var_success: Test for the boundaries check when a variable is multidimensional
+with expected success
+- test_boundary_check_multidim_var_fail: Test for the boundaries check when a variable is multidimensional
+with expected failure
 """
 
 import os
@@ -49,24 +53,25 @@ boundary_check_test_dict = {
 }
 
 boundary_check_property_based_test_dict = {
-        'dimensions': {
-            'example_dimension_2': {'existence': False}
+    'dimensions': {
+        'example_dimension_2': {'existence': False}
+    },
+    'variables': {
+        'temperature': {
+            'existence': True,
+            'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': -10, 'upper_bound': 40}
         },
-        'variables': {
-            'temperature': {
-                'existence': True,
-                'is_data_within_boundaries_check': {'perform_check': True, 'lower_bound': -10, 'upper_bound': 40}
-            },
-        },
-        'global attributes': {
-            'existence': True, 'emptiness': True
-        },
-        'file size': {
-            'perform_check': True,
-            'lower_bound': 0,
-            'upper_bound': 1
-        }
+    },
+    'global attributes': {
+        'existence': True, 'emptiness': True
+    },
+    'file size': {
+        'perform_check': True,
+        'lower_bound': 0,
+        'upper_bound': 1
     }
+}
+
 
 def test_boundary_check_no_nc():
     """
@@ -228,6 +233,7 @@ def test_boundary_check_omit_a_var():
     if os.path.exists(nc_path):
         os.remove(nc_path)
 
+
 @given(data=st.lists(st.integers(min_value=-10, max_value=40), max_size=100))
 def test_boundary_check_property_based_success(data):
     """
@@ -245,12 +251,13 @@ def test_boundary_check_property_based_success(data):
 
     qc_obj.boundary_check()
 
-    assert qc_obj.logger.info == ['boundary check for variable \'temperature\': success']
+    assert qc_obj.logger.info == ['boundary check for variable \'temperature\': SUCCESS']
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @given(data=st.lists(st.integers(), max_size=100)
        .filter(lambda lst: any(x < -10 or x > 40 for x in lst)))
@@ -276,9 +283,82 @@ def test_boundary_check_property_based_fail(data):
         if val < -10 or val > 40:
             expected_errors += 1
 
-    assert qc_obj.logger.info == ['boundary check for variable \'temperature\': fail']
+    assert qc_obj.logger.info == ['boundary check for variable \'temperature\': FAIL']
     assert len(qc_obj.logger.errors) == expected_errors
     assert not qc_obj.logger.warnings
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+
+@pytest.mark.usefixtures("create_nc_boundary_check_multidim_var")
+def test_boundary_check_multidim_var_success():
+    """
+    Test for the boundaries check when a variable is multidimensional
+    with expected success
+    """
+    qc_obj = QualityControl()
+
+    nc_path = data_dir / 'test_boundary_multidim.nc'
+    qc_obj.load_netcdf(nc_path)
+
+    qc_obj.add_qc_checks_dict({
+        'dimensions': {},
+        'variables': {
+            'var_2d': {
+                'is_data_within_boundaries_check': {
+                    'perform_check': True,
+                    'lower_bound': 0,
+                    'upper_bound': 1.01
+                }
+            }
+        },
+        'global attributes': {},
+        'file size': {}
+    })
+
+    qc_obj.boundary_check()
+
+    assert qc_obj.logger.info == ["boundary check for variable 'var_2d': SUCCESS"]
+    assert not qc_obj.logger.warnings
+    assert not qc_obj.logger.errors
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+
+@pytest.mark.usefixtures("create_nc_boundary_check_multidim_var")
+def test_boundary_check_multidim_var_fail():
+    """
+    Test for the boundaries check when a variable is multidimensional
+    with expected failure
+    """
+    qc_obj = QualityControl()
+
+    nc_path = data_dir / 'test_boundary_multidim.nc'
+    qc_obj.load_netcdf(nc_path)
+
+    qc_obj.add_qc_checks_dict({
+        'dimensions': {},
+        'variables': {
+            'var_2d': {
+                'is_data_within_boundaries_check': {
+                    'perform_check': True,
+                    'lower_bound': 0,
+                    'upper_bound': 1
+                }
+            }
+        },
+        'global attributes': {},
+        'file size': {}
+    })
+
+    qc_obj.boundary_check()
+
+    assert qc_obj.logger.info == ["boundary check for variable 'var_2d': FAIL"]
+    assert not qc_obj.logger.warnings
+    assert qc_obj.logger.errors == ["boundary check error: '1.0099999904632568' out of"
+                                    " bounds for variable 'var_2d' with bounds [0,1]"]
 
     if os.path.exists(nc_path):
         os.remove(nc_path)

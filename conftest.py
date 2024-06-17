@@ -13,6 +13,8 @@ Functions:
 - create_nc_emptiness_check_mixed: Test fixture for testing boundary checking when some things are not fully populated.
 - create_nc_emptiness_check_empty: Test fixture for testing boundary checking when nothing is populated.
 - create_data_points_amount_check: Test fixture for testing data_points_amount_check
+- create_nc_boundary_check_multidim_var: Test fixture for testing boundary
+checking when a variable is multidimensional
 """
 
 import os
@@ -21,6 +23,7 @@ from typing import List
 from netCDF4 import Dataset
 import numpy as np
 import pytest
+
 
 @pytest.fixture()
 def create_nc_boundary_check_success():
@@ -50,6 +53,7 @@ def create_nc_boundary_check_success():
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_boundary_check_fail():
@@ -81,6 +85,7 @@ def create_nc_boundary_check_fail():
     # Close the netCDF file
     nc_file.close()
 
+
 def create_nc_boundary_check_property_based(data: List[int]):
     """
     Function to create netCDF files for property based testing for boundary checks.
@@ -101,6 +106,7 @@ def create_nc_boundary_check_property_based(data: List[int]):
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_existence_check():
@@ -135,6 +141,7 @@ def create_nc_existence_check():
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_emptiness_check_full():
@@ -171,6 +178,7 @@ def create_nc_emptiness_check_full():
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_emptiness_check_mixed():
@@ -218,6 +226,7 @@ def create_nc_emptiness_check_mixed():
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_emptiness_check_empty():
@@ -275,5 +284,29 @@ def create_nc_data_points_amount_check():
 
     var_1d[:] = np.random.uniform(low=0, high=100, size=10)
     var_2d[:, :] = np.random.uniform(low=0, high=100, size=(10, 20))
+
+    nc_file.close()
+
+
+@pytest.fixture()
+def create_nc_boundary_check_multidim_var():
+    """
+    Test fixture for testing boundary checking when a variable is multidimensional
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_boundary_multidim.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    nc_file.createDimension('dim_1', 10)
+    nc_file.createDimension('dim_2', 20)
+
+    var_2d = nc_file.createVariable('var_2d', 'f4', ('dim_1', 'dim_2'), fill_value=-999.0)
+
+    var_2d[:9, :] = np.random.uniform(low=0, high=1, size=(9, 20))
+    var_2d[9, :19] = np.random.uniform(low=0, high=1, size=(1, 19))
+    var_2d[9, 19] = 1.01
 
     nc_file.close()
