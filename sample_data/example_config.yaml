@@ -3,7 +3,7 @@ dimensions:
     does_it_exist_check: true
 
 variables:
-  raw_data:
+  temperature:
     does_it_exist_check: true
     is_data_within_boundaries_check:
       perform_check: true
@@ -12,14 +12,11 @@ variables:
     are_there_enough_data_points_check:
       perform_check: true
       threshold: 100
-    do_values_change_at_acceptable_rate_check:
-      perform_check: true
-      over_which_dimension: [0]
-      acceptable_difference: [100]
-    is_value_constant_for_too_long_check:
-      perform_check: true
-      over_which_dimensions: [0,1,2]
-      threshold_for_each_dimension: [25,25,25]
+    consecutive_values_max_allowed_difference:
+      over_which_dimension:
+      maximum_difference: 100
+    max_number_of_consecutive_same_values:
+      maximum: 25
     expected_dimensions_check:
       perform_check: true
       expected_dimensions: [time, velocity_classes]

@@ -231,7 +231,7 @@ def create_nc_emptiness_check_empty():
     nc_file.close()
 
 @pytest.fixture()
-def create_nc_change_rate_check():
+def create_nc_consecutive_values_max_allowed_difference():
     """
     Test fixture for testing the change rate check.
     """

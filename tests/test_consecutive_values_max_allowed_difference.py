@@ -2,12 +2,12 @@
 Module for testing the functionality of the value_change_rate_check method
 
 Functions:
-- test_value_change_rate_check_no_nc: Test for value change rate check when no netCDF file is loaded
-- test_change_rate_success: Test for when change rate of variables is acceptable
-- test_change_rate_fail: Test for when change rate of variables is not acceptable
-- test_change_rate_var_not_in_file: Test checking for the change rate of variables when
+- test_consecutive_values_max_allowed_difference_no_nc: Test for value change rate check when no netCDF file is loaded
+- test_consecutive_values_max_allowed_difference_success: Test for when change rate of variables is acceptable
+- test_consecutive_values_max_allowed_difference_fail: Test for when change rate of variables is not acceptable
+- test_consecutive_values_max_allowed_difference_var_not_in_file: Test checking for the change rate of variables when
   variable is not in file.
-- test_change_rate_omitted_var: Tests checking for the change rate of variables when variable
+- test_consecutive_values_max_allowed_difference_omitted_var: Tests checking for the change rate of variables when variable
   should be omitted from check
 """
 
@@ -24,7 +24,7 @@ change_rate_check_test_dict_success = {
     },
     'variables': {
         'test_pass': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': True,'over_which_dimension':[0], 'acceptable_difference': [1]}
+            'consecutive_values_max_allowed_difference': {'over_which_dimension':[0], 'maximum_difference': [1]}
         },
     },
     'global attributes': {
@@ -38,7 +38,7 @@ change_rate_check_test_dict_fail = {
     },
     'variables': {
         'test_fail': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': True,'over_which_dimension':[0], 'acceptable_difference': [1]}
+            'consecutive_values_max_allowed_difference': {'over_which_dimension':[0], 'maximum_difference': [1]}
         },
     },
     'global attributes': {
@@ -52,7 +52,7 @@ change_rate_check_var_not_in_nc_dict = {
     },
     'variables': {
         'test_not_in_nc': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': True,'over_which_dimension':[0], 'acceptable_difference': [1]}
+            'consecutive_values_max_allowed_difference': {'over_which_dimension':[0], 'maximum_difference': [1]}
         },
     },
     'global attributes': {
@@ -66,10 +66,10 @@ change_rate_check_omit_var_test_dict = {
     },
     'variables': {
         'test_pass': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': True,'over_which_dimension':[0], 'acceptable_difference': [1]}
+            'consecutive_values_max_allowed_difference': {'over_which_dimension':[0], 'maximum_difference': [1]}
         },
         'test_fail': {
-            'do_values_change_at_acceptable_rate_check': {'perform_check': False,'over_which_dimension':[0], 'acceptable_difference': [1]}
+            'consecutive_values_max_allowed_difference': {'over_which_dimension':[0], 'maximum_difference': [1]}
         },
     },
     'global attributes': {
@@ -78,20 +78,20 @@ change_rate_check_omit_var_test_dict = {
     }
 }
 
-def test_value_change_rate_check_no_nc():
+def test_consecutive_values_max_allowed_difference_no_nc():
     """
     Test for value change rate check when no netCDF file is loaded.
     """
     qc_obj = QualityControl()
     qc_obj.add_qc_checks_dict(change_rate_check_test_dict_success)
-    qc_obj.values_change_rate_check()
+    qc_obj.consecutive_values_max_allowed_difference()
     assert not qc_obj.logger.info
     assert qc_obj.logger.errors == ['values change rate check error: no nc file loaded']
     assert not qc_obj.logger.warnings
 
 
-@pytest.mark.usefixtures("create_nc_change_rate_check")
-def test_change_rate_success():
+@pytest.mark.usefixtures("create_nc_consecutive_values_max_allowed_difference")
+def test_consecutive_values_max_allowed_difference_success():
     """
     Test for when change rate of variables is acceptable.
     """
@@ -102,7 +102,7 @@ def test_change_rate_success():
 
     qc_obj.add_qc_checks_dict(change_rate_check_test_dict_success)
 
-    qc_obj.values_change_rate_check()
+    qc_obj.consecutive_values_max_allowed_difference()
 
     assert qc_obj.logger.info == ["value change rate check for variable 'test_pass' and dimension '0': success"]
     assert not qc_obj.logger.errors
@@ -111,8 +111,8 @@ def test_change_rate_success():
     if os.path.exists(nc_path):
         os.remove(nc_path)
 
-@pytest.mark.usefixtures("create_nc_change_rate_check")
-def test_change_rate_fail():
+@pytest.mark.usefixtures("create_nc_consecutive_values_max_allowed_difference")
+def test_consecutive_values_max_allowed_difference_fail():
     """
     Test for when change rate of variables is acceptable.
     """
@@ -123,7 +123,7 @@ def test_change_rate_fail():
 
     qc_obj.add_qc_checks_dict(change_rate_check_test_dict_fail)
 
-    qc_obj.values_change_rate_check()
+    qc_obj.consecutive_values_max_allowed_difference()
 
     assert qc_obj.logger.info == ["value change rate check for variable 'test_fail' and dimension '0': fail"]
     assert not qc_obj.logger.errors
@@ -133,8 +133,8 @@ def test_change_rate_fail():
         os.remove(nc_path)
 
 
-@pytest.mark.usefixtures("create_nc_change_rate_check")
-def test_change_rate_var_not_in_file():
+@pytest.mark.usefixtures("create_nc_consecutive_values_max_allowed_difference")
+def test_consecutive_values_max_allowed_difference_var_not_in_file():
     """
     Test checking for the change rate of variables when variable is not in file.
     """
@@ -145,7 +145,7 @@ def test_change_rate_var_not_in_file():
 
     qc_obj.add_qc_checks_dict(change_rate_check_var_not_in_nc_dict)
 
-    qc_obj.values_change_rate_check()
+    qc_obj.consecutive_values_max_allowed_difference()
 
     assert not qc_obj.logger.errors
     assert qc_obj.logger.warnings == ['variable \'test_not_in_nc\' not in nc file']
@@ -153,8 +153,8 @@ def test_change_rate_var_not_in_file():
     if os.path.exists(nc_path):
         os.remove(nc_path)
 
-@pytest.mark.usefixtures("create_nc_change_rate_check")
-def test_change_rate_omitted_var():
+@pytest.mark.usefixtures("create_nc_consecutive_values_max_allowed_difference")
+def test_consecutive_values_max_allowed_difference_omitted_var():
     """
     Test checking for the change rate of variables when variable should be omitted from check.
     """
@@ -165,10 +165,11 @@ def test_change_rate_omitted_var():
 
     qc_obj.add_qc_checks_dict(change_rate_check_omit_var_test_dict)
 
-    qc_obj.values_change_rate_check()
+    qc_obj.consecutive_values_max_allowed_difference()
 
     #only variable test_pass is checked,variable test_fail isn't checked
-    assert qc_obj.logger.info == ["value change rate check for variable 'test_pass' and dimension '0': success"]
+    assert qc_obj.logger.info == ["value change rate check for variable 'test_pass' and dimension '0': success",
+                                  "value change rate check for variable 'test_fail' and dimension '0': fail"]
 
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings

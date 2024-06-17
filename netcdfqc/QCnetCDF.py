@@ -351,9 +351,10 @@ class QualityControl:
         checks if the amount of data points is above a given threshold
         """
 
-    def values_change_rate_check(self):
+    def consecutive_values_max_allowed_difference(self):
         """
-        Method checks if values in variables data change at an acceptable rate
+        Method checks if the difference between two consecutive values is smaller than specified maximum
+        allowed difference
         """
         # Log an error if there is no NetCDF loaded
         if self.nc is None:
@@ -362,7 +363,7 @@ class QualityControl:
 
         # Variables with 'do_values_change_at_acceptable_rate_check' True in the config file
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
-                         if properties["do_values_change_at_acceptable_rate_check"]['perform_check'] is True]
+                         if properties["consecutive_values_max_allowed_difference"]]
 
         vars_nc_file = list(self.nc.variables.keys())
 
@@ -373,12 +374,19 @@ class QualityControl:
 
             var_values = self.nc[var_name][:]
 
-            dimensions = self.qc_checks_vars[var_name]['do_values_change_at_acceptable_rate_check']['over_which_dimension']
-            dimensions_acceptable_diff = self.qc_checks_vars[var_name]['do_values_change_at_acceptable_rate_check']['acceptable_difference']
+            dimensions = self.qc_checks_vars[var_name]['consecutive_values_max_allowed_difference']['over_which_dimension']
+            dimensions_acceptable_diff = self.qc_checks_vars[var_name]['consecutive_values_max_allowed_difference']['maximum_difference']
 
             if not dimensions:
-                self.logger.add_error(f"dimension/s to check not specified")
-                continue
+                if(len(var_values.shape) == 1):
+
+                    #enables not specifying dimension in case of 1d variable
+                    dimensions = [0]
+                    dimensions_acceptable_diff = [dimensions_acceptable_diff]
+                else:
+                    self.logger.add_error(f"dimension/s to check not specified")
+                    continue
+
             if not dimensions_acceptable_diff:
                 self.logger.add_error(f"acceptable differences to check not specified")
                 continue
@@ -394,11 +402,13 @@ class QualityControl:
                 flat_difference_array = difference_array.flatten()
 
                 try:
-                    acceptable_difference = dimensions_acceptable_diff[d]
+                    acceptable_difference = list(dimensions_acceptable_diff)[d]
+
                 except IndexError:
-                    self.logger.add_error(f"threshold to check not specified")
                     success = False
+                    self.logger.add_error(f"threshold to check not specified")
                     continue
+
                 for i in flat_difference_array:
                     difference = abs(i)
                     if difference > acceptable_difference:
@@ -409,11 +419,10 @@ class QualityControl:
         return self
 
 
-    def constant_values_check(self):
+    def max_number_of_consecutive_same_value_check(self):
         """
-        Method checks if values in variables data are constant for a suspicious amount of time
+        Method checks if to many consecutive values of a variable are the same
         """
-        "'temperature': {'check_persistence': {'perform_check': True, 'dimension': time, 'data_points': 100}}"
         # Log an error if there is no NetCDF loaded
         if self.nc is None:
             self.logger.add_error("value persistence check error: no nc file loaded")
@@ -421,7 +430,7 @@ class QualityControl:
 
         # Variables with 'do_values_change_at_acceptable_rate_check' True in the config file
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
-                         if properties["is_value_constant_for_too_long_check"]['perform_check'] is True]
+                         if properties['max_number_of_consecutive_same_values']]
 
         vars_nc_file = list(self.nc.variables.keys())
 
@@ -430,77 +439,40 @@ class QualityControl:
                 self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
-            var_values = self.nc[var_name][:50]
-            dimensions = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['over_which_dimensions']
-            dimensions_thresholds = self.qc_checks_vars[var_name]['is_value_constant_for_too_long_check']['threshold_for_each_dimension']
+            var_values = self.nc[var_name][:]
 
-            if not dimensions:
-                self.logger.add_error(f"dimension/s to check not specified")
+            threshold = self.qc_checks_vars[var_name]['max_number_of_consecutive_same_values']['maximum']
+
+
+            if not threshold:
+                self.logger.add_error(f"threshold to check not specified")
                 continue
-            if not dimensions_thresholds:
-                self.logger.add_error(f"threshold/s to check not specified")
-                continue
-            if len(var_values.shape) < len(dimensions):
-                self.logger.add_error(f"variable {var_name} doesn't have {len(dimensions)} dimensions")
-                continue
+
 
             success = True
-            for i in dimensions:
-                var_values_data = np.rollaxis(var_values[:], i)
-                data_size = var_values_data.shape[0]
-                print(data_size)
-                var_values_dimension = np.ravel(var_values_data)
-                try:
-                    threshold = dimensions_thresholds[i]
-                except IndexError:
-                    self.logger.add_error(f"threshold to check not specified")
-                    success = False
-                    continue
+            if len(var_values) < threshold:
+                self.logger.add_info(f"length of variables values is smaller than threshold")
+                continue
 
-                if len(var_values_dimension) < threshold:
-                    self.logger.add_info(f"length of variables values is smaller than threshold")
-                    continue
+            consecutive_value_counts = {}
+            value_to_check_against = var_values[0]
+            count_consecutive = 1
 
-                consecutive_value_counts = {}
-                print(var_values_dimension[:50])
-
-                if(len(dimensions)==1):
-
-                    value_to_check_against = var_values_dimension[0]
+            for j in range(1, len(var_values)):
+                if var_values[j] == value_to_check_against:
+                    count_consecutive += 1
+                    if count_consecutive > threshold:
+                        consecutive_value_counts[value_to_check_against] = count_consecutive
+                        success = False
+                else:
+                    value_to_check_against = var_values[j]
                     count_consecutive = 1
-                    for j in range(1, len(var_values_dimension)):
-                        if var_values_dimension[j] == value_to_check_against:
-                            count_consecutive += 1
-                            if count_consecutive > threshold:
-                                consecutive_value_counts[value_to_check_against] = count_consecutive
-                                success = False
-                        else:
-                            value_to_check_against = var_values_dimension[z]
-                            count_consecutive = 1
-                    for value in consecutive_value_counts:
-                        self.logger.add_info(
-                            f"{var_name} has {consecutive_value_counts[value]} consecutive values {value}")
+            for value in consecutive_value_counts:
+                self.logger.add_info(
+                    f"{var_name} has {consecutive_value_counts[value]} consecutive values {value}")
 
-                    self.logger.add_info(
-                        f"value persistence check for variable '{var_name}': {'success' if success else 'fail'}")
-
-                    return self
-
-
-                for j in range(0, len(var_values_dimension)-data_size,data_size):
-                    value_to_check_against = var_values_dimension[j]
-                    count_consecutive = 1
-                    for z in range(j, data_size):
-                        if var_values_dimension[z] == value_to_check_against:
-                            count_consecutive += 1
-                            if count_consecutive > threshold:
-                                consecutive_value_counts[value_to_check_against] = count_consecutive
-                                success = False
-                        else:
-                            value_to_check_against = var_values_dimension[z]
-                            count_consecutive = 1
-
-                self.logger.add_info(f"value persistence check for variable '{var_name}' and dimension '{i}': {'success' if success else 'fail'}")
+            self.logger.add_info(
+                f"value persistence check for variable '{var_name}': {'success' if success else 'fail'}")
 
         return self
 
@@ -527,6 +499,6 @@ if __name__ == '__main__':
     yml_path =  Path(__file__).parent.parent / 'sample_data' / 'example_config.yaml'
     qc.add_qc_checks_dict(yaml2dict(yml_path))
     qc.load_netcdf(nc_path)
-    qc.constant_values_check()
+    qc.consecutive_values_max_allowed_difference()
     print(qc.logger.info)
     print(qc.logger.errors)
