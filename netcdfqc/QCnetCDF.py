@@ -36,8 +36,10 @@ class QualityControl:
     - existence_check: perform existence checks on dimensions, variables and global attributes
     - file_size_check: perform a file size check on the loaded netCDF file
     - data_points_amount_check: perform a data points amount check on the variables of the loaded netCDF file
-    - values_change_rate_check:
-    - constant_values_check:
+    - consecutive_values_max_allowed_difference_check: Method dedicated to checking if the difference between 2
+      consecutive values is smaller than the maximum allowed difference for each variable in a NetCDF file.
+    - max_number_of_consecutive_same_values_check: Method dedicated to checking whether too many
+      (maximum specified in the configuration file) consecutive values are the same for each variable in the NetCDF file.
     - expected_dimensions_vars_check: Method dedicated to checking whether each variable has the expected dimensions
     """
 
@@ -409,15 +411,179 @@ class QualityControl:
 
         return self
 
-    def values_change_rate_check(self):
-        """
-        Method checks if values in variables data change at an acceptable rate
-        """
 
-    def constant_values_check(self):
+    def consecutive_values_max_allowed_difference_check(self):
         """
-        Method checks if values in variables data are constant for a suspicious amount of time
+        Method dedicated to checking whether the difference between 2 consecutive
+        values is smaller than the maximum allowed difference for each variable in
+        the NetCDF file.
+
+        - logs an error to the logger if no netCDF file is loaded
+        - logs a warning to the logger if a variable specified to be checked does
+        not exist in the netCDF file
+        - logs a warning to the logger if the dimension/s to check are not specified
+        - logs a warning to the logger if the maximum difference/s to check are not specified
+        - logs a warning to the logger if the variable doesn't have a specified dimension
+        - writes a message to the logger whether the check succeeded or failed for each variable
+        :return: self
         """
+        # Log an error if there is no NetCDF loaded
+        if self.nc is None:
+            self.logger.add_error("consecutive_values_max_allowed_difference_check error: no nc file loaded")
+            return self
+
+        # Variables with 'consecutive_values_max_allowed_difference_check' in the config file
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+                         if properties["consecutive_values_max_allowed_difference_check"]]
+
+        vars_nc_file = list(self.nc.variables.keys())
+
+        # goes through all variables that should be checked
+        for var_name in vars_to_check:
+            # checks if variable is in NetCDF file
+            if var_name not in vars_nc_file:
+                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+                continue
+
+            # gets all values of the variable
+            var_values = self.nc[var_name][:]
+
+            # gets the specified dimensions
+            dimensions = self.qc_checks_vars[var_name]['consecutive_values_max_allowed_difference_check'][
+                'over_which_dimension']
+            # gets the maximum allowed difference for each dimension
+            dimensions_maximum_difference = \
+            self.qc_checks_vars[var_name]['consecutive_values_max_allowed_difference_check']['maximum_difference']
+
+            if not dimensions:
+                # enables not specifying dimension in case of 1d variable
+                if len(var_values.shape) == 1:
+                    dimensions = [0]
+                    dimensions_maximum_difference = [dimensions_maximum_difference]
+                else:
+                    self.logger.add_warning(f"dimension/s to check not specified")
+                    continue
+
+            # check if maximum difference is specified
+            if not dimensions_maximum_difference:
+                self.logger.add_warning(f"maximum difference/s to check not specified")
+                continue
+
+            # check if variable has as many dimensions as specified
+            if len(var_values.shape) < len(dimensions):
+                self.logger.add_warning(f"variable {var_name} doesn't have {len(dimensions)} dimensions")
+                continue
+
+            for d in dimensions:
+                success = True
+                # calculates the difference between 2 consecutive values
+                difference_array = np.diff(var_values, axis=d)
+                # flattens the array
+                flat_difference_array = difference_array.flatten()
+
+                try:
+                    # gets the maximum difference for each dimension
+                    maximum_difference = list(dimensions_maximum_difference)[d]
+
+                except IndexError:
+                    success = False
+                    self.logger.add_error(f"maximum difference to check not specified")
+                    continue
+
+                # goes through flattened array of consecutive differences
+                for i in flat_difference_array:
+                    difference = abs(i)
+                    if difference > maximum_difference:
+                        success = False
+
+                self.logger.add_info(
+                    f"consecutive_values_max_allowed_difference_check for variable '{var_name}' and dimension '{d}': {'success' if success else 'fail'}")
+
+        return self
+
+
+    def max_number_of_consecutive_same_values_check(self):
+        """
+        Method dedicated to checking whether too many (maximum specified in the configuration file)
+        consecutive values are the same for each variable in the NetCDF file.
+
+        - logs an error to the logger if no netCDF file is loaded
+        - logs a warning to the logger if a variable specified to be checked does
+        not exist in the netCDF file
+        - logs a warning to the logger if the maximum is not specified
+        - logs a error to the logger if the number of consecutive values exceeds the specified maximum
+        - writes a message to the logger whether the check succeeded or failed for each variable
+        :return: self
+                """
+        # Log an error if there is no NetCDF loaded
+        if self.nc is None:
+            self.logger.add_error("max_number_of_consecutive_same_values_check error: no nc file loaded")
+            return self
+
+        # Variables with 'do_values_change_at_acceptable_rate_check' in the config file
+        vars_to_check = [var for var, properties in self.qc_checks_vars.items()
+                         if properties['max_number_of_consecutive_same_values_check']]
+
+        vars_nc_file = list(self.nc.variables.keys())
+
+        # iterates through variables that should be checked
+        for var_name in vars_to_check:
+            if var_name not in vars_nc_file:
+                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+                continue
+
+            var_values = self.nc[var_name][:]
+
+            # get the maximum from configuration file
+            maximum = self.qc_checks_vars[var_name]['max_number_of_consecutive_same_values_check']['maximum']
+
+            # checks if maximum is specified
+            if not maximum:
+                self.logger.add_warning(f"Maximum not specified")
+                continue
+
+            success = True
+
+            # checks if the number of values is smaller than allowed maximum
+            if len(var_values) < maximum:
+                continue
+
+            # first value to check against
+            value_to_check_against = var_values[0]
+            # counts how many consecutive values there are
+            count_consecutive = 1
+
+            # loops through values
+            for j in range(1, len(var_values)):
+
+                # check if the value is the same as the previous one
+                if var_values[j] == value_to_check_against:
+                    count_consecutive += 1
+                else:
+                    # check if number of consecutive values is more than allowed
+                    if count_consecutive > maximum:
+                        success = False
+                        # logs that there are to many consecutive values
+                        self.logger.add_error(
+                            f"{var_name} has {count_consecutive} consecutive same values {var_values[j]},"
+                            f" which is higher than the threshold {maximum}")
+
+                    # sets value to check against to current value
+                    value_to_check_against = var_values[j]
+                    # sets consecutive count to 1
+                    count_consecutive = 1
+
+            # in case all values are the same or values at the end of the array are the same
+            if count_consecutive > maximum:
+                success = False
+                self.logger.add_error(
+                    f"{var_name} has {count_consecutive} consecutive same values {var_values[len(var_values) - 1]},"
+                    f" which is higher than the threshold {maximum}")
+
+            self.logger.add_info(
+                f"max_number_of_consecutive_same_values_check for variable '{var_name}': {'success' if success else 'fail'}")
+
+        return self
 
     def expected_dimensions_vars_check(self):
         """
