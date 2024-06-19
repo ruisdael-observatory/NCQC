@@ -3,7 +3,7 @@ dimensions:
     does_it_exist_check: true
 
 variables:
-  example_variable:
+  temperature:
     does_it_exist_check: true
     is_data_within_boundaries_check:
       perform_check: true
