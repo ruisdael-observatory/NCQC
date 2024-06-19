@@ -15,6 +15,10 @@ Functions:
 - create_data_points_amount_check: Test fixture for testing data_points_amount_check
 - create_nc_boundary_check_multidim_var: Test fixture for testing boundary
 checking when a variable is multidimensional
+- create_nc_consecutive_values_max_allowed_difference_check: Test fixture for testing
+  consecutive_values_max_allowed_difference_check.
+- create_nc_max_number_of_consecutive_same_values_check: Test fixture for testing max number
+  of consecutive values that are the same.
 """
 
 import os
@@ -309,4 +313,60 @@ def create_nc_boundary_check_multidim_var():
     var_2d[9, :19] = np.random.uniform(low=0, high=1, size=(1, 19))
     var_2d[9, 19] = 1.01
 
+    nc_file.close()
+
+@pytest.fixture()
+def create_nc_consecutive_values_max_allowed_difference_check():
+    """
+    Test fixture for testing consecutive_values_max_allowed_difference_check.
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_consecutive_values_max_allowed_difference_check.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    # Create a new netCDF file
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    # Create dimensions
+    nc_file.createDimension('time', 100)
+
+    # Create variables
+    test_pass = nc_file.createVariable('test_pass', 'f4', ('time',), fill_value=-1.0)
+    test_fail = nc_file.createVariable('test_fail', 'f4', ('time',), fill_value=-1.0)
+
+    # Set variables
+    test_pass[:] = np.ones(100)
+    #creates array of 100 values, each 5 larger than the previous one [0,5,10,...,495]
+    test_fail[:] = np.arange(0,500,5)
+
+    # Close the netCDF file
+    nc_file.close()
+
+@pytest.fixture()
+def create_nc_max_number_of_consecutive_same_values_check():
+    """
+    Test fixture for testing max number of consecutive values that are the same.
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_max_number_of_consecutive_same_values_check.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    # Create a new netCDF file
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    # Create dimensions
+    nc_file.createDimension('time', 100)
+
+    # Create variables
+    test_pass = nc_file.createVariable('test_pass', 'f4', ('time',), fill_value=-1.0)
+    test_fail = nc_file.createVariable('test_fail', 'f4', ('time',), fill_value=-1.0)
+
+    # Set variables
+    test_pass[:] = np.ones(100)
+    test_pass[::2] = 0
+    test_fail[:] = np.ones(100)
+
+    # Close the netCDF file
     nc_file.close()

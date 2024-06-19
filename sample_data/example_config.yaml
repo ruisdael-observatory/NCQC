@@ -12,10 +12,10 @@ variables:
     are_there_enough_data_points_check:
       perform_check: true
       threshold: 100
-    consecutive_values_max_allowed_difference:
+    consecutive_values_max_allowed_difference_check:
       over_which_dimension: [0]
       maximum_difference: [1]
-    max_number_of_consecutive_same_values:
+    max_number_of_consecutive_same_values_check:
       maximum: 25
     expected_dimensions_check:
       perform_check: true
