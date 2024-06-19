@@ -326,7 +326,7 @@ def test_yaml2dict():
         }},
         'file size': {
             'perform_check': True,
-            'lower_bound': 0,
-            'upper_bound': 1
+            'lower_bound': 10000,
+            'upper_bound': 20000
         }
     }
