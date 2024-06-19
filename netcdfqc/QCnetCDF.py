@@ -600,14 +600,3 @@ def yaml2dict(path: Path) -> dict:
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
-
-
-if __name__ == '__main__':
-    qc = QualityControl()
-    nc_path = Path(__file__).parent.parent / 'sample_data' / '2024526_Green_Village-GV_THIES006.nc'
-    yml_path =  Path(__file__).parent.parent / 'sample_data' / 'example_config.yaml'
-    qc.add_qc_checks_dict(yaml2dict(yml_path))
-    qc.load_netcdf(nc_path)
-    qc.consecutive_values_max_allowed_difference()
-    print(qc.logger.info)
-    print(qc.logger.errors)
