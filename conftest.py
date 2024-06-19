@@ -11,6 +11,8 @@ Functions:
 - create_nc_emptiness_check_full: Test fixture for testing boundary checking when everything is fully populated.
 - create_nc_emptiness_check_mixed: Test fixture for testing boundary checking when some things are not fully populated.
 - create_nc_emptiness_check_empty: Test fixture for testing boundary checking when nothing is populated.
+- create_nc_consecutive_values_max_allowed_difference_check: Test fixture for testing consecutive_values_max_allowed_difference_check.
+- create_nc_max_number_of_consecutive_same_values_check: Test fixture for testing max number of consecutive values that are the same.
 """
 
 import os
@@ -278,11 +280,11 @@ def create_nc_boundary_check_multidim_var():
     nc_file.close()
 
 @pytest.fixture()
-def create_nc_consecutive_values_max_allowed_difference():
+def create_nc_consecutive_values_max_allowed_difference_check():
     """
-    Test fixture for testing the change rate check.
+    Test fixture for testing consecutive_values_max_allowed_difference_check.
     """
-    nc_path = Path(__file__).parent / 'sample_data' / 'test_change_rate.nc'
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_consecutive_values_max_allowed_difference_check.nc'
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
@@ -299,17 +301,18 @@ def create_nc_consecutive_values_max_allowed_difference():
 
     # Set variables
     test_pass[:] = np.ones(100)
+    #creates array of 100 values, each 5 larger than the previous one [0,5,10,...,495]
     test_fail[:] = np.arange(0,500,5)
 
     # Close the netCDF file
     nc_file.close()
 
 @pytest.fixture()
-def create_nc_max_number_of_consecutive_same_values():
+def create_nc_max_number_of_consecutive_same_values_check():
     """
     Test fixture for testing max number of consecutive values that are the same.
     """
-    nc_path = Path(__file__).parent / 'sample_data' / 'test_max_number_of_consecutive_same_values.nc'
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_max_number_of_consecutive_same_values_check.nc'
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
