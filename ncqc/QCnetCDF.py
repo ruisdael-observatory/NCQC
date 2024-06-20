@@ -376,11 +376,11 @@ class QualityControl:
 
     def data_points_amount_check(self):
         """
-        Method to perform amount of data points for each variable check. Method
-        checks if the amount of data points is above a given threshold
+        Method to perform amount of data points for each variable check.
+        Method checks if the amount of data points is above a given minimum.
 
         - logs an error if there is no netCDF file loaded
-        - logs an error if the number of data points for a variable is below the specified threshold
+        - logs an error if the number of data points for a variable is below the specified minimum
         - logs an info message for each variable, stating whether the check is successful or not
 
         :return: self
@@ -399,12 +399,12 @@ class QualityControl:
                 self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
-            threshold = self.qc_checks_vars[var_name]['data_points_amount_check']['threshold']
+            minimum = self.qc_checks_vars[var_name]['data_points_amount_check']['minimum']
             var_values_size = self.nc[var_name][:].size  # total number of data points over all dimensions
 
-            if threshold > var_values_size:
+            if minimum > var_values_size:
                 self.logger.add_error(f"data points amount check error: number of data points ({var_values_size})"
-                                      f" for variable '{var_name}' is below the specified threshold ({threshold})")
+                                      f" for variable '{var_name}' is below the specified minimum ({minimum})")
                 self.logger.add_info(f"data points amount check for variable '{var_name}': FAIL")
             else:
                 self.logger.add_info(f"data points amount check for variable '{var_name}': SUCCESS")
@@ -412,7 +412,7 @@ class QualityControl:
         return self
 
 
-    def adjacent_values_difference_check(self): # adjacent_values_difference_check
+    def adjacent_values_difference_check(self):
         """
         Method dedicated to checking whether the difference between 2 adjacent
         values is smaller than the maximum allowed difference for each variable in
@@ -477,7 +477,7 @@ class QualityControl:
 
             for d in dimensions:
                 success = True
-                # calculates the difference between 2 consecutive values
+                # calculates the difference between 2 adjacent values
                 difference_array = np.diff(var_values, axis=d)
                 # flattens the array
                 flat_difference_array = difference_array.flatten()
@@ -491,7 +491,7 @@ class QualityControl:
                     self.logger.add_warning(f"maximum difference not specified")
                     continue
 
-                # goes through flattened array of consecutive differences
+                # goes through flattened array of adjacent differences
                 for i in flat_difference_array:
                     difference = abs(i)
                     if difference > maximum_difference:
@@ -504,7 +504,7 @@ class QualityControl:
         return self
 
 
-    def consecutive_identical_values_check(self): # consecutive_identical_values_check
+    def consecutive_identical_values_check(self):
         """
         Method dedicated to checking whether too many (maximum specified in the configuration file)
         consecutive values are the same for each variable in the NetCDF file.
@@ -591,6 +591,7 @@ class QualityControl:
         """
         Method dedicated to checking whether each variable has the expected dimensions
         """
+        self.logger.add_warning("not implemented yet")
 
 def yaml2dict(path: Path) -> dict:
     """

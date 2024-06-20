@@ -2,12 +2,11 @@
 Module for testing the functionality of the consecutive_identical_values_check method
 
 Functions:
-- test_consecutive_identical_values_check_no_nc: Test for max_number_of_consecutive_same_values when no netCDF file is loaded
+- test_consecutive_identical_values_check_no_nc: Test for consecutive_identical_values_check when no netCDF file is loaded
 - test_consecutive_identical_values_check_success: Test for when there aren't to many consecutive same values
 - test_consecutive_identical_values_check_fail: Test for when a variable has to many consecutive same values
-- test_max_number_of_consecutive_same_values_var_check_not_in_file: Test checking the max number of consecutive same values of variables
+- test_consecutive_identical_values_check_var_not_in_file: Test checking the max number of consecutive same values of variables
     when variable is not in file
-
 """
 
 import os

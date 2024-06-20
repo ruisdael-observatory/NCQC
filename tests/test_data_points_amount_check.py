@@ -42,13 +42,13 @@ class TestDataPointsAmountCheck(unittest.TestCase):
                 'var_1d': {
                     'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 10
+                        'minimum': 10
                     }
                 },
                 'var_2d': {
                     'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 200
+                        'minimum': 200
                     }
                 }
             },
@@ -74,13 +74,13 @@ class TestDataPointsAmountCheck(unittest.TestCase):
                 'var_1d': {
                     'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 10
+                        'minimum': 10
                     }
                 },
                 'var_2d': {
                     'data_points_amount_check': {
                         'perform_check': False,
-                        'threshold': 200
+                        'minimum': 200
                     }
                 }
             },
@@ -106,13 +106,13 @@ class TestDataPointsAmountCheck(unittest.TestCase):
                 'var_1d': {
                     'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 10
+                        'minimum': 10
                     }
                 },
                 'var_2d': {
                     'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 201
+                        'minimum': 201
                     }
                 }
             },
@@ -123,7 +123,7 @@ class TestDataPointsAmountCheck(unittest.TestCase):
         assert qc_obj.logger.info == ["data points amount check for variable 'var_1d': SUCCESS",
                                       "data points amount check for variable 'var_2d': FAIL"]
         assert qc_obj.logger.errors == ["data points amount check error: number of data points (200)"
-                                        " for variable 'var_2d' is below the specified threshold (201)"]
+                                        " for variable 'var_2d' is below the specified minimum (201)"]
         if os.path.exists(nc_path):
             os.remove(nc_path)
 
@@ -141,7 +141,7 @@ class TestDataPointsAmountCheck(unittest.TestCase):
                 'var_3d': {
                     'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 1000
+                        'minimum': 1000
                     }
                 }
             },

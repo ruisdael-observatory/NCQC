@@ -12,7 +12,7 @@ variables:
       upper_bound: 1
     data_points_amount_check:
       perform_check: true
-      threshold: 100 # -> minimum
+      minimum: 100
     adjacent_values_difference_check:
       over_which_dimension: [0]
       maximum_difference: [1]

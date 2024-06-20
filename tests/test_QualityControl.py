@@ -307,7 +307,7 @@ def test_yaml2dict():
                     'lower_bound': 0,
                     'upper_bound': 1
                 },
-                'data_points_amount_check': {'perform_check': True, 'threshold': 100},
+                'data_points_amount_check': {'perform_check': True, 'minimum': 100},
                 'adjacent_values_difference_check': {
                     'over_which_dimension': [0],
                     'maximum_difference': [1]
