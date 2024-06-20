@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 import pytest
 
-from netcdfqc.QCnetCDF import QualityControl
+from ncqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 
@@ -75,7 +75,7 @@ def test_adjacent_values_difference_check_no_nc():
 
 
 @pytest.mark.usefixtures("create_nc_adjacent_values_difference_check")
-def test_consecutive_values_max_allowed_difference_success():
+def test_adjacent_values_max_allowed_difference_success():
     """
     Test for when adjacent_values_difference_check succeeds.
     """
@@ -120,7 +120,7 @@ def test_adjacent_values_difference_check_fail():
 
 
 @pytest.mark.usefixtures("create_nc_adjacent_values_difference_check")
-def test_consecutive_values_max_allowed_difference_var_not_in_file():
+def test_adjacent_values_max_allowed_difference_var_not_in_file():
     """
     Test adjacent_values_difference_check when variable is not in file.
     """

@@ -10,7 +10,7 @@ import netCDF4
 import yaml
 import numpy as np
 
-from netcdfqc.log import LoggerQC
+from ncqc.log import LoggerQC
 
 
 class QualityControl:
@@ -414,7 +414,7 @@ class QualityControl:
 
     def adjacent_values_difference_check(self): # adjacent_values_difference_check
         """
-        Method dedicated to checking whether the difference between 2 consecutive
+        Method dedicated to checking whether the difference between 2 adjacent
         values is smaller than the maximum allowed difference for each variable in
         the NetCDF file.
 
@@ -424,6 +424,7 @@ class QualityControl:
         - logs a warning to the logger if the dimension/s to check are not specified
         - logs a warning to the logger if the maximum difference/s to check are not specified
         - logs a warning to the logger if the variable doesn't have a specified dimension
+        - logs an error for each instance of the difference being too high
         - writes a message to the logger whether the check succeeded or failed for each variable
         :return: self
         """
@@ -487,7 +488,7 @@ class QualityControl:
 
                 except IndexError:
                     success = False
-                    self.logger.add_error(f"maximum difference not specified")
+                    self.logger.add_warning(f"maximum difference not specified")
                     continue
 
                 # goes through flattened array of consecutive differences

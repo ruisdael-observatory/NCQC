@@ -23,7 +23,7 @@ from pathlib import Path
 from hypothesis import given, strategies as st
 import pytest
 
-from netcdfqc.QCnetCDF import QualityControl
+from ncqc.QCnetCDF import QualityControl
 from conftest import create_nc_data_boundaries_check_property_based
 
 data_dir = Path(__file__).parent.parent / 'sample_data'

@@ -15,9 +15,9 @@ Functions:
 from pathlib import Path
 from unittest.mock import patch
 
-from netcdfqc.create_config import create_config_dict_from_yaml, create_config_dict_from_dict
+from ncqc.create_config import create_config_dict_from_yaml, create_config_dict_from_dict
 
-@patch('netcdfqc.create_config.yaml2dict')
+@patch('ncqc.create_config.yaml2dict')
 def test_create_from_yaml(mock_yaml2dict):
     """
     Test for create_config_dict_from_yaml with default arguments and a mocked yaml2dict function.

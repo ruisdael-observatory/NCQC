@@ -4,7 +4,7 @@ Module for testing the LoggerQC class from log.py
 import unittest
 from unittest.mock import patch, Mock
 
-from netcdfqc.log import LoggerQC
+from ncqc.log import LoggerQC
 
 
 class TestLoggerQC(unittest.TestCase):
@@ -70,8 +70,8 @@ class TestLoggerQC(unittest.TestCase):
         logger_obj.add_info("example message 2")
         assert logger_obj.info == ['example message', 'example message 2']
 
-    @patch('netcdfqc.log.date')
-    @patch('netcdfqc.log.datetime')
+    @patch('ncqc.log.date')
+    @patch('ncqc.log.datetime')
     def test_create_report(self, mock_datetime, mock_date):
         """
         Test for the create_report method with a single report creation
@@ -102,8 +102,8 @@ class TestLoggerQC(unittest.TestCase):
         assert not logger_obj.errors
         assert not logger_obj.warnings
 
-    @patch('netcdfqc.log.date')
-    @patch('netcdfqc.log.datetime')
+    @patch('ncqc.log.date')
+    @patch('ncqc.log.datetime')
     def test_create_report_mult_reports(self, mock_datetime, mock_date):
         """
         Test for the create_report method with 2 report creations

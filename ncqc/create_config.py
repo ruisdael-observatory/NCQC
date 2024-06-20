@@ -26,7 +26,7 @@ Functions:
 from pathlib import Path
 from typing import List, Dict
 
-from netcdfqc.QCnetCDF import yaml2dict
+from ncqc.QCnetCDF import yaml2dict
 
 def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default-value
                                  dimensions_name: str = 'dimensions',

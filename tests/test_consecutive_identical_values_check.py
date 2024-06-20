@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 import pytest
 
-from netcdfqc.QCnetCDF import QualityControl
+from ncqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 

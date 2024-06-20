@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from netcdfqc.QCnetCDF import QualityControl, yaml2dict
+from ncqc.QCnetCDF import QualityControl, yaml2dict
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 
@@ -27,7 +27,7 @@ class TestQualityControl(unittest.TestCase):
     - test_yaml2dict: Test for loading a yaml file into a dictionary
     """
 
-    @patch('netcdfqc.QCnetCDF.yaml2dict')
+    @patch('ncqc.QCnetCDF.yaml2dict')
     def test_add_qc_checks_conf(self, mock_yaml2dict):
         """
         Test for adding the required checks by using a config file
@@ -181,7 +181,7 @@ class TestQualityControl(unittest.TestCase):
             , 'missing global attributes checks in provided config_file/dict'
             , 'missing file size check in provided config_file/dict']
 
-    @patch('netcdfqc.QCnetCDF.yaml2dict')
+    @patch('ncqc.QCnetCDF.yaml2dict')
     def test_replace_qc_checks_conf(self, mock_yaml2dict):
         """
         Test for replacing the required checks by using a config file
@@ -280,7 +280,7 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_gl_attrs == new_checks_dict['global attributes']
         assert qc_obj.qc_check_file_size == new_checks_dict['file size']
 
-    @patch('netcdfqc.QCnetCDF.netCDF4.Dataset')
+    @patch('ncqc.QCnetCDF.netCDF4.Dataset')
     def test_load_netcdf(self, mock_dataset):
         """
         Test for using load_netcdf to set the netCDF attribute

@@ -2,7 +2,7 @@
 venv/*
 build/*
 dist/*
-netcdfqc.egg-info/*
+ncqc.egg-info/*
 __pycache__
 .idea
 .hypothesis/*
