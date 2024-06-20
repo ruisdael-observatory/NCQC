@@ -113,21 +113,21 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
     # Give every dimension the setup for potentially applicable checks with "TO DO" for values
     for dim in qc_dict['dimensions']:
         qc_dict['dimensions'][dim] = {
-            'does_it_exist_check': 'TODO'
+            'existence_check': 'TODO'
         }
 
     # Give every variable the setup for potentially applicable checks with "TO DO" for values,
     # which have to be manually edited
     for var in qc_dict['variables']:
         qc_dict['variables'][var] = {
-            'does_it_exist_check': 'TODO',
-            'is_it_empty_check': 'TODO',
-            'is_data_within_boundaries_check': {
+            'existence_check': 'TODO',
+            'emptiness_check': 'TODO',
+            'data_boundaries_check': {
                 'perform_check': 'TODO',
                 'lower_bound': 'TODO',
                 'upper_bound': 'TODO'
             },
-            'are_there_enough_data_points_check': {
+            'data_points_amount_check': {
                 'perform_check': 'TODO',
                 'threshold': 'TODO',
                 'dimension': 'TODO'
@@ -145,8 +145,8 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
     # Give every global attribute the setup for potentially applicable checks with "TO DO" for values
     for attr in qc_dict['global_attributes']:
         qc_dict['global_attributes'][attr] = {
-            'does_it_exist_check': 'TODO',
-            'is_it_empty_check': 'TODO'
+            'existence_check': 'TODO',
+            'emptiness_check': 'TODO'
         }
 
     return qc_dict

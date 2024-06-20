@@ -1,21 +1,22 @@
 dimensions:
   example_dimension:
-    does_it_exist_check: true
+    existence_check: true
 
 variables:
   example_variable:
-    does_it_exist_check: true
-    is_data_within_boundaries_check:
+    existence_check: true
+    emptiness_check: true
+    data_boundaries_check:
       perform_check: true
       lower_bound: 0
       upper_bound: 1
-    are_there_enough_data_points_check:
+    data_points_amount_check:
       perform_check: true
-      threshold: 100
-    consecutive_values_max_allowed_difference_check:
+      threshold: 100 # -> minimum
+    adjacent_values_difference_check:
       over_which_dimension: [0]
       maximum_difference: [1]
-    max_number_of_consecutive_same_values_check:
+    consecutive_identical_values_check:
       maximum: 25
     expected_dimensions_check:
       perform_check: true
@@ -23,8 +24,8 @@ variables:
 
 global attributes:
   example_gl_attr:
-    does_it_exist_check: true
-    is_it_empty_check: true
+    existence_check: true
+    emptiness_check: true
 
 file size:
   perform_check: true

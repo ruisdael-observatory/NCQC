@@ -297,21 +297,22 @@ def test_yaml2dict():
     """
     res = yaml2dict(Path(__file__).parent.parent / 'sample_data/example_config.yaml')
     assert res == {
-        'dimensions': {'example_dimension': {'does_it_exist_check': True}},
+        'dimensions': {'example_dimension': {'existence_check': True}},
         'variables': {
             'example_variable': {
-                'does_it_exist_check': True,
-                'is_data_within_boundaries_check': {
+                'existence_check': True,
+                'emptiness_check': True,
+                'data_boundaries_check': {
                     'perform_check': True,
                     'lower_bound': 0,
                     'upper_bound': 1
                 },
-                'are_there_enough_data_points_check': {'perform_check': True, 'threshold': 100},
-                'consecutive_values_max_allowed_difference_check': {
+                'data_points_amount_check': {'perform_check': True, 'threshold': 100},
+                'adjacent_values_difference_check': {
                     'over_which_dimension': [0],
                     'maximum_difference': [1]
                 },
-                'max_number_of_consecutive_same_values_check': {
+                'consecutive_identical_values_check': {
                     'maximum': 25
                 },
                 'expected_dimensions_check': {
@@ -321,8 +322,8 @@ def test_yaml2dict():
             }
         },
         'global attributes': {'example_gl_attr': {
-            'does_it_exist_check': True,
-            'is_it_empty_check': True
+            'existence_check': True,
+            'emptiness_check': True
         }},
         'file size': {
             'perform_check': True,

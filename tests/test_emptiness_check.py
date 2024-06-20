@@ -42,15 +42,15 @@ def test_emptiness_check_full():
     qc_obj.load_netcdf(nc_path)
 
     qc_obj.qc_checks_vars = {
-        'temperature': {'is_it_empty_check': True},
-        'wind_speed': {'is_it_empty_check': True},
-        'wind_direction': {'is_it_empty_check': True},
-        'altitude': {'is_it_empty_check': False}
+        'temperature': {'emptiness_check': True},
+        'wind_speed': {'emptiness_check': True},
+        'wind_direction': {'emptiness_check': True},
+        'altitude': {'emptiness_check': False}
     }
     qc_obj.qc_checks_gl_attrs = {
-        'title': {'is_it_empty_check': True},
-        'source': {'is_it_empty_check': False},
-        'contributors': {'is_it_empty_check': True}
+        'title': {'emptiness_check': True},
+        'source': {'emptiness_check': False},
+        'contributors': {'emptiness_check': True}
     }
 
     qc_obj.emptiness_check()
@@ -83,17 +83,17 @@ def test_emptiness_check_mixed():
     qc_obj.load_netcdf(nc_path)
 
     qc_obj.qc_checks_vars = {
-        'temperature': {'is_it_empty_check': True},
-        'wind_speed': {'is_it_empty_check': True},
-        'wind_direction': {'is_it_empty_check': True},
-        'longitude': {'is_it_empty_check': True},
-        'latitude': {'is_it_empty_check': True},
-        'altitude': {'is_it_empty_check': True}
+        'temperature': {'emptiness_check': True},
+        'wind_speed': {'emptiness_check': True},
+        'wind_direction': {'emptiness_check': True},
+        'longitude': {'emptiness_check': True},
+        'latitude': {'emptiness_check': True},
+        'altitude': {'emptiness_check': True}
     }
     qc_obj.qc_checks_gl_attrs = {
-        'title': {'is_it_empty_check': True},
-        'source': {'is_it_empty_check': False},
-        'contributors': {'is_it_empty_check': True}
+        'title': {'emptiness_check': True},
+        'source': {'emptiness_check': False},
+        'contributors': {'emptiness_check': True}
     }
 
     qc_obj.emptiness_check()
@@ -130,14 +130,14 @@ def test_emptiness_check_all_empty():
     qc_obj.load_netcdf(nc_path)
 
     qc_obj.qc_checks_vars = {
-        'temperature': {'is_it_empty_check': True},
-        'wind_speed': {'is_it_empty_check': True},
-        'wind_direction': {'is_it_empty_check': True}
+        'temperature': {'emptiness_check': True},
+        'wind_speed': {'emptiness_check': True},
+        'wind_direction': {'emptiness_check': True}
     }
     qc_obj.qc_checks_gl_attrs = {
-        'title': {'is_it_empty_check': True},
-        'source': {'is_it_empty_check': False},
-        'contributors': {'is_it_empty_check': True}
+        'title': {'emptiness_check': True},
+        'source': {'emptiness_check': False},
+        'contributors': {'emptiness_check': True}
     }
 
     qc_obj.emptiness_check()
@@ -174,10 +174,10 @@ def test_emptiness_check_all_false():
     qc_obj.load_netcdf(nc_path)
 
     qc_obj.qc_checks_vars = {
-        'example_variable': {'is_it_empty_check': False}
+        'example_variable': {'emptiness_check': False}
     }
     qc_obj.qc_checks_gl_attrs = {
-        'example_attribute': {'is_it_empty_check': False}
+        'example_attribute': {'emptiness_check': False}
     }
 
     qc_obj.emptiness_check()

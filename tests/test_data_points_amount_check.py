@@ -40,13 +40,13 @@ class TestDataPointsAmountCheck(unittest.TestCase):
             'dimensions': {},
             'variables': {
                 'var_1d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
                         'threshold': 10
                     }
                 },
                 'var_2d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
                         'threshold': 200
                     }
@@ -72,13 +72,13 @@ class TestDataPointsAmountCheck(unittest.TestCase):
             'dimensions': {},
             'variables': {
                 'var_1d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
                         'threshold': 10
                     }
                 },
                 'var_2d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': False,
                         'threshold': 200
                     }
@@ -104,13 +104,13 @@ class TestDataPointsAmountCheck(unittest.TestCase):
             'dimensions': {},
             'variables': {
                 'var_1d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
                         'threshold': 10
                     }
                 },
                 'var_2d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
                         'threshold': 201
                     }
@@ -139,7 +139,7 @@ class TestDataPointsAmountCheck(unittest.TestCase):
             'dimensions': {},
             'variables': {
                 'var_3d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
                         'threshold': 1000
                     }
