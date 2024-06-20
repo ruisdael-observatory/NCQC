@@ -87,7 +87,7 @@ def test_consecutive_identical_values_check_success():
     qc_obj.consecutive_identical_values_check()
 
     assert qc_obj.logger.info == ["consecutive_identical_values_check for variable 'test_pass': "
-    'success']
+    'SUCCESS']
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
@@ -108,7 +108,7 @@ def test_consecutive_identical_values_check_fail():
 
     qc_obj.consecutive_identical_values_check()
 
-    assert qc_obj.logger.info == ["consecutive_identical_values_check for variable 'test_fail': fail"]
+    assert qc_obj.logger.info == ["consecutive_identical_values_check for variable 'test_fail': FAIL"]
     assert qc_obj.logger.errors == ["test_fail has 100 consecutive same values 1.0, which is higher than the threshold 50"]
     assert not qc_obj.logger.warnings
 

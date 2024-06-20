@@ -89,7 +89,7 @@ def test_consecutive_values_max_allowed_difference_success():
     qc_obj.adjacent_values_difference_check()
 
     assert qc_obj.logger.info == ["adjacent_values_difference_check for variable 'test_pass'"
-                                  " and dimension '0': success"]
+                                  " and dimension '0': SUCCESS"]
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
@@ -111,8 +111,8 @@ def test_adjacent_values_difference_check_fail():
     qc_obj.adjacent_values_difference_check()
 
     assert qc_obj.logger.info == ["adjacent_values_difference_check for variable 'test_fail' and "
-                                  "dimension '0': fail"]
-    assert not qc_obj.logger.errors
+                                  "dimension '0': FAIL"]
+    assert len(qc_obj.logger.errors) == 19
     assert not qc_obj.logger.warnings
 
     if os.path.exists(nc_path):

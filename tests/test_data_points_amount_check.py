@@ -167,4 +167,4 @@ class TestDataPointsAmountCheck(unittest.TestCase):
         qc_obj.data_points_amount_check()
         assert not qc_obj.logger.info
         assert not qc_obj.logger.warnings
-        assert qc_obj.logger.errors == ['data points amount check error: no nc file loaded']
+        assert qc_obj.logger.errors == ['data_points_amount_check error: no nc file loaded']

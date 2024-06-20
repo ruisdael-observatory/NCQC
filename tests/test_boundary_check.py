@@ -81,7 +81,7 @@ def test_data_boundaries_check_no_nc():
     qc_obj.add_qc_checks_dict(data_boundaries_check_test_dict)
     qc_obj.data_boundaries_check()
     assert not qc_obj.logger.info
-    assert qc_obj.logger.errors == ['boundary check error: no nc file loaded']
+    assert qc_obj.logger.errors == ['data_boundaries_check error: no nc file loaded']
     assert not qc_obj.logger.warnings
 
 

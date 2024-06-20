@@ -133,4 +133,4 @@ class TestFileSizeCheck(unittest.TestCase):
         qc_obj = QualityControl()
         res = qc_obj.file_size_check()
         assert res == qc_obj
-        assert qc_obj.logger.errors == ['file size check error: no nc file loaded']
+        assert qc_obj.logger.errors == ['file_size_check error: no nc file loaded']

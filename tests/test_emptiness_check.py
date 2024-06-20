@@ -25,7 +25,7 @@ def test_emptiness_check_no_nc():
     qc_obj = QualityControl()
     qc_obj.emptiness_check()
 
-    assert qc_obj.logger.errors == ['emptiness check error: no nc file loaded']
+    assert qc_obj.logger.errors == ['emptiness_check error: no nc file loaded']
     assert not qc_obj.logger.warnings
     assert not qc_obj.logger.info
 

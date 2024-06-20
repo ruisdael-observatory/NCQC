@@ -337,8 +337,9 @@ def create_nc_adjacent_values_difference_check():
 
     # Set variables
     test_pass[:] = np.ones(100)
-    #creates array of 100 values, each 5 larger than the previous one [0,5,10,...,495]
-    test_fail[:] = np.arange(0,500,5)
+    # creates an array of first 80 ones, then 20 values, each 5 larger than the previous one [0,5,10,...,95]
+    test_fail[:80] = np.ones(80)
+    test_fail[80:] = np.arange(0,100,5)
 
     # Close the netCDF file
     nc_file.close()

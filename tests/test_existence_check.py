@@ -25,7 +25,7 @@ def test_existence_check_no_nc():
     qc_obj = QualityControl()
     qc_obj.existence_check()
 
-    assert qc_obj.logger.errors == ['existence check error: no nc file loaded']
+    assert qc_obj.logger.errors == ['existence_check error: no nc file loaded']
     assert not qc_obj.logger.warnings
     assert not qc_obj.logger.info
 
