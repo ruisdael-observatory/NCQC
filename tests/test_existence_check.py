@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 import pytest
 
-from netcdfqc.QCnetCDF import QualityControl
+from ncqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 
@@ -25,7 +25,7 @@ def test_existence_check_no_nc():
     qc_obj = QualityControl()
     qc_obj.existence_check()
 
-    assert qc_obj.logger.errors == ['existence check error: no nc file loaded']
+    assert qc_obj.logger.errors == ['existence_check error: no nc file loaded']
     assert not qc_obj.logger.warnings
     assert not qc_obj.logger.info
 
@@ -42,19 +42,19 @@ def test_existence_check_all_exist():
     qc_obj.load_netcdf(nc_path)
 
     qc_obj.qc_checks_dims = {
-        'time': {'does_it_exist_check': True},
-        'diameter_classes': {'does_it_exist_check': False},
-        'velocity_classes': {'does_it_exist_check': True}
+        'time': {'existence_check': True},
+        'diameter_classes': {'existence_check': False},
+        'velocity_classes': {'existence_check': True}
     }
     qc_obj.qc_checks_vars = {
-        'longitude': {'does_it_exist_check': True},
-        'latitude': {'does_it_exist_check': True},
-        'altitude': {'does_it_exist_check': True}
+        'longitude': {'existence_check': True},
+        'latitude': {'existence_check': True},
+        'altitude': {'existence_check': True}
     }
     qc_obj.qc_checks_gl_attrs = {
-        'title': {'does_it_exist_check': True},
-        'source': {'does_it_exist_check': True},
-        'contributors': {'does_it_exist_check': False}
+        'title': {'existence_check': True},
+        'source': {'existence_check': True},
+        'contributors': {'existence_check': False}
     }
 
     qc_obj.existence_check()
@@ -87,22 +87,22 @@ def test_existence_check_mixed():
     qc_obj.load_netcdf(nc_path)
 
     qc_obj.qc_checks_dims = {
-        'time': {'does_it_exist_check': True},
-        'diameter_classes': {'does_it_exist_check': False},
-        'velocity_classes': {'does_it_exist_check': True},
-        'bad_dimension': {'does_it_exist_check': True}
+        'time': {'existence_check': True},
+        'diameter_classes': {'existence_check': False},
+        'velocity_classes': {'existence_check': True},
+        'bad_dimension': {'existence_check': True}
     }
     qc_obj.qc_checks_vars = {
-        'longitude': {'does_it_exist_check': True},
-        'latitude': {'does_it_exist_check': True},
-        'altitude': {'does_it_exist_check': True},
-        'bad_variable': {'does_it_exist_check': True}
+        'longitude': {'existence_check': True},
+        'latitude': {'existence_check': True},
+        'altitude': {'existence_check': True},
+        'bad_variable': {'existence_check': True}
     }
     qc_obj.qc_checks_gl_attrs = {
-        'title': {'does_it_exist_check': True},
-        'source': {'does_it_exist_check': True},
-        'contributors': {'does_it_exist_check': False},
-        'bad_attribute': {'does_it_exist_check': True}
+        'title': {'existence_check': True},
+        'source': {'existence_check': True},
+        'contributors': {'existence_check': False},
+        'bad_attribute': {'existence_check': True}
     }
 
     qc_obj.existence_check()
@@ -136,14 +136,14 @@ def test_existence_check_none_exist():
     qc_obj.load_netcdf(nc_path)
 
     qc_obj.qc_checks_dims = {
-        'bad_dimension': {'does_it_exist_check': True}
+        'bad_dimension': {'existence_check': True}
     }
     qc_obj.qc_checks_vars = {
-        'bad_variable1': {'does_it_exist_check': True},
-        'bad_variable2': {'does_it_exist_check': True}
+        'bad_variable1': {'existence_check': True},
+        'bad_variable2': {'existence_check': True}
     }
     qc_obj.qc_checks_gl_attrs = {
-        'bad_attribute': {'does_it_exist_check': True}
+        'bad_attribute': {'existence_check': True}
     }
 
     qc_obj.existence_check()
@@ -178,13 +178,13 @@ def test_existence_check_all_false():
     qc_obj.load_netcdf(nc_path)
 
     qc_obj.qc_checks_dims = {
-        'example_dimension': {'does_it_exist_check': False}
+        'example_dimension': {'existence_check': False}
     }
     qc_obj.qc_checks_vars = {
-        'example_variable': {'does_it_exist_check': False}
+        'example_variable': {'existence_check': False}
     }
     qc_obj.qc_checks_gl_attrs = {
-        'example_attribute': {'does_it_exist_check': False}
+        'example_attribute': {'existence_check': False}
     }
 
     qc_obj.existence_check()

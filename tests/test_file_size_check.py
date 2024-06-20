@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch, Mock
 
-from netcdfqc.QCnetCDF import QualityControl
+from ncqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 
@@ -28,7 +28,7 @@ class TestFileSizeCheck(unittest.TestCase):
     - test_no_nc_file: Testing the file_size_check method from QCnetCDF.py
      when there is no netCDF file loaded
     """
-    @patch('netcdfqc.QCnetCDF.Path.stat', return_value=Mock(st_size=15000))
+    @patch('ncqc.QCnetCDF.Path.stat', return_value=Mock(st_size=15000))
     def test_file_size_check_success(self, mock_path_stat):  # pylint: disable=unused-argument
         """
         Testing the file_size_check method from QCnetCDF.py with expected success
@@ -43,7 +43,7 @@ class TestFileSizeCheck(unittest.TestCase):
         assert res == qc_obj
         assert qc_obj.logger.info == ['file size check: SUCCESS']
 
-    @patch('netcdfqc.QCnetCDF.Path.stat', return_value=Mock(st_size=9000))
+    @patch('ncqc.QCnetCDF.Path.stat', return_value=Mock(st_size=9000))
     def test_file_size_check_fail(self, mock_path_stat):  # pylint: disable=unused-argument
         """
         Testing the file_size_check method from QCnetCDF.py with expected failure
@@ -60,7 +60,7 @@ class TestFileSizeCheck(unittest.TestCase):
         assert qc_obj.logger.errors == ['file size check error: size of loaded file (9000 bytes)'
                                         'is out of bounds for bounds: [10000,20000]']
 
-    @patch('netcdfqc.QCnetCDF.Path.stat', return_value=Mock(st_size=10000))
+    @patch('ncqc.QCnetCDF.Path.stat', return_value=Mock(st_size=10000))
     def test_file_size_check_lower_boundaries(self, mock_path_stat):
         """
         Testing the file_size_check method from QCnetCDF.py with lower boundary value
@@ -84,7 +84,7 @@ class TestFileSizeCheck(unittest.TestCase):
         assert qc_obj.logger.errors == ['file size check error: size of loaded file (9999 bytes)'
                                         'is out of bounds for bounds: [10000,20000]']
 
-    @patch('netcdfqc.QCnetCDF.Path.stat', return_value=Mock(st_size=20000))
+    @patch('ncqc.QCnetCDF.Path.stat', return_value=Mock(st_size=20000))
     def test_file_size_check_upper_boundaries(self, mock_path_stat):
         """
         Testing the file_size_check method from QCnetCDF.py with upper boundary value
@@ -133,4 +133,4 @@ class TestFileSizeCheck(unittest.TestCase):
         qc_obj = QualityControl()
         res = qc_obj.file_size_check()
         assert res == qc_obj
-        assert qc_obj.logger.errors == ['file size check error: no nc file loaded']
+        assert qc_obj.logger.errors == ['file_size_check error: no nc file loaded']

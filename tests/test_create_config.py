@@ -15,9 +15,9 @@ Functions:
 from pathlib import Path
 from unittest.mock import patch
 
-from netcdfqc.create_config import create_config_dict_from_yaml, create_config_dict_from_dict
+from ncqc.create_config import create_config_dict_from_yaml, create_config_dict_from_dict
 
-@patch('netcdfqc.create_config.yaml2dict')
+@patch('ncqc.create_config.yaml2dict')
 def test_create_from_yaml(mock_yaml2dict):
     """
     Test for create_config_dict_from_yaml with default arguments and a mocked yaml2dict function.
@@ -39,19 +39,19 @@ def test_create_from_yaml(mock_yaml2dict):
 
     expected_dict = {
         'dimensions': {
-            'dim1': {'does_it_exist_check': 'TODO'},
-            'dim2': {'does_it_exist_check': 'TODO'}
+            'dim1': {'existence_check': 'TODO'},
+            'dim2': {'existence_check': 'TODO'}
         },
         'variables': {
             'var1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -66,14 +66,14 @@ def test_create_from_yaml(mock_yaml2dict):
                 }
             },
             'var2': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -90,8 +90,8 @@ def test_create_from_yaml(mock_yaml2dict):
         },
         'global_attributes': {
             'glattr1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO'
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO'
             }
         },
         'file_size': {
@@ -141,19 +141,19 @@ def test_create_from_dict_with_arguments():
 
     expected_dict = {
         'dimensions': {
-            'dim1': {'does_it_exist_check': 'TODO'},
-            'dim2': {'does_it_exist_check': 'TODO'}
+            'dim1': {'existence_check': 'TODO'},
+            'dim2': {'existence_check': 'TODO'}
         },
         'variables': {
             'var1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -168,14 +168,14 @@ def test_create_from_dict_with_arguments():
                 }
             },
             'var2': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -190,14 +190,14 @@ def test_create_from_dict_with_arguments():
                 }
             },
             'field_1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -212,14 +212,14 @@ def test_create_from_dict_with_arguments():
                 }
             },
             'field_2': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -236,8 +236,8 @@ def test_create_from_dict_with_arguments():
         },
         'global_attributes': {
             'glattr1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO'
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO'
             }
         },
         'file_size': {
@@ -274,14 +274,14 @@ def test_create_from_dict_multiple_other_variables():
         'dimensions': {},
         'variables': {
             'var1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -296,14 +296,14 @@ def test_create_from_dict_multiple_other_variables():
                 }
             },
             'var2': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -318,14 +318,14 @@ def test_create_from_dict_multiple_other_variables():
                 }
             },
             'field1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -340,14 +340,14 @@ def test_create_from_dict_multiple_other_variables():
                 }
             },
             'field2': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -390,14 +390,14 @@ def test_create_from_dict_one_string_other_variables():
         'dimensions': {},
         'variables': {
             'field1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -412,14 +412,14 @@ def test_create_from_dict_one_string_other_variables():
                 }
             },
             'field2': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'

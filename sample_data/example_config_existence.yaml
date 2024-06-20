@@ -1,48 +1,48 @@
 dimensions:
 
   time:
-    does_it_exist_check: true
+    existence_check: true
 
   diameter_classes:
-    does_it_exist_check: false
+    existence_check: false
 
   velocity_classes:
-    does_it_exist_check: true
+    existence_check: true
 
   bad_dimension:
-    does_it_exist_check: true
+    existence_check: true
 
 
 variables:
 
   longitude:
-    does_it_exist_check: true
-    is_it_empty_check: true
-    is_data_within_boundaries_check:
+    existence_check: true
+    emptiness_check: true
+    data_boundaries_check:
       perform_check: true
       lower_bound: 0
       upper_bound: 1
 
   latitude:
-    does_it_exist_check: true
-    is_it_empty_check: true
-    is_data_within_boundaries_check:
+    existence_check: true
+    emptiness_check: true
+    data_boundaries_check:
       perform_check: true
       lower_bound: 0
       upper_bound: 1
 
   datetime:
-    does_it_exist_check: true
-    is_it_empty_check: true
-    is_data_within_boundaries_check:
+    existence_check: true
+    emptiness_check: true
+    data_boundaries_check:
       perform_check: true
       lower_bound: 0
       upper_bound: 1
 
   bad_variable:
-    does_it_exist_check: true
-    is_it_empty_check: true
-    is_data_within_boundaries_check:
+    existence_check: true
+    emptiness_check: true
+    data_boundaries_check:
       perform_check: true
       lower_bound: 0
       upper_bound: 1
@@ -51,17 +51,17 @@ variables:
 global attributes:
 
   title:
-    does_it_exist_check: true
-    is_it_empty_check: true
+    existence_check: true
+    emptiness_check: true
 
   source:
-    does_it_exist_check: true
-    is_it_empty_check: true
+    existence_check: true
+    emptiness_check: true
 
   contributors:
-    does_it_exist_check: false
-    is_it_empty_check: true
+    existence_check: false
+    emptiness_check: true
 
   bad_attribute:
-    does_it_exist_check: true
-    is_it_empty_check: true
+    existence_check: true
+    emptiness_check: true

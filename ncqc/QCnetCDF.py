@@ -10,7 +10,7 @@ import netCDF4
 import yaml
 import numpy as np
 
-from netcdfqc.log import LoggerQC
+from ncqc.log import LoggerQC
 
 
 class QualityControl:
@@ -32,15 +32,15 @@ class QualityControl:
     - replace_qc_checks_conf: replace checks via a config file
     - replace_qc_checks_dict: replace checks via a dictionary
     - load_netcdf: load the netcdf file to be checked
-    - boundary_check: perform a boundary check on the variables of the loaded netCDF file
+    - data_boundaries_check: perform a boundary check on the variables of the loaded netCDF file
     - existence_check: perform existence checks on dimensions, variables and global attributes
     - file_size_check: perform a file size check on the loaded netCDF file
     - data_points_amount_check: perform a data points amount check on the variables of the loaded netCDF file
-    - consecutive_values_max_allowed_difference_check: Method dedicated to checking if the difference between 2
+    - adjacent_values_difference_check: Method dedicated to checking if the difference between 2
       consecutive values is smaller than the maximum allowed difference for each variable in a NetCDF file.
-    - max_number_of_consecutive_same_values_check: Method dedicated to checking whether too many
+    - consecutive_identical_values_check: Method dedicated to checking whether too many
       (maximum specified in the configuration file) consecutive values are the same for each variable in the NetCDF file.
-    - expected_dimensions_vars_check: Method dedicated to checking whether each variable has the expected dimensions
+    - expected_dimensions_check: Method dedicated to checking whether each variable has the expected dimensions
     """
 
     def __init__(self):
@@ -128,7 +128,7 @@ class QualityControl:
         self.nc = netCDF4.Dataset(nc_file_path)  # pylint: disable=no-member
         return self
 
-    def boundary_check(self):
+    def data_boundaries_check(self):
         """
         Method dedicated to checking whether the data for each variable in
         the loaded netCDF file is within the specified bounds.
@@ -142,12 +142,12 @@ class QualityControl:
         :return: self
         """
         if self.nc is None:
-            self.logger.add_error("boundary check error: no nc file loaded")
+            self.logger.add_error("data_boundaries_check error: no nc file loaded")
             return self
 
         vars_to_check = [
             var_name for var_name, properties in self.qc_checks_vars.items()
-            if properties['is_data_within_boundaries_check']['perform_check']
+            if properties['data_boundaries_check']['perform_check']
         ]
 
         vars_nc_file = list(self.nc.variables.keys())
@@ -157,8 +157,8 @@ class QualityControl:
                 self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
-            lower_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['lower_bound']
-            upper_bound = self.qc_checks_vars[var_name]['is_data_within_boundaries_check']['upper_bound']
+            lower_bound = self.qc_checks_vars[var_name]['data_boundaries_check']['lower_bound']
+            upper_bound = self.qc_checks_vars[var_name]['data_boundaries_check']['upper_bound']
 
             # use np.ravel to flatten the (possibly multidimensional) array into a 1-d array
             var_values = np.ravel(self.nc[var_name][:])
@@ -185,7 +185,7 @@ class QualityControl:
         """
         # Log an error if there is no netCDF loaded
         if self.nc is None:
-            self.logger.add_error("existence check error: no nc file loaded")
+            self.logger.add_error("existence_check error: no nc file loaded")
             return self
 
         # Dimensions, variables, and global attributes from the netCDF dict
@@ -193,13 +193,13 @@ class QualityControl:
         nc_variables = self.nc.variables.keys()
         nc_global_attributes = self.nc.ncattrs()
 
-        # Dimensions, variables, and global attributes with 'does_it_exist_check' True in the config file
+        # Dimensions, variables, and global attributes with 'existence_check' True in the config file
         dims_to_check = [dim for dim, properties in self.qc_checks_dims.items()
-            if properties['does_it_exist_check'] is True]
+            if properties['existence_check'] is True]
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
-            if properties['does_it_exist_check'] is True]
+            if properties['existence_check'] is True]
         attrs_to_check = [attr for attr, properties in self.qc_checks_gl_attrs.items()
-            if properties['does_it_exist_check'] is True]
+            if properties['existence_check'] is True]
 
         checked = 0
         exist = 0
@@ -266,14 +266,14 @@ class QualityControl:
         """
         # Log an error if there is no netCDF loaded
         if self.nc is None:
-            self.logger.add_error("emptiness check error: no nc file loaded")
+            self.logger.add_error("emptiness_check error: no nc file loaded")
             return self
 
-        # Variables and global attributes with 'is_it_empty_check' True in the config file
+        # Variables and global attributes with 'emptiness_check' True in the config file
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
-            if properties['is_it_empty_check'] is True]
+            if properties['emptiness_check'] is True]
         attrs_to_check = [attr for attr, properties in self.qc_checks_gl_attrs.items()
-            if properties['is_it_empty_check'] is True]
+            if properties['emptiness_check'] is True]
 
         checked_vars = 0
         non_empty_vars = 0
@@ -354,7 +354,7 @@ class QualityControl:
         :return: self
         """
         if self.nc is None:
-            self.logger.add_error("file size check error: no nc file loaded")
+            self.logger.add_error("file_size_check error: no nc file loaded")
             return self
 
         if not self.qc_check_file_size['perform_check']:
@@ -376,21 +376,21 @@ class QualityControl:
 
     def data_points_amount_check(self):
         """
-        Method to perform amount of data points for each variable check. Method
-        checks if the amount of data points is above a given threshold
+        Method to perform amount of data points for each variable check.
+        Method checks if the amount of data points is above a given minimum.
 
         - logs an error if there is no netCDF file loaded
-        - logs an error if the number of data points for a variable is below the specified threshold
+        - logs an error if the number of data points for a variable is below the specified minimum
         - logs an info message for each variable, stating whether the check is successful or not
 
         :return: self
         """
         if self.nc is None:
-            self.logger.add_error("data points amount check error: no nc file loaded")
+            self.logger.add_error("data_points_amount_check error: no nc file loaded")
             return self
 
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
-                         if properties['are_there_enough_data_points_check']['perform_check']]
+                         if properties['data_points_amount_check']['perform_check']]
 
         vars_nc_file = list(self.nc.variables.keys())
 
@@ -399,12 +399,12 @@ class QualityControl:
                 self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
-            threshold = self.qc_checks_vars[var_name]['are_there_enough_data_points_check']['threshold']
+            minimum = self.qc_checks_vars[var_name]['data_points_amount_check']['minimum']
             var_values_size = self.nc[var_name][:].size  # total number of data points over all dimensions
 
-            if threshold > var_values_size:
+            if minimum > var_values_size:
                 self.logger.add_error(f"data points amount check error: number of data points ({var_values_size})"
-                                      f" for variable '{var_name}' is below the specified threshold ({threshold})")
+                                      f" for variable '{var_name}' is below the specified minimum ({minimum})")
                 self.logger.add_info(f"data points amount check for variable '{var_name}': FAIL")
             else:
                 self.logger.add_info(f"data points amount check for variable '{var_name}': SUCCESS")
@@ -412,9 +412,9 @@ class QualityControl:
         return self
 
 
-    def consecutive_values_max_allowed_difference_check(self):
+    def adjacent_values_difference_check(self):
         """
-        Method dedicated to checking whether the difference between 2 consecutive
+        Method dedicated to checking whether the difference between 2 adjacent
         values is smaller than the maximum allowed difference for each variable in
         the NetCDF file.
 
@@ -424,17 +424,18 @@ class QualityControl:
         - logs a warning to the logger if the dimension/s to check are not specified
         - logs a warning to the logger if the maximum difference/s to check are not specified
         - logs a warning to the logger if the variable doesn't have a specified dimension
+        - logs an error for each instance of the difference being too high
         - writes a message to the logger whether the check succeeded or failed for each variable
         :return: self
         """
         # Log an error if there is no NetCDF loaded
         if self.nc is None:
-            self.logger.add_error("consecutive_values_max_allowed_difference_check error: no nc file loaded")
+            self.logger.add_error("adjacent_values_difference_check error: no nc file loaded")
             return self
 
-        # Variables with 'consecutive_values_max_allowed_difference_check' in the config file
+        # Variables with 'adjacent_values_difference_check' in the config file
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
-                         if properties["consecutive_values_max_allowed_difference_check"]]
+                         if properties["adjacent_values_difference_check"]]
 
         vars_nc_file = list(self.nc.variables.keys())
 
@@ -449,11 +450,11 @@ class QualityControl:
             var_values = self.nc[var_name][:]
 
             # gets the specified dimensions
-            dimensions = self.qc_checks_vars[var_name]['consecutive_values_max_allowed_difference_check'][
+            dimensions = self.qc_checks_vars[var_name]['adjacent_values_difference_check'][
                 'over_which_dimension']
             # gets the maximum allowed difference for each dimension
             dimensions_maximum_difference = \
-            self.qc_checks_vars[var_name]['consecutive_values_max_allowed_difference_check']['maximum_difference']
+            self.qc_checks_vars[var_name]['adjacent_values_difference_check']['maximum_difference']
 
             if not dimensions:
                 # enables not specifying dimension in case of 1d variable
@@ -476,7 +477,7 @@ class QualityControl:
 
             for d in dimensions:
                 success = True
-                # calculates the difference between 2 consecutive values
+                # calculates the difference between 2 adjacent values
                 difference_array = np.diff(var_values, axis=d)
                 # flattens the array
                 flat_difference_array = difference_array.flatten()
@@ -487,22 +488,23 @@ class QualityControl:
 
                 except IndexError:
                     success = False
-                    self.logger.add_error(f"maximum difference to check not specified")
+                    self.logger.add_warning(f"maximum difference not specified")
                     continue
 
-                # goes through flattened array of consecutive differences
+                # goes through flattened array of adjacent differences
                 for i in flat_difference_array:
                     difference = abs(i)
                     if difference > maximum_difference:
                         success = False
+                        self.logger.add_error(f"difference of '{difference}' exceeds the maximum difference of '{maximum_difference}'")
 
                 self.logger.add_info(
-                    f"consecutive_values_max_allowed_difference_check for variable '{var_name}' and dimension '{d}': {'success' if success else 'fail'}")
+                    f"adjacent_values_difference_check for variable '{var_name}' and dimension '{d}': {'SUCCESS' if success else 'FAIL'}")
 
         return self
 
 
-    def max_number_of_consecutive_same_values_check(self):
+    def consecutive_identical_values_check(self):
         """
         Method dedicated to checking whether too many (maximum specified in the configuration file)
         consecutive values are the same for each variable in the NetCDF file.
@@ -514,15 +516,15 @@ class QualityControl:
         - logs a error to the logger if the number of consecutive values exceeds the specified maximum
         - writes a message to the logger whether the check succeeded or failed for each variable
         :return: self
-                """
+        """
         # Log an error if there is no NetCDF loaded
         if self.nc is None:
-            self.logger.add_error("max_number_of_consecutive_same_values_check error: no nc file loaded")
+            self.logger.add_error("consecutive_identical_values_check error: no nc file loaded")
             return self
 
         # Variables with 'do_values_change_at_acceptable_rate_check' in the config file
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
-                         if properties['max_number_of_consecutive_same_values_check']]
+                         if properties['consecutive_identical_values_check']]
 
         vars_nc_file = list(self.nc.variables.keys())
 
@@ -535,7 +537,7 @@ class QualityControl:
             var_values = self.nc[var_name][:]
 
             # get the maximum from configuration file
-            maximum = self.qc_checks_vars[var_name]['max_number_of_consecutive_same_values_check']['maximum']
+            maximum = self.qc_checks_vars[var_name]['consecutive_identical_values_check']['maximum']
 
             # checks if maximum is specified
             if not maximum:
@@ -581,14 +583,15 @@ class QualityControl:
                     f" which is higher than the threshold {maximum}")
 
             self.logger.add_info(
-                f"max_number_of_consecutive_same_values_check for variable '{var_name}': {'success' if success else 'fail'}")
+                f"consecutive_identical_values_check for variable '{var_name}': {'SUCCESS' if success else 'FAIL'}")
 
         return self
 
-    def expected_dimensions_vars_check(self):
+    def expected_dimensions_check(self):
         """
         Method dedicated to checking whether each variable has the expected dimensions
         """
+        self.logger.add_warning("not implemented yet")
 
 def yaml2dict(path: Path) -> dict:
     """

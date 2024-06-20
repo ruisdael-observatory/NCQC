@@ -74,19 +74,19 @@ Example output dictionary:
 ```python
 {
         'dimensions': {
-            'dim1': {'does_it_exist_check': 'TODO'},
-            'dim2': {'does_it_exist_check': 'TODO'}
+            'dim1': {'existence_check': 'TODO'},
+            'dim2': {'existence_check': 'TODO'}
         },
         'variables': {
             'var1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO',
-                'is_data_within_boundaries_check': {
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO',
+                'data_boundaries_check': {
                     'perform_check': 'TODO',
                     'lower_bound': 'TODO',
                     'upper_bound': 'TODO'
                 },
-                'are_there_enough_data_points_check': {
+                'data_points_amount_check': {
                     'perform_check': 'TODO',
                     'threshold': 'TODO',
                     'dimension': 'TODO'
@@ -103,12 +103,12 @@ Example output dictionary:
         },
         'global_attributes': {
             'glattr1': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO'
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO'
             },
             'glattr2': {
-                'does_it_exist_check': 'TODO',
-                'is_it_empty_check': 'TODO'
+                'existence_check': 'TODO',
+                'emptiness_check': 'TODO'
             }
         },
         'file_size': {
@@ -137,14 +137,14 @@ fields:
 ```python
 'variables': {
     'field_1': {
-        'does_it_exist_check': 'TODO',
-        'is_it_empty_check': 'TODO',
-        'is_data_within_boundaries_check': {
+        'existence_check': 'TODO',
+        'emptiness_check': 'TODO',
+        'data_boundaries_check': {
             'perform_check': 'TODO',
             'lower_bound': 'TODO',
             'upper_bound': 'TODO'
         },
-        'are_there_enough_data_points_check': {
+        'data_points_amount_check': {
             'perform_check': 'TODO',
             'threshold': 'TODO',
             'dimension': 'TODO'
@@ -180,7 +180,7 @@ qc_obj.load_netcdf(nc_path)
 
 ### Running checks with a QualityControl object
 These are the quality control checks that can be performed on a `QualityControl` object with a set up configuration and loaded netCDF file:
-* `boundary_check`: logs an error for each data point which falls outside of the variable bounds, which are specified in the configuration
+* `data_boundaries_check`: logs an error for each data point which falls outside of the variable bounds, which are specified in the configuration
 * `existence_check`: logs an error for each dimension, variable, or global attribute which according to the configuration should be present in the netCDF file but is not, and logs info for each category how many of the checked fields exist
 * `emptiness_check`: logs an error for each variable or global attribute which has (a) missing value(s), in the case of variables also specifying how many data poins are empty, and logs info for each category how many of the checked fields are fully populated
 * `data_points_amount_check`: TODO
@@ -192,7 +192,7 @@ Code example:
 
 ```python
 # Separately
-qc_obj.boundary_check()
+qc_obj.data_boundaries_check()
 qc_obj.file_size_check()
 
 # Chained

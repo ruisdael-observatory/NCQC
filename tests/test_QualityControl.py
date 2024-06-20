@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from netcdfqc.QCnetCDF import QualityControl, yaml2dict
+from ncqc.QCnetCDF import QualityControl, yaml2dict
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 
@@ -27,7 +27,7 @@ class TestQualityControl(unittest.TestCase):
     - test_yaml2dict: Test for loading a yaml file into a dictionary
     """
 
-    @patch('netcdfqc.QCnetCDF.yaml2dict')
+    @patch('ncqc.QCnetCDF.yaml2dict')
     def test_add_qc_checks_conf(self, mock_yaml2dict):
         """
         Test for adding the required checks by using a config file
@@ -181,7 +181,7 @@ class TestQualityControl(unittest.TestCase):
             , 'missing global attributes checks in provided config_file/dict'
             , 'missing file size check in provided config_file/dict']
 
-    @patch('netcdfqc.QCnetCDF.yaml2dict')
+    @patch('ncqc.QCnetCDF.yaml2dict')
     def test_replace_qc_checks_conf(self, mock_yaml2dict):
         """
         Test for replacing the required checks by using a config file
@@ -280,7 +280,7 @@ class TestQualityControl(unittest.TestCase):
         assert qc_obj.qc_checks_gl_attrs == new_checks_dict['global attributes']
         assert qc_obj.qc_check_file_size == new_checks_dict['file size']
 
-    @patch('netcdfqc.QCnetCDF.netCDF4.Dataset')
+    @patch('ncqc.QCnetCDF.netCDF4.Dataset')
     def test_load_netcdf(self, mock_dataset):
         """
         Test for using load_netcdf to set the netCDF attribute
@@ -297,21 +297,22 @@ def test_yaml2dict():
     """
     res = yaml2dict(Path(__file__).parent.parent / 'sample_data/example_config.yaml')
     assert res == {
-        'dimensions': {'example_dimension': {'does_it_exist_check': True}},
+        'dimensions': {'example_dimension': {'existence_check': True}},
         'variables': {
             'example_variable': {
-                'does_it_exist_check': True,
-                'is_data_within_boundaries_check': {
+                'existence_check': True,
+                'emptiness_check': True,
+                'data_boundaries_check': {
                     'perform_check': True,
                     'lower_bound': 0,
                     'upper_bound': 1
                 },
-                'are_there_enough_data_points_check': {'perform_check': True, 'threshold': 100},
-                'consecutive_values_max_allowed_difference_check': {
+                'data_points_amount_check': {'perform_check': True, 'minimum': 100},
+                'adjacent_values_difference_check': {
                     'over_which_dimension': [0],
                     'maximum_difference': [1]
                 },
-                'max_number_of_consecutive_same_values_check': {
+                'consecutive_identical_values_check': {
                     'maximum': 25
                 },
                 'expected_dimensions_check': {
@@ -321,8 +322,8 @@ def test_yaml2dict():
             }
         },
         'global attributes': {'example_gl_attr': {
-            'does_it_exist_check': True,
-            'is_it_empty_check': True
+            'existence_check': True,
+            'emptiness_check': True
         }},
         'file size': {
             'perform_check': True,

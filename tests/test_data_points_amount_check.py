@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from netcdfqc.QCnetCDF import QualityControl
+from ncqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 nc_path = data_dir / 'test_data_points_amount.nc'
@@ -40,15 +40,15 @@ class TestDataPointsAmountCheck(unittest.TestCase):
             'dimensions': {},
             'variables': {
                 'var_1d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 10
+                        'minimum': 10
                     }
                 },
                 'var_2d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 200
+                        'minimum': 200
                     }
                 }
             },
@@ -72,15 +72,15 @@ class TestDataPointsAmountCheck(unittest.TestCase):
             'dimensions': {},
             'variables': {
                 'var_1d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 10
+                        'minimum': 10
                     }
                 },
                 'var_2d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': False,
-                        'threshold': 200
+                        'minimum': 200
                     }
                 }
             },
@@ -104,15 +104,15 @@ class TestDataPointsAmountCheck(unittest.TestCase):
             'dimensions': {},
             'variables': {
                 'var_1d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 10
+                        'minimum': 10
                     }
                 },
                 'var_2d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 201
+                        'minimum': 201
                     }
                 }
             },
@@ -123,7 +123,7 @@ class TestDataPointsAmountCheck(unittest.TestCase):
         assert qc_obj.logger.info == ["data points amount check for variable 'var_1d': SUCCESS",
                                       "data points amount check for variable 'var_2d': FAIL"]
         assert qc_obj.logger.errors == ["data points amount check error: number of data points (200)"
-                                        " for variable 'var_2d' is below the specified threshold (201)"]
+                                        " for variable 'var_2d' is below the specified minimum (201)"]
         if os.path.exists(nc_path):
             os.remove(nc_path)
 
@@ -139,9 +139,9 @@ class TestDataPointsAmountCheck(unittest.TestCase):
             'dimensions': {},
             'variables': {
                 'var_3d': {
-                    'are_there_enough_data_points_check': {
+                    'data_points_amount_check': {
                         'perform_check': True,
-                        'threshold': 1000
+                        'minimum': 1000
                     }
                 }
             },
@@ -167,4 +167,4 @@ class TestDataPointsAmountCheck(unittest.TestCase):
         qc_obj.data_points_amount_check()
         assert not qc_obj.logger.info
         assert not qc_obj.logger.warnings
-        assert qc_obj.logger.errors == ['data points amount check error: no nc file loaded']
+        assert qc_obj.logger.errors == ['data_points_amount_check error: no nc file loaded']
