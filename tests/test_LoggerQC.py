@@ -11,7 +11,7 @@ class TestLoggerQC(unittest.TestCase):
     """
     Class for testing the LoggerQC class
 
-    Methods:
+     Methods:
     - test_constructor_not_none: Test whether the constructor method creates an object
     - test_constructor: Test for the constructor method
     - test_add_error: Test for the add_error method
@@ -24,6 +24,7 @@ class TestLoggerQC(unittest.TestCase):
     - test_get_all_reports_empty: Test for the get_all_reports method with no existing reports
     - test_get_all_reports: Test for the get_all_reports method with 2 existing reports
     """
+
     def test_constructor_not_none(self):
         """
         Test whether the constructor method creates an object

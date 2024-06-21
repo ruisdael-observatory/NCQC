@@ -1,7 +1,7 @@
 """
 Test module for the Quality Control object
 
-Functions:
+ Functions:
 - test_yaml2dict: Test for the yaml2dict function
 """
 
@@ -13,11 +13,12 @@ from ncqc.QCnetCDF import QualityControl, yaml2dict
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 
+
 class TestQualityControl(unittest.TestCase):
     """
     Class for testing the QualityControl object.
 
-    Functions:
+     Functions:
     - test_add_qc_checks_conf: Test for adding the required checks by using a config file
     - test_add_qc_checks_dict: Test for adding the required checks by using a dictionary
     - test_add_qc_checks_dict_errors: Test for adding qc checks with an empty dictionary
@@ -303,11 +304,10 @@ def test_yaml2dict():
                 'existence_check': True,
                 'emptiness_check': True,
                 'data_boundaries_check': {
-                    'perform_check': True,
                     'lower_bound': 0,
                     'upper_bound': 1
                 },
-                'data_points_amount_check': {'perform_check': True, 'minimum': 100},
+                'data_points_amount_check': {'minimum': 100},
                 'adjacent_values_difference_check': {
                     'over_which_dimension': [0],
                     'maximum_difference': [1]
@@ -316,7 +316,6 @@ def test_yaml2dict():
                     'maximum': 25
                 },
                 'expected_dimensions_check': {
-                    'perform_check': True,
                     'expected_dimensions': ['time', 'velocity_classes']
                 }
             }
@@ -326,7 +325,6 @@ def test_yaml2dict():
             'emptiness_check': True
         }},
         'file size': {
-            'perform_check': True,
             'lower_bound': 10000,
             'upper_bound': 20000
         }

@@ -1,7 +1,7 @@
 """
 Module for testing the functionality of the value_change_rate_check method
 
-Functions:
+ Functions:
 - test_adjacent_values_difference_check_no_nc: Test for
   adjacent_values_difference_check when no netCDF file is loaded.
 - test_adjacent_values_difference_check_success: Test for when
@@ -25,7 +25,7 @@ adjacent_values_difference_check_dict_success = {
     },
     'variables': {
         'test_pass': {
-            'adjacent_values_difference_check': {'over_which_dimension':[0], 'maximum_difference': [1]}
+            'adjacent_values_difference_check': {'over_which_dimension': [0], 'maximum_difference': [1]}
         },
     },
     'global attributes': {
@@ -39,7 +39,7 @@ adjacent_values_difference_check_dict_fail = {
     },
     'variables': {
         'test_fail': {
-            'adjacent_values_difference_check': {'over_which_dimension':[0], 'maximum_difference': [1]}
+            'adjacent_values_difference_check': {'over_which_dimension': [0], 'maximum_difference': [1]}
         },
     },
     'global attributes': {
@@ -53,7 +53,7 @@ adjacent_values_difference_check_var_not_in_nc_dict = {
     },
     'variables': {
         'test_not_in_nc': {
-            'adjacent_values_difference_check': {'over_which_dimension':[0], 'maximum_difference': [1]}
+            'adjacent_values_difference_check': {'over_which_dimension': [0], 'maximum_difference': [1]}
         },
     },
     'global attributes': {
@@ -61,6 +61,7 @@ adjacent_values_difference_check_var_not_in_nc_dict = {
     'file size': {
     }
 }
+
 
 def test_adjacent_values_difference_check_no_nc():
     """
@@ -95,6 +96,7 @@ def test_adjacent_values_max_allowed_difference_success():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_adjacent_values_difference_check")
 def test_adjacent_values_difference_check_fail():
@@ -138,8 +140,3 @@ def test_adjacent_values_max_allowed_difference_var_not_in_file():
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
-
-
-
-
-

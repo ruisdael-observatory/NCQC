@@ -18,7 +18,7 @@ telegram_fields:
             standard_name: 'rain_intensity'
 
 
-Functions:
+ Functions:
 - create_config_dict_from_yaml: Parses the given config file to create a dictionary which can be used for QC
 - create_config_dict_from_dict: Parses the given dictionary to create a dictionary which can be used for QC
 """
@@ -28,7 +28,8 @@ from typing import List, Dict
 
 from ncqc.QCnetCDF import yaml2dict
 
-def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default-value
+
+def create_config_dict_from_yaml(path: Path,  # pylint: disable=dangerous-default-value
                                  dimensions_name: str = 'dimensions',
                                  variables_name: str = 'variables',
                                  global_attributes_name: str = 'global_attributes',
@@ -37,7 +38,7 @@ def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default
     Parses the given yaml file to create a dictionary which can be used for QC
 
     :param path: path to the config file to parse
-    :param dimension_names: name of the groups containing the dimensions
+    :param dimensions_name: name of the groups containing the dimensions
     :param variables_name: name of the groups containing the variables
     :param global_attributes_name: name of the groups containing the global attributes
     :return: a dictionary which contains the structure for specifying QC checks,
@@ -50,7 +51,8 @@ def create_config_dict_from_yaml(path: Path, # pylint: disable=dangerous-default
                                         global_attributes_name=global_attributes_name,
                                         other_variable_name_paths=other_variable_name_paths)
 
-def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-default-value
+
+def create_config_dict_from_dict(input_dict: Dict,  # pylint: disable=dangerous-default-value
                                  dimensions_name: str = 'dimensions',
                                  variables_name: str = 'variables',
                                  global_attributes_name: str = 'global_attributes',
@@ -58,8 +60,8 @@ def create_config_dict_from_dict(input_dict: Dict, # pylint: disable=dangerous-d
     """
     Creates a config dict for QC by parsing the given dictionary.
 
-    :param dict: the dictionary to parse
-    :param dimension_names: name of the groups containing the dimensions
+    :param input_dict: the dictionary to parse
+    :param dimensions_name: name of the groups containing the dimensions
     :param variables_name: name of the groups containing the variables
     :param global_attributes_name: name of the groups containing the global attributes
     :param other_variable_name_paths: a list of names to follow to get the names of field variables

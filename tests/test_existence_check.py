@@ -1,7 +1,7 @@
 """
 Module for testing the functionality of the existence check.
 
-Functions:
+ Functions:
 - test_existence_check_no_nc: Test for the existence check when no netCDF file is loaded.
 - test_existence_check_all_exist: Test for the existence check when everything exists.
 - test_existence_check_mixed: Test for the existence check with mixed existence.

@@ -1,7 +1,7 @@
 """
 Module for testing the functionality of the emptiness check.
 
-Functions:
+ Functions:
 - test_emptiness_check_no_nc: Test for the emptiness check when no netCDF file is loaded.
 - test_emptiness_check_full: Test for the emptiness check when everything is fully populated.
 - test_emptiness_check_mixed: Test for the emptiness check with mixed emptiness.

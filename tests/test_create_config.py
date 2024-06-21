@@ -1,7 +1,7 @@
 """
 Module for testing the automatic creation of config dicts for specifying checks.
 
-Functions:
+ Functions:
 - test_create_from_yaml: Test for create_config_dict_from_yaml with default arguments and a mocked yaml2dict function.
 - test_create_from_dict_with_arguments: Test for create_config_dict_from_dict with custom arguments.
 - test_create_from_dict_multiple_other_variables: Test for create_config_dict_from_dict
@@ -16,6 +16,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from ncqc.create_config import create_config_dict_from_yaml, create_config_dict_from_dict
+
 
 @patch('ncqc.create_config.yaml2dict')
 def test_create_from_yaml(mock_yaml2dict):
@@ -104,6 +105,7 @@ def test_create_from_yaml(mock_yaml2dict):
     qc_dict = create_config_dict_from_yaml(path=Path('path'), )
 
     assert qc_dict == expected_dict
+
 
 def test_create_from_dict_with_arguments():
     """
@@ -255,6 +257,7 @@ def test_create_from_dict_with_arguments():
 
     assert qc_dict == expected_dict
 
+
 def test_create_from_dict_multiple_other_variables():
     """
     Test for create_config_dict_from_dict with multiple other variable names specified.
@@ -375,6 +378,7 @@ def test_create_from_dict_multiple_other_variables():
 
     assert qc_dict == expected_dict
 
+
 def test_create_from_dict_one_string_other_variables():
     """
     Test for create_config_dict_from_dict with only one string in the other_variables_names list argument.
@@ -445,6 +449,7 @@ def test_create_from_dict_one_string_other_variables():
     qc_dict = create_config_dict_from_dict(input_dict=test_dict, other_variable_name_paths=[["fields"]])
 
     assert qc_dict == expected_dict
+
 
 def test_create_from_dict_empty_other_variables():
     """

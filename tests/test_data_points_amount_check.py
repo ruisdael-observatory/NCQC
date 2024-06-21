@@ -17,18 +17,19 @@ class TestDataPointsAmountCheck(unittest.TestCase):
     """
     Class dedicated to testing the data_points_amount_check method from QCnetCDF.py
 
-    Methods:
+     Methods:
     - test_data_points_amount_check_success: Testing the data_points_amount_check method from
-     QCnetCDF.py with expected success
+      QCnetCDF.py with expected success
     - test_data_points_amount_check_omit_a_var: Testing the data_points_amount_check method from
-     QCnetCDF.py when omitting a variable
+      QCnetCDF.py when omitting a variable
     - test_data_points_amount_check_fail: Testing the data_points_amount_check method from QCnetCDF.py
-     with expected failure for one of the checks
+      with expected failure for one of the checks
     - test_data_points_amount_check_no_such_var: Testing the data_points_amount_check method from
-     QCnetCDF.py with an expected warning for the variable specified not existing
+      QCnetCDF.py with an expected warning for the variable specified not existing
     - test_data_points_amount_check_no_nc: Testing the data_points_amount_check method from QCnetCDF.py
-     with an expected error for a netCDF file not being loaded
+      with an expected error for a netCDF file not being loaded
     """
+
     @pytest.mark.usefixtures("create_nc_data_points_amount_check")
     def test_data_points_amount_check_success(self):
         """
@@ -78,10 +79,7 @@ class TestDataPointsAmountCheck(unittest.TestCase):
                     }
                 },
                 'var_2d': {
-                    'data_points_amount_check': {
-                        'perform_check': False,
-                        'minimum': 200
-                    }
+                    'existence_check': True
                 }
             },
             'global attributes': {},
