@@ -6,6 +6,8 @@ Module dedicated to the main logic of the netCDF quality control library
 """
 
 from pathlib import Path
+from typing import Union, List
+
 import netCDF4
 import yaml
 import numpy as np
@@ -633,6 +635,20 @@ class QualityControl:
          )
 
         return self
+
+    def create_report(self, get_all_reports: bool = False) -> Union[list[dict], dict]:
+        """
+        Method to create and get a report from the logger
+        :param get_all_reports: If marked True, returns a list of all created reports. Defaults to False.
+        :return: A list of dictionaries representing all reports if get_all_reports is True,
+                 otherwise a single dictionary representing the latest report.
+        """
+        self.logger.create_report()
+
+        if get_all_reports:
+            return self.logger.get_all_reports()
+
+        return self.logger.get_latest_report()
 
 
 def yaml2dict(path: Path) -> dict:
