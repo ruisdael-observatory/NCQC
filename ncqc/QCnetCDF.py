@@ -6,7 +6,7 @@ Module dedicated to the main logic of the netCDF quality control library
 """
 
 from pathlib import Path
-from typing import Union, List
+from typing import Union
 
 import netCDF4
 import yaml
