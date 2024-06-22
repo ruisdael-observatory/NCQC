@@ -43,6 +43,8 @@ class QualityControl:
     - consecutive_identical_values_check: Method dedicated to checking whether too many
       (maximum specified in the configuration file) consecutive values are the same for each variable in the NetCDF file.
     - expected_dimensions_check: Method dedicated to checking whether each variable has the expected dimensions
+    - check: Method that performs all checks
+    - create_report: Method to create and get a report from the logger
     """
 
     def __init__(self):
@@ -142,6 +144,9 @@ class QualityControl:
         - writes a message to the logger whether a boundary check for a variable
           succeeded or failed
 
+        :param all_checks_run: True when the method is run through the `check` method, which
+                            runs all checks at once. If the method is run by itself
+                            all_checks_run is False by default.
         :return: self
         """
         if self.nc is None:
@@ -156,8 +161,9 @@ class QualityControl:
         vars_nc_file = list(self.nc.variables.keys())
 
         for var_name in vars_to_check:
-            if var_name not in vars_nc_file and not all_checks_run:
-                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+            if var_name not in vars_nc_file:
+                if not all_checks_run:
+                    self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
             lower_bound = self.qc_checks_vars[var_name]['data_boundaries_check']['lower_bound']
@@ -257,7 +263,8 @@ class QualityControl:
 
         return self
 
-    def emptiness_check(self):  # pylint: disable=too-many-branches, disable=too-many-statements
+    def emptiness_check(self,
+                        all_checks_run: bool = False):  # pylint: disable=too-many-branches, disable=too-many-statements
         """
         Method to perform emptiness checks on variables and global attributes.
 
@@ -265,12 +272,17 @@ class QualityControl:
         - Logs errors for each variable and global attribute which should be fully populated but is not.
         - Logs info for each category how many of the checked fields are fully populated.
 
+        :param all_checks_run: True when the method is run through the `check` method, which
+                            runs all checks at once. If the method is run by itself
+                            all_checks_run is False by default.
         :return: self to make chaining calls possible
         """
         # Log an error if there is no netCDF loaded
         if self.nc is None:
             self.logger.add_error("emptiness_check error: no nc file loaded")
             return self
+
+        vars_nc_file = list(self.nc.variables.keys())
 
         # Variables and global attributes with 'emptiness_check' True in the config file
         vars_to_check = [var for var, properties in self.qc_checks_vars.items()
@@ -283,6 +295,11 @@ class QualityControl:
 
         # Loop over all variables in the config file
         for var in vars_to_check:
+            if var not in vars_nc_file:
+                if not all_checks_run:
+                    self.logger.add_warning(f"variable '{var}' not in nc file")
+                continue
+
             checked_vars += 1
             var_data = self.nc[var][:]
 
@@ -331,6 +348,9 @@ class QualityControl:
 
         # Loop over all global attributes in the config file, log error if it should exist but does not
         for attr in attrs_to_check:
+            if attr not in self.nc.ncattrs():
+                continue
+
             checked_attrs += 1
             if not self.nc.getncattr(attr):
                 self.logger.add_error(error=f'global attribute "{attr}" is empty')
@@ -386,6 +406,9 @@ class QualityControl:
         - logs an error if the number of data points for a variable is below the specified minimum
         - logs an info message for each variable, stating whether the check is successful or not
 
+        :param all_checks_run: True when the method is run through the `check` method, which
+                            runs all checks at once. If the method is run by itself
+                            all_checks_run is False by default.
         :return: self
         """
         if self.nc is None:
@@ -398,8 +421,9 @@ class QualityControl:
         vars_nc_file = list(self.nc.variables.keys())
 
         for var_name in vars_to_check:
-            if var_name not in vars_nc_file and not all_checks_run:
-                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+            if var_name not in vars_nc_file:
+                if not all_checks_run:
+                    self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
             minimum = self.qc_checks_vars[var_name]['data_points_amount_check']['minimum']
@@ -428,6 +452,10 @@ class QualityControl:
         - logs a warning to the logger if the variable doesn't have a specified dimension
         - logs an error for each instance of the difference being too high
         - writes a message to the logger whether the check succeeded or failed for each variable
+
+        :param all_checks_run: True when the method is run through the `check` method, which
+                            runs all checks at once. If the method is run by itself
+                            all_checks_run is False by default.
         :return: self
         """
         # Log an error if there is no NetCDF loaded
@@ -444,8 +472,9 @@ class QualityControl:
         # goes through all variables that should be checked
         for var_name in vars_to_check:
             # checks if variable is in NetCDF file
-            if var_name not in vars_nc_file and not all_checks_run:
-                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+            if var_name not in vars_nc_file:
+                if not all_checks_run:
+                    self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
             # gets all values of the variable
@@ -517,6 +546,10 @@ class QualityControl:
         - logs a warning to the logger if the maximum is not specified
         - logs an error to the logger if the number of consecutive values exceeds the specified maximum
         - writes a message to the logger whether the check succeeded or failed for each variable
+
+        :param all_checks_run: True when the method is run through the `check` method, which
+                            runs all checks at once. If the method is run by itself
+                            all_checks_run is False by default.
         :return: self
         """
         # Log an error if there is no NetCDF loaded
@@ -532,8 +565,9 @@ class QualityControl:
 
         # iterates through variables that should be checked
         for var_name in vars_to_check:
-            if var_name not in vars_nc_file and not all_checks_run:
-                self.logger.add_warning(f"variable '{var_name}' not in nc file")
+            if var_name not in vars_nc_file:
+                if not all_checks_run:
+                    self.logger.add_warning(f"variable '{var_name}' not in nc file")
                 continue
 
             var_values = self.nc[var_name][:]
@@ -543,8 +577,11 @@ class QualityControl:
 
             # checks if maximum is specified
             if not maximum:
-                self.logger.add_warning(f"Maximum not specified")
-                continue
+                if maximum == 0:
+                    self.logger.add_warning("consecutive_identical_values_check: Maximum is 0")
+                else:
+                    self.logger.add_warning("consecutive_identical_values_check: Maximum not specified")
+                    continue
 
             success = True
 
@@ -627,7 +664,7 @@ class QualityControl:
         (self
          .file_size_check()
          .existence_check()
-         .emptiness_check()
+         .emptiness_check(all_checks_run=True)
          .data_points_amount_check(all_checks_run=True)
          .data_boundaries_check(all_checks_run=True)
          .consecutive_identical_values_check(all_checks_run=True)
@@ -661,3 +698,13 @@ def yaml2dict(path: Path) -> dict:
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
+
+
+if __name__ == '__main__':
+    data_dir = Path(__file__).parent.parent / 'sample_data'
+    nc_path = data_dir / 'test_data_points_amount.nc'
+    qc_obj = QualityControl()
+    qc_obj.load_netcdf(nc_path)
+    qc_obj.add_qc_checks_conf(data_dir / 'example_config.yaml')
+    qc_obj.check()
+    print(qc_obj.logger.warnings)

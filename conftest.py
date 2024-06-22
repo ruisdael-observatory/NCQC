@@ -19,6 +19,7 @@ When a test fixtures is set as argument for a test function, it automatically ru
   adjacent_values_difference_check.
 - create_nc_consecutive_identical_values_check: Test fixture for testing max number
   of consecutive values that are the same.
+- create_nc_all_checks: Test fixture for testing check method from QualityControl class
 """
 
 import os
@@ -372,4 +373,29 @@ def create_nc_consecutive_identical_values_check():
     test_fail[:] = np.ones(100)
 
     # Close the netCDF file
+    nc_file.close()
+
+
+@pytest.fixture()
+def create_nc_all_checks():
+    """
+    Test fixture for testing check method from QualityControl class
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_all_checks.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    nc_file.attr_1 = 'attr_1'
+
+    nc_file.createDimension('dim_1', 50)
+
+    var_1 = nc_file.createVariable('var_1', 'f4', ('dim_1',), fill_value=-999.0)
+    var_2 = nc_file.createVariable('var_2', 'f4', ('dim_1',), fill_value=-999.0)
+
+    var_1[:] = np.random.uniform(low=1, high=10, size=50)
+    var_2[:] = np.random.uniform(low=10, high=19, size=50)
+
     nc_file.close()
