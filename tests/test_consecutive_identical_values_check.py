@@ -111,7 +111,7 @@ def test_consecutive_identical_values_check_fail():
 
     assert qc_obj.logger.info == ["consecutive_identical_values_check for variable 'test_fail': FAIL"]
     assert qc_obj.logger.errors == [
-        "test_fail has 100 consecutive same values 1.0, which is higher than the threshold 50"]
+        "test_fail has 100 consecutive identical values 1.0, which is higher than the threshold of 50"]
     assert not qc_obj.logger.warnings
 
     if os.path.exists(nc_path):

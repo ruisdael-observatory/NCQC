@@ -41,7 +41,7 @@ class QualityControl:
     - adjacent_values_difference_check: Method dedicated to checking if the difference between 2
       consecutive values is smaller than the maximum allowed difference for each variable in a NetCDF file.
     - consecutive_identical_values_check: Method dedicated to checking whether too many
-      (maximum specified in the configuration file) consecutive values are the same for each variable in the NetCDF file.
+      (maximum specified in the configuration file) consecutive values are identical for each variable in the NetCDF file.
     - expected_dimensions_check: Method dedicated to checking whether each variable has the expected dimensions
     - check: Method that performs all checks
     - create_report: Method to create and get a report from the logger
@@ -538,13 +538,13 @@ class QualityControl:
     def consecutive_identical_values_check(self, all_checks_run: bool = False):
         """
         Method dedicated to checking whether too many (maximum specified in the configuration file)
-        consecutive values are the same for each variable in the NetCDF file.
+        consecutive values are identical for each variable in the NetCDF file.
 
-        - logs an error to the logger if no netCDF file is loaded
-        - logs a warning to the logger if a variable specified to be checked does
+        - logs an error if no netCDF file is loaded
+        - logs a warning if a variable specified to be checked does
           not exist in the netCDF file
-        - logs a warning to the logger if the maximum is not specified
-        - logs an error to the logger if the number of consecutive values exceeds the specified maximum
+        - logs a warning if the maximum is not specified
+        - logs an error if the number of consecutive values exceeds the specified maximum
         - writes a message to the logger whether the check succeeded or failed for each variable
 
         :param all_checks_run: True when the method is run through the `check` method, which
@@ -606,8 +606,8 @@ class QualityControl:
                         success = False
                         # logs that there are to many consecutive values
                         self.logger.add_error(
-                            f"{var_name} has {count_consecutive} consecutive same values {var_values[j]},"
-                            f" which is higher than the threshold {maximum}")
+                            f"{var_name} has {count_consecutive} consecutive identical values {var_values[j]},"
+                            f" which is higher than the threshold of {maximum}")
 
                     # sets value to check against to current value
                     value_to_check_against = var_values[j]
@@ -618,8 +618,8 @@ class QualityControl:
             if count_consecutive > maximum:
                 success = False
                 self.logger.add_error(
-                    f"{var_name} has {count_consecutive} consecutive same values {var_values[len(var_values) - 1]},"
-                    f" which is higher than the threshold {maximum}")
+                    f"{var_name} has {count_consecutive} consecutive identical values {var_values[len(var_values) - 1]},"
+                    f" which is higher than the threshold of {maximum}")
 
             self.logger.add_info(
                 f"consecutive_identical_values_check for variable '{var_name}': {'SUCCESS' if success else 'FAIL'}")
@@ -698,13 +698,3 @@ def yaml2dict(path: Path) -> dict:
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
-
-
-if __name__ == '__main__':
-    data_dir = Path(__file__).parent.parent / 'sample_data'
-    nc_path = data_dir / 'test_data_points_amount.nc'
-    qc_obj = QualityControl()
-    qc_obj.load_netcdf(nc_path)
-    qc_obj.add_qc_checks_conf(data_dir / 'example_config.yaml')
-    qc_obj.check()
-    print(qc_obj.logger.warnings)
