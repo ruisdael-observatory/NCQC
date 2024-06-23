@@ -43,7 +43,7 @@ class QualityControl:
     - consecutive_identical_values_check: Method dedicated to checking whether too many
       (maximum specified in the configuration file) consecutive values are identical for each variable in the NetCDF file.
     - expected_dimensions_check: Method dedicated to checking whether each variable has the expected dimensions
-    - check: Method that performs all checks
+    - perform_all_checks: Method that performs all checks
     - create_report: Method to create and get a report from the logger
     """
 
@@ -144,7 +144,7 @@ class QualityControl:
         - writes a message to the logger whether a boundary check for a variable
           succeeded or failed
 
-        :param all_checks_run: True when the method is run through the `check` method, which
+        :param all_checks_run: True when the method is run through the `perform_all_checks` method, which
                             runs all checks at once. If the method is run by itself
                             all_checks_run is False by default.
         :return: self
@@ -272,7 +272,7 @@ class QualityControl:
         - Logs errors for each variable and global attribute which should be fully populated but is not.
         - Logs info for each category how many of the checked fields are fully populated.
 
-        :param all_checks_run: True when the method is run through the `check` method, which
+        :param all_checks_run: True when the method is run through the `perform_all_checks` method, which
                             runs all checks at once. If the method is run by itself
                             all_checks_run is False by default.
         :return: self to make chaining calls possible
@@ -406,7 +406,7 @@ class QualityControl:
         - logs an error if the number of data points for a variable is below the specified minimum
         - logs an info message for each variable, stating whether the check is successful or not
 
-        :param all_checks_run: True when the method is run through the `check` method, which
+        :param all_checks_run: True when the method is run through the `perform_all_checks` method, which
                             runs all checks at once. If the method is run by itself
                             all_checks_run is False by default.
         :return: self
@@ -453,7 +453,7 @@ class QualityControl:
         - logs an error for each instance of the difference being too high
         - writes a message to the logger whether the check succeeded or failed for each variable
 
-        :param all_checks_run: True when the method is run through the `check` method, which
+        :param all_checks_run: True when the method is run through the `perform_all_checks` method, which
                             runs all checks at once. If the method is run by itself
                             all_checks_run is False by default.
         :return: self
@@ -547,7 +547,7 @@ class QualityControl:
         - logs an error if the number of consecutive values exceeds the specified maximum
         - writes a message to the logger whether the check succeeded or failed for each variable
 
-        :param all_checks_run: True when the method is run through the `check` method, which
+        :param all_checks_run: True when the method is run through the `perform_all_checks` method, which
                             runs all checks at once. If the method is run by itself
                             all_checks_run is False by default.
         :return: self
@@ -634,7 +634,7 @@ class QualityControl:
         self.logger.add_warning("not implemented yet")
         return self
 
-    def check(self):
+    def perform_all_checks(self):
         """
         Method that performs all checks in the following order:
          1. file_size_check
@@ -652,7 +652,7 @@ class QualityControl:
         :return: self
         """
         if self.nc is None:
-            self.logger.add_error("check error: no nc file loaded")
+            self.logger.add_error("perform_all_checks error: no nc file loaded")
             return self
 
         vars_nc_file = list(self.nc.variables.keys())

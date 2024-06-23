@@ -19,7 +19,7 @@ When a test fixtures is set as argument for a test function, it automatically ru
   adjacent_values_difference_check.
 - create_nc_consecutive_identical_values_check: Test fixture for testing max number
   of consecutive values that are the same.
-- create_nc_all_checks: Test fixture for testing check method from QualityControl class
+- create_nc_all_checks: Test fixture for testing perform_all_checks method from QualityControl class
 """
 
 import os
@@ -379,7 +379,7 @@ def create_nc_consecutive_identical_values_check():
 @pytest.fixture()
 def create_nc_all_checks():
     """
-    Test fixture for testing check method from QualityControl class
+    Test fixture for testing perform_all_checks method from QualityControl class
     """
     nc_path = Path(__file__).parent / 'sample_data' / 'test_all_checks.nc'
 

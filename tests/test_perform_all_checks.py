@@ -1,5 +1,5 @@
 """
-Module for testing the check method from the QualityControl class
+Module for testing the perform_all_checks method from the QualityControl class
 """
 import os
 import unittest
@@ -15,28 +15,28 @@ data_dir = Path(__file__).parent.parent / 'sample_data'
 
 class TestCheck(unittest.TestCase):
     """
-    Test class for the check method from the QualityControl class
+    Test class for the perform_all_checks method from the QualityControl class
 
      Methods:
-    - test_check_no_nc: Test method for when there is no netCDF file loaded
-    - test_check_no_such_var: Test method for when a variable specified in the config
+    - test_perform_all_checks_no_nc: Test method for when there is no netCDF file loaded
+    - test_perform_all_checks_no_such_var: Test method for when a variable specified in the config
       file does not exist in the netCDF file
-    - test_check_all_success: Test method for when all checks succeed
-    - test_check_all_fail: Test method for when most checks fail
+    - test_perform_all_checks_all_success: Test method for when all checks succeed
+    - test_perform_all_checks_all_fail: Test method for when most checks fail
     """
 
-    def test_check_no_nc(self):
+    def test_perform_all_checks_no_nc(self):
         """
         Test method for when there is no netCDF file loaded
         """
         qc_obj = QualityControl()
-        qc_obj.check()
+        qc_obj.perform_all_checks()
         assert not qc_obj.logger.info
         assert not qc_obj.logger.warnings
-        assert qc_obj.logger.errors == ['check error: no nc file loaded']
+        assert qc_obj.logger.errors == ['perform_all_checks error: no nc file loaded']
 
     @pytest.mark.usefixtures("create_nc_data_points_amount_check")
-    def test_check_no_such_var(self):
+    def test_perform_all_checks_no_such_var(self):
         """
         Test method for when a variable specified in the config file does not exist in the netCDF file
         """
@@ -44,7 +44,7 @@ class TestCheck(unittest.TestCase):
         qc_obj = QualityControl()
         qc_obj.load_netcdf(nc_path)
         qc_obj.add_qc_checks_conf(data_dir / 'example_config.yaml')
-        qc_obj.check()
+        qc_obj.perform_all_checks()
         assert qc_obj.logger.warnings == ["variable 'example_variable' not in nc file"]
 
         if os.path.exists(nc_path):
@@ -52,7 +52,7 @@ class TestCheck(unittest.TestCase):
 
     @pytest.mark.usefixtures("create_nc_all_checks")
     @patch('ncqc.QCnetCDF.Path.stat', return_value=Mock(st_size=150))
-    def test_check_all_success(self, mock_path_stat):
+    def test_perform_all_checks_all_success(self, mock_path_stat):
         """
         Test method for when all checks succeed
         :param mock_path_stat: Mock object for the Path.stat call
@@ -93,7 +93,7 @@ class TestCheck(unittest.TestCase):
             },
             'file size': {'lower_bound': 100, 'upper_bound': 200}
         })
-        qc_obj.check()
+        qc_obj.perform_all_checks()
 
         assert qc_obj.logger.info == [
             "file size check: SUCCESS",
@@ -117,7 +117,7 @@ class TestCheck(unittest.TestCase):
 
     @pytest.mark.usefixtures("create_nc_all_checks")
     @patch('ncqc.QCnetCDF.Path.stat', return_value=Mock(st_size=150))
-    def test_check_all_fail(self, mock_path_stat):
+    def test_perform_all_checks_all_fail(self, mock_path_stat):
         """
         Test method for when most checks fail
         :param mock_path_stat: Mock object for the Path.stat call
@@ -158,7 +158,7 @@ class TestCheck(unittest.TestCase):
             },
             'file size': {'lower_bound': 200, 'upper_bound': 300}
         })
-        qc_obj.check()
+        qc_obj.perform_all_checks()
 
         print(qc_obj.logger.info)
 
