@@ -15,7 +15,7 @@ There are a couple steps to perform quality control checks. These are:
 * [Getting a report from a QualityControl object](#getting-a-report-from-a-qualitycontrol-object)
 
 ### Creating a configuration file or dictionary
-To remove the manual labor from setting up the configuration for the `QualityControl` object, there are two methods: `create_config_dict_from_yaml` and `create_config_dict_from_dict` to create the base for a configuration dictionary by parsing an existing .yaml file or dictionary respectively. By specifying the names of the groups containing the dimensions, variables and global attributes via the paramaters `dimensions_name`, `variables_name`, and `global_attributes_name`, these fields get added to the output dictionary with the structure for specifying what checks to perform already set up. Below is an example of how this can be used.
+To remove the manual labor from setting up the configuration for the `QualityControl` object, there are two methods: `create_config_dict_from_yaml` and `create_config_dict_from_dict` to create the base for a configuration dictionary by parsing an existing .yaml file or dictionary respectively. By specifying the names of the groups containing the dimensions, variables and global attributes via the paramaters `dimensions_name`, `variables_name`, and `global_attributes_name`, these fields get added to the output dictionary with the structure for specifying what checks to perform already set up. The types for all the values are given, but the specific values will still need to be filled in. Below is an example of how this can be used.
 
 Method call:
 ```python
@@ -74,47 +74,42 @@ Example output dictionary:
 ```python
 {
         'dimensions': {
-            'dim1': {'existence_check': 'TODO'},
-            'dim2': {'existence_check': 'TODO'}
+            'dim1': {'existence_check': 'bool'},
+            'dim2': {'existence_check': 'bool'}
         },
         'variables': {
             'var1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             }
         },
         'global_attributes': {
             'glattr1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO'
+                'existence_check': 'bool',
+                'emptiness_check': 'bool'
             },
             'glattr2': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO'
+                'existence_check': 'bool',
+                'emptiness_check': 'bool'
             }
         },
         'file_size': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
+            'lower_bound': 'int',
+            'upper_bound': 'int'
         }
     }
 ```
@@ -137,25 +132,21 @@ fields:
 ```python
 'variables': {
     'field_1': {
-        'existence_check': 'TODO',
-        'emptiness_check': 'TODO',
+        'existence_check': 'bool',
+        'emptiness_check': 'bool',
         'data_boundaries_check': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
+            'lower_bound': 'int',
+            'upper_bound': 'int'
         },
         'data_points_amount_check': {
-            'perform_check': 'TODO',
-            'threshold': 'TODO',
-            'dimension': 'TODO'
+            'minimum': 'int'
         },
-        'do_values_change_at_acceptable_rate_check': {
-            'perform_check': 'TODO',
-            'acceptable_difference': 'TODO'
+        'adjacent_values_difference_check': {
+            'over_which_dimension': 'List[int]',
+            'maximum_difference': 'List[int]'
         },
-        'is_value_constant_for_too_long_check': {
-            'perform_check': 'TODO',
-            'threshold': 'TODO'
+        'consecutive_identical_values_check': {
+            'maximum': 'int'
         }
     }
 }
@@ -180,13 +171,14 @@ qc_obj.load_netcdf(nc_path)
 
 ### Running checks with a QualityControl object
 These are the quality control checks that can be performed on a `QualityControl` object with a set up configuration and loaded netCDF file:
-* `data_boundaries_check`: logs an error for each data point which falls outside of the variable bounds, which are specified in the configuration
+* `file_size_check`: logs an error of the size of the provided netCDF file falls outside of the specified bounds
 * `existence_check`: logs an error for each dimension, variable, or global attribute which according to the configuration should be present in the netCDF file but is not, and logs info for each category how many of the checked fields exist
 * `emptiness_check`: logs an error for each variable or global attribute which has (a) missing value(s), in the case of variables also specifying how many data poins are empty, and logs info for each category how many of the checked fields are fully populated
-* `data_points_amount_check`: TODO
-* `values_change_rate_check`: TODO
-* `constant_values_check`: TODO
-* `file_size_check`: TODO
+* `data_points_amount_check`: logs an error for each variable which has less data points than the specified minimum data points for that variable
+* `data_boundaries_check`: logs an error for each data point which falls outside of the specified variable bounds
+* `consecutive_identical_values_check`: logs an error for each variable which has more consecutive identical than the specified maximum for that variable
+* `adjacent_values_difference_check`: logs an error if the difference between two adjacent data points is greater than the specified maximum difference for that variable
+Additionally, calling the method `perform_all_checks` will run all the previously mentioned checks in the order of that list.
 
 Code example:
 
@@ -197,19 +189,25 @@ qc_obj.file_size_check()
 
 # Chained
 qc_obj.existence_check().emptiness_check()
+
+# All checks
+qc_obj.perform_all_checks()
 ```
 
 ### Getting a report from a QualityControl object
 Once quality control checks have been performed, it is possible to get a report by accessing the `LoggerQC` object of the `QualityControl` object:
-* `create_report`: creates a dictionary containing the logged errors, warnings, and info, in addition to the date and time. This dictionary gets stored in the logger's list of repotrs. This method also automatically clears the logger's errors, warnings, and info.
-* `get_latest_report`: returns the most recently created report
-* `get_all_reports`: returns the full list of reports created so far
+* `create_report`: creates a dictionary containing the logged errors, warnings, and info, in addition to the date and time. This dictionary gets stored in the logger's list of reports. This method also automatically clears the logger's errors, warnings, and info, so future reports won't contain old logs. `create_report` takes a boolean parameter `get_all_reports`, and if that is true it will return the list of all reports, otherwise it will return only most recently created report.
 
 Code example:
 
 ```python
-qc_obj.create_report()
-report = qc_obj.get_latest_report()
+# Create a report and access it
+latest_report = qc_obj.create_report(get_all_reports=false)
+
+qc_obj.perform_all_checks()
+
+# Create a new report and access all reports
+all_reports = qc_obj.create_report(get_all_reports=true)
 ```
 
 ## Contributing
