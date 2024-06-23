@@ -74,9 +74,8 @@ def create_config_dict_from_dict(input_dict: Dict,  # pylint: disable=dangerous-
         'variables': {},
         'global_attributes': {},
         'file_size': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
+            'lower_bound': 'int',
+            'upper_bound': 'int'
         }
     }
 
@@ -112,43 +111,39 @@ def create_config_dict_from_dict(input_dict: Dict,  # pylint: disable=dangerous-
     if global_attributes_name in list(input_dict.keys()):
         qc_dict['global_attributes'].update(input_dict[global_attributes_name])
 
-    # Give every dimension the setup for potentially applicable checks with "TO DO" for values
+    # Give every dimension the setup for potentially applicable checks with the necessary types as values
     for dim in qc_dict['dimensions']:
         qc_dict['dimensions'][dim] = {
-            'existence_check': 'TODO'
+            'existence_check': 'bool'
         }
 
-    # Give every variable the setup for potentially applicable checks with "TO DO" for values,
+    # Give every variable the setup for potentially applicable checks with the necessary types as values,
     # which have to be manually edited
     for var in qc_dict['variables']:
         qc_dict['variables'][var] = {
-            'existence_check': 'TODO',
-            'emptiness_check': 'TODO',
+            'existence_check': 'bool',
+            'emptiness_check': 'bool',
             'data_boundaries_check': {
-                'perform_check': 'TODO',
-                'lower_bound': 'TODO',
-                'upper_bound': 'TODO'
+                'lower_bound': 'int',
+                'upper_bound': 'int'
             },
             'data_points_amount_check': {
-                'perform_check': 'TODO',
-                'threshold': 'TODO',
-                'dimension': 'TODO'
+                'minimum': 'int'
             },
-            'do_values_change_at_acceptable_rate_check': {
-                'perform_check': 'TODO',
-                'acceptable_difference': 'TODO'
+            'adjacent_values_difference_check': {
+                'over_which_dimension': 'List[int]',
+                'maximum_difference': 'List[int]'
             },
-            'is_value_constant_for_too_long_check': {
-                'perform_check': 'TODO',
-                'threshold': 'TODO'
+            'consecutive_identical_values_check': {
+                'maximum': 'int'
             }
         }
 
-    # Give every global attribute the setup for potentially applicable checks with "TO DO" for values
+    # Give every global attribute the setup for potentially applicable checks with the necessary types as values
     for attr in qc_dict['global_attributes']:
         qc_dict['global_attributes'][attr] = {
-            'existence_check': 'TODO',
-            'emptiness_check': 'TODO'
+            'existence_check': 'bool',
+            'emptiness_check': 'bool'
         }
 
     return qc_dict
