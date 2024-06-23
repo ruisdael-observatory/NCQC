@@ -40,65 +40,56 @@ def test_create_from_yaml(mock_yaml2dict):
 
     expected_dict = {
         'dimensions': {
-            'dim1': {'existence_check': 'TODO'},
-            'dim2': {'existence_check': 'TODO'}
+            'dim1': {'existence_check': 'bool'},
+            'dim2': {'existence_check': 'bool'}
         },
         'variables': {
             'var1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             },
             'var2': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             }
         },
         'global_attributes': {
             'glattr1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO'
+                'existence_check': 'bool',
+                'emptiness_check': 'bool'
             }
         },
         'file_size': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
+            'lower_bound': 'int',
+            'upper_bound': 'int'
         }
     }
 
@@ -143,109 +134,92 @@ def test_create_from_dict_with_arguments():
 
     expected_dict = {
         'dimensions': {
-            'dim1': {'existence_check': 'TODO'},
-            'dim2': {'existence_check': 'TODO'}
+            'dim1': {'existence_check': 'bool'},
+            'dim2': {'existence_check': 'bool'}
         },
         'variables': {
             'var1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             },
             'var2': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             },
             'field_1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             },
             'field_2': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             }
         },
         'global_attributes': {
             'glattr1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO'
+                'existence_check': 'bool',
+                'emptiness_check': 'bool'
             }
         },
         'file_size': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
+            'lower_bound': 'int',
+            'upper_bound': 'int'
         }
     }
 
@@ -277,99 +251,82 @@ def test_create_from_dict_multiple_other_variables():
         'dimensions': {},
         'variables': {
             'var1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             },
             'var2': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             },
             'field1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             },
             'field2': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             }
         },
         'global_attributes': {},
         'file_size': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
+            'lower_bound': 'int',
+            'upper_bound': 'int'
         }
     }
 
@@ -394,55 +351,46 @@ def test_create_from_dict_one_string_other_variables():
         'dimensions': {},
         'variables': {
             'field1': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             },
             'field2': {
-                'existence_check': 'TODO',
-                'emptiness_check': 'TODO',
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
                 'data_boundaries_check': {
-                    'perform_check': 'TODO',
-                    'lower_bound': 'TODO',
-                    'upper_bound': 'TODO'
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
                 },
                 'data_points_amount_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO',
-                    'dimension': 'TODO'
+                    'minimum': 'int'
                 },
-                'do_values_change_at_acceptable_rate_check': {
-                    'perform_check': 'TODO',
-                    'acceptable_difference': 'TODO'
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
                 },
-                'is_value_constant_for_too_long_check': {
-                    'perform_check': 'TODO',
-                    'threshold': 'TODO'
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
                 }
             }
         },
         'global_attributes': {},
         'file_size': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
+            'lower_bound': 'int',
+            'upper_bound': 'int'
         }
     }
 
@@ -463,9 +411,8 @@ def test_create_from_dict_empty_other_variables():
         'variables': {},
         'global_attributes': {},
         'file_size': {
-            'perform_check': 'TODO',
-            'lower_bound': 'TODO',
-            'upper_bound': 'TODO'
+            'lower_bound': 'int',
+            'upper_bound': 'int'
         }
     }
 
