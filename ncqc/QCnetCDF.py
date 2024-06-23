@@ -39,7 +39,7 @@ class QualityControl:
     - file_size_check: perform a file size check on the loaded netCDF file
     - data_points_amount_check: perform a data points amount check on the variables of the loaded netCDF file
     - adjacent_values_difference_check: Method dedicated to checking if the difference between 2
-      consecutive values is smaller than the maximum allowed difference for each variable in a NetCDF file.
+      adjecent values is smaller than the maximum allowed difference for each variable in a NetCDF file.
     - consecutive_identical_values_check: Method dedicated to checking whether too many
       (maximum specified in the configuration file) consecutive values are identical for each variable in the NetCDF file.
     - expected_dimensions_check: Method dedicated to checking whether each variable has the expected dimensions
@@ -488,13 +488,8 @@ class QualityControl:
                 self.qc_checks_vars[var_name]['adjacent_values_difference_check']['maximum_difference']
 
             if not dimensions:
-                # enables not specifying dimension in case of 1d variable
-                if len(var_values.shape) == 1:
-                    dimensions = [0]
-                    dimensions_maximum_difference = [dimensions_maximum_difference]
-                else:
-                    self.logger.add_warning(f"dimension/s to check not specified")
-                    continue
+                self.logger.add_warning(f"dimension/s to check not specified")
+                continue
 
             # check if maximum difference is specified
             if not dimensions_maximum_difference:
@@ -502,7 +497,7 @@ class QualityControl:
                 continue
 
             # check if variable has as many dimensions as specified
-            if len(var_values.shape) < len(dimensions):
+            if len(var_values.shape) != len(dimensions):
                 self.logger.add_warning(f"variable {var_name} doesn't have {len(dimensions)} dimensions")
                 continue
 
