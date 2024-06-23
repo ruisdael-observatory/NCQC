@@ -2,11 +2,11 @@
 Module with all test fixtures.
 When a test fixtures is set as argument for a test function, it automatically runs at the start of the test.
 
-Functions:
+ Functions:
 - create_nc_data_boundaries_check_success: Test fixture for testing boundary checking
-    when all data falls within the boundaries.
+  when all data falls within the boundaries.
 - create_nc_data_boundaries_check_fail: Test fixture for testing boundary checking
-    when not all data falls within the boundaries.
+  when not all data falls within the boundaries.
 - create_nc_data_boundaries_check_property_based: Creates netCDF files for property based testing for boundary checks.
 - create_nc_existence_check: Test fixture for testing existence checking.
 - create_nc_emptiness_check_full: Test fixture for testing boundary checking when everything is fully populated.
@@ -14,11 +14,12 @@ Functions:
 - create_nc_emptiness_check_empty: Test fixture for testing boundary checking when nothing is populated.
 - create_data_points_amount_check: Test fixture for testing data_points_amount_check
 - create_nc_data_boundaries_check_multidim_var: Test fixture for testing boundary
-checking when a variable is multidimensional
+  checking when a variable is multidimensional
 - create_nc_adjacent_values_difference_check: Test fixture for testing
   adjacent_values_difference_check.
 - create_nc_consecutive_identical_values_check: Test fixture for testing max number
   of consecutive values that are the same.
+- create_nc_all_checks: Test fixture for testing perform_all_checks method from QualityControl class
 """
 
 import os
@@ -315,6 +316,7 @@ def create_nc_data_boundaries_check_multidim_var():
 
     nc_file.close()
 
+
 @pytest.fixture()
 def create_nc_adjacent_values_difference_check():
     """
@@ -339,10 +341,11 @@ def create_nc_adjacent_values_difference_check():
     test_pass[:] = np.ones(100)
     # creates an array of first 80 ones, then 20 values, each 5 larger than the previous one [0,5,10,...,95]
     test_fail[:80] = np.ones(80)
-    test_fail[80:] = np.arange(0,100,5)
+    test_fail[80:] = np.arange(0, 100, 5)
 
     # Close the netCDF file
     nc_file.close()
+
 
 @pytest.fixture()
 def create_nc_consecutive_identical_values_check():
@@ -370,4 +373,29 @@ def create_nc_consecutive_identical_values_check():
     test_fail[:] = np.ones(100)
 
     # Close the netCDF file
+    nc_file.close()
+
+
+@pytest.fixture()
+def create_nc_all_checks():
+    """
+    Test fixture for testing perform_all_checks method from QualityControl class
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_all_checks.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    nc_file.attr_1 = 'attr_1'
+
+    nc_file.createDimension('dim_1', 50)
+
+    var_1 = nc_file.createVariable('var_1', 'f4', ('dim_1',), fill_value=-999.0)
+    var_2 = nc_file.createVariable('var_2', 'f4', ('dim_1',), fill_value=-999.0)
+
+    var_1[:] = np.random.uniform(low=1, high=10, size=50)
+    var_2[:] = np.random.uniform(low=10, high=19, size=50)
+
     nc_file.close()

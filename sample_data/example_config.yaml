@@ -7,11 +7,9 @@ variables:
     existence_check: true
     emptiness_check: true
     data_boundaries_check:
-      perform_check: true
       lower_bound: 0
       upper_bound: 1
     data_points_amount_check:
-      perform_check: true
       minimum: 100
     adjacent_values_difference_check:
       over_which_dimension: [0]
@@ -19,7 +17,6 @@ variables:
     consecutive_identical_values_check:
       maximum: 25
     expected_dimensions_check:
-      perform_check: true
       expected_dimensions: [time, velocity_classes]
 
 global attributes:
@@ -28,6 +25,5 @@ global attributes:
     emptiness_check: true
 
 file size:
-  perform_check: true
   lower_bound: 10000
   upper_bound: 20000

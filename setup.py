@@ -1,6 +1,6 @@
-'''
+"""
 File to set up the python library.
-'''
+"""
 
 from setuptools import find_packages, setup
 

@@ -1,7 +1,7 @@
 """
 Module for testing the functionality of the consecutive_identical_values_check method
 
-Functions:
+ Functions:
 - test_consecutive_identical_values_check_no_nc: Test for consecutive_identical_values_check when no netCDF file is loaded
 - test_consecutive_identical_values_check_success: Test for when there aren't to many consecutive same values
 - test_consecutive_identical_values_check_fail: Test for when a variable has to many consecutive same values
@@ -59,6 +59,7 @@ consecutive_identical_values_check_var_not_in_nc_dict = {
     }
 }
 
+
 def test_consecutive_identical_values_check_no_nc():
     """
     Test for consecutive_identical_values_check when no netCDF file is loaded.
@@ -86,12 +87,13 @@ def test_consecutive_identical_values_check_success():
     qc_obj.consecutive_identical_values_check()
 
     assert qc_obj.logger.info == ["consecutive_identical_values_check for variable 'test_pass': "
-    'SUCCESS']
+                                  'SUCCESS']
     assert not qc_obj.logger.errors
     assert not qc_obj.logger.warnings
 
     if os.path.exists(nc_path):
         os.remove(nc_path)
+
 
 @pytest.mark.usefixtures("create_nc_consecutive_identical_values_check")
 def test_consecutive_identical_values_check_fail():
@@ -108,7 +110,8 @@ def test_consecutive_identical_values_check_fail():
     qc_obj.consecutive_identical_values_check()
 
     assert qc_obj.logger.info == ["consecutive_identical_values_check for variable 'test_fail': FAIL"]
-    assert qc_obj.logger.errors == ["test_fail has 100 consecutive same values 1.0, which is higher than the threshold 50"]
+    assert qc_obj.logger.errors == [
+        "test_fail has 100 consecutive identical values 1.0, which is higher than the threshold of 50"]
     assert not qc_obj.logger.warnings
 
     if os.path.exists(nc_path):

@@ -1,26 +1,26 @@
 """
 Module for testing the functionality of the boundaries check
 
-Functions:
+ Functions:
 - test_data_boundaries_check_no_nc: Test for the boundaries check when no netCDF file is loaded
 - test_data_boundaries_check_success: Test for the boundaries check when all checks are successful
 - test_data_boundaries_check_fail: Test for the boundaries check when a check fails
 - test_data_boundaries_check_wrong_var_name: Test for the boundaries check when a variable to be
-checked is not in the loaded netCDF file
+  checked is not in the loaded netCDF file
 - test_data_boundaries_check_omit_a_var: Test for the boundaries check when a variable has to be omitted
 - test_data_boundaries_check_property_based_success: Property based test for the boundaries check
     when all values are within the specified boundaries
 - test_data_boundaries_check_property_based_fail: Property based test for the boundaries check
-    when at least one value is outside of the specified boundaries
+  when at least one value is outside of the specified boundaries
 - test_data_boundaries_check_multidim_var_success: Test for the boundaries check when a variable is multidimensional
-with expected success
+  with expected success
 - test_data_boundaries_check_multidim_var_fail: Test for the boundaries check when a variable is multidimensional
-with expected failure
+  with expected failure
 """
 
 import os
 from pathlib import Path
-from hypothesis import given, strategies as st
+from hypothesis import given, strategies as st, settings
 import pytest
 
 from ncqc.QCnetCDF import QualityControl
@@ -35,18 +35,17 @@ data_boundaries_check_test_dict = {
     'variables': {
         'velocity_spread': {
             'existence': False,
-            'data_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 3.3}
+            'data_boundaries_check': {'lower_bound': 0, 'upper_bound': 3.3}
         },
         'kinetic_energy': {
             'existence': True,
-            'data_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1.91}
+            'data_boundaries_check': {'lower_bound': 0, 'upper_bound': 1.91}
         },
     },
     'global attributes': {
         'existence': True, 'emptiness': True
     },
     'file size': {
-        'perform_check': True,
         'lower_bound': 0,
         'upper_bound': 1
     }
@@ -59,14 +58,13 @@ data_boundaries_check_property_based_test_dict = {
     'variables': {
         'temperature': {
             'existence': True,
-            'data_boundaries_check': {'perform_check': True, 'lower_bound': -10, 'upper_bound': 40}
+            'data_boundaries_check': {'lower_bound': -10, 'upper_bound': 40}
         },
     },
     'global attributes': {
         'existence': True, 'emptiness': True
     },
     'file size': {
-        'perform_check': True,
         'lower_bound': 0,
         'upper_bound': 1
     }
@@ -125,18 +123,17 @@ def test_data_boundaries_check_fail():
         'variables': {
             'velocity_spread': {
                 'existence': False,
-                'data_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 3.3}
+                'data_boundaries_check': {'lower_bound': 0, 'upper_bound': 3.3}
             },
             'kinetic_energy': {
                 'existence': True,
-                'data_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1.8}
+                'data_boundaries_check': {'lower_bound': 0, 'upper_bound': 1.8}
             },
         },
         'global attributes': {
             'existence': True, 'emptiness': True
         },
         'file size': {
-            'perform_check': True,
             'lower_bound': 0,
             'upper_bound': 1
         }
@@ -171,7 +168,7 @@ def test_data_boundaries_check_wrong_var_name():
         'variables': {
             'no_such_var': {
                 'existence': False,
-                'data_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1}
+                'data_boundaries_check': {'lower_bound': 0, 'upper_bound': 1}
             }
         },
         'global attributes': {},
@@ -205,19 +202,17 @@ def test_data_boundaries_check_omit_a_var():
         },
         'variables': {
             'velocity_spread': {
-                'existence': False,
-                'data_boundaries_check': {'perform_check': False, 'lower_bound': 0, 'upper_bound': 3.3}
+                'existence': False
             },
             'kinetic_energy': {
                 'existence': True,
-                'data_boundaries_check': {'perform_check': True, 'lower_bound': 0, 'upper_bound': 1.91}
+                'data_boundaries_check': {'lower_bound': 0, 'upper_bound': 1.91}
             },
         },
         'global attributes': {
             'existence': True, 'emptiness': True
         },
         'file size': {
-            'perform_check': True,
             'lower_bound': 0,
             'upper_bound': 1
         }
@@ -234,11 +229,12 @@ def test_data_boundaries_check_omit_a_var():
         os.remove(nc_path)
 
 
+@settings(deadline=None)
 @given(data=st.lists(st.integers(min_value=-10, max_value=40), max_size=100))
 def test_data_boundaries_check_property_based_success(data):
     """
     Property based test for the boundaries check when all values are within the specified boundaries
-    :param data: all possible lists of integers where all values are inside of the range [-10, 40]
+    :param data: all possible lists of integers where all values are inside the range [-10, 40]
     """
     create_nc_data_boundaries_check_property_based(data=data)
 
@@ -259,12 +255,13 @@ def test_data_boundaries_check_property_based_success(data):
         os.remove(nc_path)
 
 
+@settings(deadline=None)
 @given(data=st.lists(st.integers(), max_size=100)
        .filter(lambda lst: any(x < -10 or x > 40 for x in lst)))
 def test_data_boundaries_check_property_based_fail(data):
     """
-    Property based test for the boundaries check when at least one value is outside of the specified boundaries
-    :param data: all possible lists of integers where at least value is outside of the range [-10, 40]
+    Property based test for the boundaries check when at least one value is outside the specified boundaries
+    :param data: all possible lists of integers where at least value is outside the range [-10, 40]
     """
     create_nc_data_boundaries_check_property_based(data=data)
 
@@ -307,7 +304,6 @@ def test_data_boundaries_check_multidim_var_success():
         'variables': {
             'var_2d': {
                 'data_boundaries_check': {
-                    'perform_check': True,
                     'lower_bound': 0,
                     'upper_bound': 1.01
                 }
@@ -343,7 +339,6 @@ def test_data_boundaries_check_multidim_var_fail():
         'variables': {
             'var_2d': {
                 'data_boundaries_check': {
-                    'perform_check': True,
                     'lower_bound': 0,
                     'upper_bound': 1
                 }

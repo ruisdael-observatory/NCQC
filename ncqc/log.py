@@ -9,13 +9,13 @@ class LoggerQC:
     Class dedicated to logging errors, warnings, info, and creating
     reports for the netCDF quality control library
 
-    Attributes:
+     Attributes:
     - reports: list of created reports
     - errors: list of logged errors for the report being created
     - warnings: list of logged warnings for the report being created
     - info: list of messages for the report being created
 
-    Methods:
+     Methods:
     - add_error: method to add an error
     - add_warning: method to add info
     - add_info: method to add a message
@@ -23,6 +23,7 @@ class LoggerQC:
     - get_latest_report: method to get the latest report
     - get_all_reports: method to get all reports
     """
+
     def __init__(self):
         """
         Constructor for the logger object
@@ -58,7 +59,7 @@ class LoggerQC:
         Method dedicated to creating a report and adding it to the list of reports
 
         - the method creates a report in the form of a dictionary, adds it to the
-        list of reports, and resets the objects attributes
+          list of reports, and resets the objects attributes
         """
         report_dict = {
             'report_date': date.today().strftime("%d-%m-%Y"),
