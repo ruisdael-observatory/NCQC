@@ -15,7 +15,7 @@ There are a couple steps to perform quality control checks. These are:
 * [Getting a report from a QualityControl object](#getting-a-report-from-a-qualitycontrol-object)
 
 ### Creating a configuration file or dictionary
-To remove the manual labor from setting up the configuration for the `QualityControl` object, there are two methods: `create_config_dict_from_yaml` and `create_config_dict_from_dict` to create the base for a configuration dictionary by parsing an existing .yaml file or dictionary respectively. By specifying the names of the groups containing the dimensions, variables and global attributes via the paramaters `dimensions_name`, `variables_name`, and `global_attributes_name`, these fields get added to the output dictionary with the structure for specifying what checks to perform already set up. The types for all the values are given, but the specific values will still need to be filled in. Below is an example of how this can be used.
+To remove the manual labor from setting up the configuration for the `QualityControl` object, there are two methods: `create_config_dict_from_yaml` and `create_config_dict_from_dict` to create the base for a configuration dictionary by parsing an existing .yaml file or dictionary respectively. By specifying the names of the groups containing the dimensions, variables and global attributes via the paramaters `dimensions_name`, `variables_name`, and `global_attributes_name`, these fields get added to the output dictionary with the structure for specifying what checks to perform already set up. The types for all the values are given, but the specific values will still need to be filled in. Below is an example of how this can be used and a link to the respective in- and outputs.
 
 Method call:
 ```python
@@ -35,84 +35,7 @@ output_dict = create_config_dict_from_dict(
     global_attributes_name="gl_attrs"
 )
 ```
-
-Example yaml file:
-```yaml
-dims:
-  dim1:
-    # ...
-  dim2:
-    # ...
-
-vars:
-  var1:
-    # ...
-
-gl_attrs:
-  glattr1: 'text1'
-  glattr2: 'text2'
-```
-
-Example config dictionary:
-```python
-{
-    'dims': {
-        'dim1': 'value1',
-        'dim2': 'value2'
-    },
-    'vars': {
-        'var1': 'value1',
-    },
-    'gl_attrs': {
-        'glattr1': 'value1'
-        'glattr2': 'value2'
-    }
-}
-```
-
-Example output dictionary:
-```python
-{
-        'dimensions': {
-            'dim1': {'existence_check': 'bool'},
-            'dim2': {'existence_check': 'bool'}
-        },
-        'variables': {
-            'var1': {
-                'existence_check': 'bool',
-                'emptiness_check': 'bool',
-                'data_boundaries_check': {
-                    'lower_bound': 'int',
-                    'upper_bound': 'int'
-                },
-                'data_points_amount_check': {
-                    'minimum': 'int'
-                },
-                'adjacent_values_difference_check': {
-                    'over_which_dimension': 'List[int]',
-                    'maximum_difference': 'List[int]'
-                },
-                'consecutive_identical_values_check': {
-                    'maximum': 'int'
-                }
-            }
-        },
-        'global_attributes': {
-            'glattr1': {
-                'existence_check': 'bool',
-                'emptiness_check': 'bool'
-            },
-            'glattr2': {
-                'existence_check': 'bool',
-                'emptiness_check': 'bool'
-            }
-        },
-        'file_size': {
-            'lower_bound': 'int',
-            'upper_bound': 'int'
-        }
-    }
-```
+[Example in- and outputs](#example-for-creating-a-configuration-file-or-dictionary)
 
 Some input dictionaries might have variables where the name is not at the top layer, for example with this structure:
 
@@ -221,6 +144,86 @@ ncqc is developed in the context of the [Ruisdael Observatory](https://ruisdael-
 * Ella Milinovic
 * Noky Soekarman
 * Jesse Vleeschdraager
+
+## Example for creating a configuration file or dictionary
+
+Example yaml file (input):
+```yaml
+dims:
+  dim1:
+    # ...
+  dim2:
+    # ...
+
+vars:
+  var1:
+    # ...
+
+gl_attrs:
+  glattr1: 'text1'
+  glattr2: 'text2'
+```
+
+Example config dictionary (input):
+```python
+{
+    'dims': {
+        'dim1': 'value1',
+        'dim2': 'value2'
+    },
+    'vars': {
+        'var1': 'value1',
+    },
+    'gl_attrs': {
+        'glattr1': 'value1'
+        'glattr2': 'value2'
+    }
+}
+```
+
+Example output dictionary:
+```python
+{
+        'dimensions': {
+            'dim1': {'existence_check': 'bool'},
+            'dim2': {'existence_check': 'bool'}
+        },
+        'variables': {
+            'var1': {
+                'existence_check': 'bool',
+                'emptiness_check': 'bool',
+                'data_boundaries_check': {
+                    'lower_bound': 'int',
+                    'upper_bound': 'int'
+                },
+                'data_points_amount_check': {
+                    'minimum': 'int'
+                },
+                'adjacent_values_difference_check': {
+                    'over_which_dimension': 'List[int]',
+                    'maximum_difference': 'List[int]'
+                },
+                'consecutive_identical_values_check': {
+                    'maximum': 'int'
+                }
+            }
+        },
+        'global_attributes': {
+            'glattr1': {
+                'existence_check': 'bool',
+                'emptiness_check': 'bool'
+            },
+            'glattr2': {
+                'existence_check': 'bool',
+                'emptiness_check': 'bool'
+            }
+        },
+        'file_size': {
+            'lower_bound': 'int',
+            'upper_bound': 'int'
+        }
+    }
+```
 
 ## License
 GPLv3. See [LICENSE](LICENSE)
