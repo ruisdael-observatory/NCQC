@@ -17,6 +17,8 @@ When a test fixtures is set as argument for a test function, it automatically ru
   checking when a variable is multidimensional
 - create_nc_adjacent_values_difference_check: Test fixture for testing
   adjacent_values_difference_check.
+- create_nc_adjacent_values_difference_check_multidim: Test fixture for testing adjacent_values_difference_check
+  with multidimensional variable.
 - create_nc_consecutive_identical_values_check: Test fixture for testing max number
   of consecutive values that are the same.
 - create_nc_all_checks: Test fixture for testing perform_all_checks method from QualityControl class
@@ -316,6 +318,29 @@ def create_nc_data_boundaries_check_multidim_var():
 
     nc_file.close()
 
+
+@pytest.fixture()
+def create_nc_adjacent_values_difference_check_multidim():
+    """
+    Test fixture for testing adjacent_values_difference_check with multidimensional variable.
+    """
+    nc_path = Path(__file__).parent / 'sample_data' / 'test_adjacent_values_difference_check.nc'
+
+    if os.path.exists(nc_path):
+        os.remove(nc_path)
+
+    # Create a new netCDF file
+    nc_file = Dataset(nc_path, 'w', format='NETCDF4')
+
+    # create dimensions
+    nc_file.createDimension('dim_1', 10)
+    nc_file.createDimension('dim_2', 10)
+
+    # create variable
+    var_2d = nc_file.createVariable('var_2d', 'f4', ('dim_1', 'dim_2'), fill_value=-999.0)
+    var_2d[:] = np.ones((10, 10))
+    # Close the netCDF file
+    nc_file.close()
 
 @pytest.fixture()
 def create_nc_adjacent_values_difference_check():
