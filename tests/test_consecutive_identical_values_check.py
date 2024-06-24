@@ -22,73 +22,52 @@ from ncqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 
-consecutive_identical_values_check_dict_success = {
+general_dict = {
     'dimensions': {
-    },
-    'variables': {
-        'test_pass': {
-            'consecutive_identical_values_check': {'maximum': 50}
-        },
     },
     'global attributes': {
     },
     'file size': {
+    }
+}
+
+consecutive_identical_values_check_dict_success = {
+    'variables': {
+        'test_pass': {
+            'consecutive_identical_values_check': {'maximum': 50}
+        },
     }
 }
 
 consecutive_identical_values_check_dict_fail = {
-    'dimensions': {
-    },
     'variables': {
         'test_fail': {
             'consecutive_identical_values_check': {'maximum': 50}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 consecutive_identical_values_check_var_not_in_nc_dict = {
-    'dimensions': {
-    },
     'variables': {
         'test_not_in_nc': {
             'consecutive_identical_values_check': {'maximum': 50}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 consecutive_identical_values_check_max_not_specified_dict = {
-    'dimensions': {
-    },
     'variables': {
         'test_pass': {
             'consecutive_identical_values_check': {'maximum': ''}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 consecutive_identical_values_check_fewer_vals_than_max_dict = {
-    'dimensions': {
-    },
     'variables': {
         'test_pass': {
             'consecutive_identical_values_check': {'maximum': 101}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
@@ -97,8 +76,11 @@ def test_consecutive_identical_values_check_no_nc():
     Test for consecutive_identical_values_check when no netCDF file is loaded.
     """
     qc_obj = QualityControl()
-    qc_obj.add_qc_checks_dict(consecutive_identical_values_check_dict_success)
+
+    dictionary = general_dict | consecutive_identical_values_check_dict_success
+    qc_obj.add_qc_checks_dict(dictionary)
     qc_obj.consecutive_identical_values_check()
+
     assert not qc_obj.logger.info
     assert qc_obj.logger.errors == ['consecutive_identical_values_check error: no nc file loaded']
     assert not qc_obj.logger.warnings
@@ -114,7 +96,8 @@ def test_consecutive_identical_values_check_success():
     nc_path = data_dir / 'test_consecutive_identical_values_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(consecutive_identical_values_check_dict_success)
+    dictionary = general_dict | consecutive_identical_values_check_dict_success
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.consecutive_identical_values_check()
 
@@ -137,7 +120,8 @@ def test_consecutive_identical_values_check_fail():
     nc_path = data_dir / 'test_consecutive_identical_values_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(consecutive_identical_values_check_dict_fail)
+    dictionary = general_dict | consecutive_identical_values_check_dict_fail
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.consecutive_identical_values_check()
 
@@ -161,7 +145,8 @@ def test_consecutive_identical_values_check_var_not_in_file():
     nc_path = data_dir / 'test_consecutive_identical_values_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(consecutive_identical_values_check_var_not_in_nc_dict)
+    dictionary = general_dict | consecutive_identical_values_check_var_not_in_nc_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.consecutive_identical_values_check()
 
@@ -181,7 +166,8 @@ def test_consecutive_identical_values_check_max_not_specified():
     nc_path = data_dir / 'test_consecutive_identical_values_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(consecutive_identical_values_check_max_not_specified_dict)
+    dictionary = general_dict | consecutive_identical_values_check_max_not_specified_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.consecutive_identical_values_check()
 
@@ -202,7 +188,8 @@ def test_consecutive_identical_values_check_fewer_values_than_maximum():
     nc_path = data_dir / 'test_consecutive_identical_values_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(consecutive_identical_values_check_fewer_vals_than_max_dict)
+    dictionary = general_dict | consecutive_identical_values_check_fewer_vals_than_max_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.consecutive_identical_values_check()
 

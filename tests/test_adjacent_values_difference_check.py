@@ -29,115 +29,76 @@ from ncqc.QCnetCDF import QualityControl
 
 data_dir = Path(__file__).parent.parent / 'sample_data'
 
-adjacent_values_difference_check_dict_success = {
+general_dict = {
     'dimensions': {
-    },
-    'variables': {
-        'test_pass': {
-            'adjacent_values_difference_check': {'over_which_dimension': [0], 'maximum_difference': [1]}
-        },
     },
     'global attributes': {
     },
     'file size': {
+    }
+}
+
+adjacent_values_difference_check_dict_success = {
+    'variables': {
+        'test_pass': {
+            'adjacent_values_difference_check': {'over_which_dimension': [0], 'maximum_difference': [1]}
+        },
     }
 }
 
 adjacent_values_difference_check_dict_fail = {
-    'dimensions': {
-    },
     'variables': {
         'test_fail': {
             'adjacent_values_difference_check': {'over_which_dimension': [0], 'maximum_difference': [1]}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 adjacent_values_difference_check_var_not_in_nc_dict = {
-    'dimensions': {
-    },
     'variables': {
         'test_not_in_nc': {
             'adjacent_values_difference_check': {'over_which_dimension': [0], 'maximum_difference': [1]}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 adjacent_values_difference_check_dimensions_not_specified_dict = {
-    'dimensions': {
-    },
     'variables': {
         'test_pass': {
             'adjacent_values_difference_check': {'over_which_dimension':'', 'maximum_difference': 1}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 adjacent_values_difference_check_max_difference_not_specified_dict = {
-    'dimensions': {
-    },
     'variables': {
         'test_pass': {
             'adjacent_values_difference_check': {'over_which_dimension': [0], 'maximum_difference': ''}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 adjacent_values_difference_check_wrong_number_of_dimensions_dict = {
-    'dimensions': {
-    },
     'variables': {
         'test_pass': {
             'adjacent_values_difference_check': {'over_which_dimension': [0,1], 'maximum_difference': [1]}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 adjacent_values_difference_check_multidim_dict = {
-    'dimensions': {
-    },
     'variables': {
         'var_2d': {
             'adjacent_values_difference_check': {'over_which_dimension': [0,1], 'maximum_difference': [1,1]}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
 adjacent_values_difference_check_max_difference_not_specified_multidim_dict = {
-    'dimensions': {
-    },
     'variables': {
         'var_2d': {
             'adjacent_values_difference_check': {'over_which_dimension': [0,1], 'maximum_difference': [1]}
         },
-    },
-    'global attributes': {
-    },
-    'file size': {
     }
 }
 
@@ -147,7 +108,9 @@ def test_adjacent_values_difference_check_no_nc():
     Test for adjacent_values_difference_check when no netCDF file is loaded.
     """
     qc_obj = QualityControl()
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_dict_success)
+
+    dictionary = general_dict | adjacent_values_difference_check_dict_success
+    qc_obj.add_qc_checks_dict(dictionary)
     qc_obj.adjacent_values_difference_check()
 
     assert not qc_obj.logger.info
@@ -165,7 +128,8 @@ def test_adjacent_values_difference_check_success():
     nc_path = data_dir / 'test_adjacent_values_difference_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_dict_success)
+    dictionary = general_dict | adjacent_values_difference_check_dict_success
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.adjacent_values_difference_check()
 
@@ -188,7 +152,8 @@ def test_adjacent_values_difference_check_fail():
     nc_path = data_dir / 'test_adjacent_values_difference_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_dict_fail)
+    dictionary = general_dict | adjacent_values_difference_check_dict_fail
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.adjacent_values_difference_check()
 
@@ -211,7 +176,8 @@ def test_adjacent_values_difference_check_var_not_in_file():
     nc_path = data_dir / 'test_adjacent_values_difference_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_var_not_in_nc_dict)
+    dictionary = general_dict | adjacent_values_difference_check_var_not_in_nc_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.adjacent_values_difference_check()
 
@@ -233,7 +199,8 @@ def test_adjacent_values_difference_check_dimensions_not_specified():
     nc_path = data_dir / 'test_adjacent_values_difference_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_dimensions_not_specified_dict)
+    dictionary = general_dict | adjacent_values_difference_check_dimensions_not_specified_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.adjacent_values_difference_check()
 
@@ -255,7 +222,8 @@ def test_adjacent_values_difference_check_maximum_difference_not_specified():
     nc_path = data_dir / 'test_adjacent_values_difference_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_max_difference_not_specified_dict)
+    dictionary = general_dict | adjacent_values_difference_check_max_difference_not_specified_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.adjacent_values_difference_check()
 
@@ -277,7 +245,8 @@ def test_adjacent_values_difference_check_wrong_number_of_dimensions():
     nc_path = data_dir / 'test_adjacent_values_difference_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_wrong_number_of_dimensions_dict)
+    dictionary = general_dict | adjacent_values_difference_check_wrong_number_of_dimensions_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.adjacent_values_difference_check()
 
@@ -299,7 +268,8 @@ def test_adjacent_values_difference_check_multidim():
     nc_path = data_dir / 'test_adjacent_values_difference_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_multidim_dict)
+    dictionary = general_dict | adjacent_values_difference_check_multidim_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.adjacent_values_difference_check()
 
@@ -323,7 +293,8 @@ def test_adjacent_values_difference_check_max_difference_not_specified_multidim(
     nc_path = data_dir / 'test_adjacent_values_difference_check.nc'
     qc_obj.load_netcdf(nc_path)
 
-    qc_obj.add_qc_checks_dict(adjacent_values_difference_check_max_difference_not_specified_multidim_dict)
+    dictionary = general_dict | adjacent_values_difference_check_max_difference_not_specified_multidim_dict
+    qc_obj.add_qc_checks_dict(dictionary)
 
     qc_obj.adjacent_values_difference_check()
 
