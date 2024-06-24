@@ -39,9 +39,10 @@ class QualityControl:
     - file_size_check: perform a file size check on the loaded netCDF file
     - data_points_amount_check: perform a data points amount check on the variables of the loaded netCDF file
     - adjacent_values_difference_check: Method dedicated to checking if the difference between 2
-      consecutive values is smaller than the maximum allowed difference for each variable in a NetCDF file.
+      adjecent values is smaller than the maximum allowed difference for each variable in a NetCDF file.
     - consecutive_identical_values_check: Method dedicated to checking whether too many
-      (maximum specified in the configuration file) consecutive values are identical for each variable in the NetCDF file.
+      (maximum specified in the configuration file) consecutive values are identical for each variable
+      in the NetCDF file.
     - expected_dimensions_check: Method dedicated to checking whether each variable has the expected dimensions
     - perform_all_checks: Method that performs all checks
     - create_report: Method to create and get a report from the logger
@@ -488,13 +489,8 @@ class QualityControl:
                 self.qc_checks_vars[var_name]['adjacent_values_difference_check']['maximum_difference']
 
             if not dimensions:
-                # enables not specifying dimension in case of 1d variable
-                if len(var_values.shape) == 1:
-                    dimensions = [0]
-                    dimensions_maximum_difference = [dimensions_maximum_difference]
-                else:
-                    self.logger.add_warning(f"dimension/s to check not specified")
-                    continue
+                self.logger.add_warning(f"dimension/s to check not specified")
+                continue
 
             # check if maximum difference is specified
             if not dimensions_maximum_difference:
@@ -502,7 +498,7 @@ class QualityControl:
                 continue
 
             # check if variable has as many dimensions as specified
-            if len(var_values.shape) < len(dimensions):
+            if len(var_values.shape) != len(dimensions):
                 self.logger.add_warning(f"variable {var_name} doesn't have {len(dimensions)} dimensions")
                 continue
 
@@ -519,7 +515,7 @@ class QualityControl:
 
                 except IndexError:
                     success = False
-                    self.logger.add_warning(f"maximum difference not specified")
+                    self.logger.add_warning(f"maximum difference not specified for dimension {d}")
                     continue
 
                 # goes through flattened array of adjacent differences
@@ -530,8 +526,8 @@ class QualityControl:
                         self.logger.add_error(
                             f"difference of '{difference}' exceeds the maximum difference of '{maximum_difference}'")
 
-                self.logger.add_info(
-                    f"adjacent_values_difference_check for variable '{var_name}' and dimension '{d}': {'SUCCESS' if success else 'FAIL'}")
+                self.logger.add_info(f"adjacent_values_difference_check for variable "
+                                     f"'{var_name}' and dimension '{d}': {'SUCCESS' if success else 'FAIL'}")
 
         return self
 
@@ -585,8 +581,11 @@ class QualityControl:
 
             success = True
 
-            # checks if the number of values is smaller than allowed maximum
-            if len(var_values) < maximum:
+            # checks if the number of values is smaller or equal to the
+            # allowed maximum (check then allways succeeds)
+            if len(var_values) <= maximum:
+                self.logger.add_info(
+                    f"consecutive_identical_values_check for variable '{var_name}': {'SUCCESS'}")
                 continue
 
             # first value to check against
@@ -617,9 +616,9 @@ class QualityControl:
             # in case all values are the same or values at the end of the array are the same
             if count_consecutive > maximum:
                 success = False
-                self.logger.add_error(
-                    f"{var_name} has {count_consecutive} consecutive identical values {var_values[len(var_values) - 1]},"
-                    f" which is higher than the threshold of {maximum}")
+                self.logger.add_error(f"{var_name} has {count_consecutive} consecutive identical"
+                                      f" values {var_values[len(var_values) - 1]},"
+                                      f" which is higher than the threshold of {maximum}")
 
             self.logger.add_info(
                 f"consecutive_identical_values_check for variable '{var_name}': {'SUCCESS' if success else 'FAIL'}")
