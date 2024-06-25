@@ -29,6 +29,8 @@ To remove the manual labor from setting up the configuration for the `QualityCon
 
 Method call:
 ```python
+from ncqc.create_config import create_config_dict_from_yaml, create_config_dict_from_dict
+
 # with a yaml file
 output_dict = create_config_dict_from_yaml(
     input_dict=path_to_yaml_file,
@@ -94,6 +96,8 @@ The following methods can be used with a `QualityControl` object to set up the q
 Code example:
 
 ```python
+from ncqc.QCnetCDF import QualityControl
+
 qc_obj = QualityControl()
 
 qc_obj.add_qc_checks_dict(config_dictionary)
