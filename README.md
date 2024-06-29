@@ -133,18 +133,18 @@ qc_obj.perform_all_checks()
 
 ### Getting a report from a QualityControl object
 Once quality control checks have been performed, it is possible to get a report by accessing the `LoggerQC` object of the `QualityControl` object:
-* `create_report`: creates a dictionary containing the logged errors, warnings, and info, in addition to the date and time. This dictionary gets stored in the logger's list of reports. This method also automatically clears the logger's errors, warnings, and info, so future reports won't contain old logs. `create_report` takes a boolean parameter `get_all_reports`, and if that is true it will return the list of all reports, otherwise it will return only most recently created report.
+* `create_report`: creates a dictionary containing the logged errors, warnings, and info, in addition to the date and time. This dictionary gets stored in the logger's list of reports. This method also automatically clears the logger's errors, warnings, and info, so future reports won't contain old logs. `create_report` takes an optional boolean parameter `get_all_reports`, and if that is true it will return the list of all reports, otherwise it will return only most recently created report.
 
 Code example:
 
 ```python
 # Create a report and access it
-latest_report = qc_obj.create_report(get_all_reports=false)
+latest_report = qc_obj.create_report()
 
 qc_obj.perform_all_checks()
 
 # Create a new report and access all reports
-all_reports = qc_obj.create_report(get_all_reports=true)
+all_reports = qc_obj.create_report(get_all_reports=True)
 ```
 
 ## Contributing
