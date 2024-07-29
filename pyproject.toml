@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name='ncqc'
+version = "0.1.0"
+dependencies = [
+        'PyYAML',
+        'netCDF4',
+        'numpy'
+        ]
+requires-python = ">= 3.10"        
+description = "NetCDF Quality Control Python library"
+readme = {file = "README.md", content-type = "text/markdown"}
+authors = [
+  {name = "Noky Soekarman"},
+  {name = "Jesse Vleeschdraager"},
+  {name = "Mels Lutgerink"},
+  {name = "Ella Milinović"},
+  {name = "Vasil Chirov"},
+  {name = "Andre Castro"},
+  {name = "Marc Schleiss"},
+]
+maintainers = [
+  {name = "Andre Castro"},
+  {name = "Marc Schleiss"},
+]
+license = {file = "LICENSE"}
+keywords = ["NetCDF", "Quality Control"]
+
+
+[project.urls]
+Repository = "https://github.com/ruisdael-observatory/NCQC.git"
+Issues = "https://github.com/ruisdael-observatory/NCQC/issues/"
