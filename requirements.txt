@@ -4,3 +4,4 @@ coverage
 netCDF4
 pylint
 hypothesis
+numpy
