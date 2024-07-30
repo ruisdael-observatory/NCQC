@@ -6,3 +6,4 @@ ncqc.egg-info/*
 __pycache__
 .idea
 .hypothesis/*
+.env
