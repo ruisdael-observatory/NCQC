@@ -7,3 +7,4 @@ __pycache__
 .idea
 .hypothesis/*
 .env
+token

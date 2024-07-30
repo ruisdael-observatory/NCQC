@@ -5,11 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name='ncqc'
 version = "0.1.0"
-dependencies = [
-        'PyYAML',
-        'netCDF4',
-        'numpy'
-        ]
+dependencies = ["netCDF4", "PyYAML"]
 requires-python = ">= 3.10"        
 description = "NetCDF Quality Control Python library"
 readme = {file = "README.md", content-type = "text/markdown"}
@@ -44,3 +40,7 @@ test = [
 [project.urls]
 Repository = "https://github.com/ruisdael-observatory/NCQC.git"
 Issues = "https://github.com/ruisdael-observatory/NCQC/issues/"
+
+
+[tool.setuptools.packages.find]
+exclude = ["sample_data*", "tests*", "venv*"]
