@@ -115,6 +115,9 @@ These are the quality control checks that can be performed on a `QualityControl`
 * `adjacent_values_difference_check`: logs an error if the difference between two adjacent data points is greater than the specified maximum difference for that variable
 Additionally, calling the method `perform_all_checks` will run all the previously mentioned checks in the order of that list.
 
+@Andre Note: Why aren't the tests only defined by the `checks_dict` and there is only one method: `perform_checks` ????
+
+
 Code example:
 
 ```python
