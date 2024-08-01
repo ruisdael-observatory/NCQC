@@ -1,7 +1,5 @@
 # NetCDF Quality Control Library
 
-[[_TOC_]]
-
 ncqc is a Python library for performing quality control on netCDF files. It was developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. This library is focused around the `QualityControl` class, to which a netCDF file and configuration can be added to then perform quality control checks.
 
 ## Installation

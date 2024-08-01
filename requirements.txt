@@ -1,6 +1,6 @@
-PyYAML
+PyYAML~=6.0.1
 pytest
 coverage
-netCDF4
+netCDF4~=1.6.5
 pylint
 hypothesis
