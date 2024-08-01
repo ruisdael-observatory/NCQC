@@ -10,7 +10,7 @@ Installing ncqc from source requires two steps, creating a wheel distribution fi
 Steps:
 * create a new virtual environment: `python -m venv venv`
 * upgrade pip: `pip install --upgrade pip`
-* install requirements for building the wheel: `pip install setuptools wheel`
+* install requirements for building the wheel: `pip install setuptools wheel build`
 * create the wheel: `python -m build`
 * install wheel: `pip install dist/*.whl`
 
