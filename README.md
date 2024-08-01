@@ -1,21 +1,18 @@
 # NetCDF Quality Control Library
 
-[[_TOC_]]
-
 ncqc is a Python library for performing quality control on netCDF files. It was developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. This library is focused around the `QualityControl` class, to which a netCDF file and configuration can be added to then perform quality control checks.
 
 ## Installation
-### Installing from source
-Installing ncqc from source requires two steps: creating a wheel file, and using that to install the library. This is done by running the following commands:
-```
-pip install wheel
-pip install setuptools
-pip install twine
+### Installation from source
 
-python setup.py bdist_wheel
+Installing ncqc from source requires two steps, creating a wheel distribution file and installing it.
 
-pip install ./dist/ncqc-0.1.0-py3-none-any.whl
-```
+Steps:
+* create a new virtual environment: `python -m venv venv`
+* upgrade pip: `pip install --upgrade pip`
+* install requirements for building the wheel: `pip install setuptools wheel build`
+* create the wheel: `python -m build`
+* install wheel: `pip install dist/*.whl`
 
 ## Usage
 There are a couple steps to perform quality control checks. These are:
@@ -241,3 +238,6 @@ Example output dictionary:
 
 ## License
 GPLv3. See [LICENSE](LICENSE)
+
+# Notes
+[^1]: for an overview of virtual environments tools see [Python Tools for Managing Virtual Environments](https://dev.to/bowmanjd/python-tools-for-managing-virtual-environments-3bko)
