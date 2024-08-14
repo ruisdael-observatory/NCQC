@@ -106,7 +106,7 @@ qc_obj.load_netcdf(nc_path)
 
 ### Running checks with a QualityControl object
 These are the quality control checks that can be performed on a `QualityControl` object with a set up configuration and loaded netCDF file:
-* `file_size_check`: logs an error of the size of the provided netCDF file falls outside of the specified bounds
+* `file_size_check`: logs an error of the size (in bytes) of the provided netCDF file falls outside of the specified bounds
 * `existence_check`: logs an error for each dimension, variable, or global attribute which according to the configuration should be present in the netCDF file but is not, and logs info for each category how many of the checked fields exist
 * `emptiness_check`: logs an error for each variable or global attribute which has (a) missing value(s), in the case of variables also specifying how many data poins are empty, and logs info for each category how many of the checked fields are fully populated
 * `data_points_amount_check`: logs an error for each variable which has less data points than the specified minimum data points for that variable
