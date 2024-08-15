@@ -1,7 +1,5 @@
 # NetCDF Quality Control Library
 
-[[_TOC_]]
-
 ncqc is a Python library for performing quality control on netCDF files. It was developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. This library is focused around the `QualityControl` class, to which a netCDF file and configuration can be added to then perform quality control checks.
 
 ## Installation
@@ -108,7 +106,7 @@ qc_obj.load_netcdf(nc_path)
 
 ### Running checks with a QualityControl object
 These are the quality control checks that can be performed on a `QualityControl` object with a set up configuration and loaded netCDF file:
-* `file_size_check`: logs an error of the size of the provided netCDF file falls outside of the specified bounds
+* `file_size_check`: logs an error of the size (in bytes) of the provided netCDF file falls outside of the specified bounds
 * `existence_check`: logs an error for each dimension, variable, or global attribute which according to the configuration should be present in the netCDF file but is not, and logs info for each category how many of the checked fields exist
 * `emptiness_check`: logs an error for each variable or global attribute which has (a) missing value(s), in the case of variables also specifying how many data poins are empty, and logs info for each category how many of the checked fields are fully populated
 * `data_points_amount_check`: logs an error for each variable which has less data points than the specified minimum data points for that variable
@@ -116,6 +114,9 @@ These are the quality control checks that can be performed on a `QualityControl`
 * `consecutive_identical_values_check`: logs an error for each variable which has more consecutive identical than the specified maximum for that variable
 * `adjacent_values_difference_check`: logs an error if the difference between two adjacent data points is greater than the specified maximum difference for that variable
 Additionally, calling the method `perform_all_checks` will run all the previously mentioned checks in the order of that list.
+
+@Andre Note: Why aren't the tests only defined by the `checks_dict` and there is only one method: `perform_checks` ????
+
 
 Code example:
 
